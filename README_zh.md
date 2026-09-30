@@ -6,7 +6,7 @@
 <p align="center">
   <a href="https://index-translate.bilibili.com/">在线 Demo</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">Hugging Face</a> ·
-  <a href="https://modelscope.cn/organization/IndexTeam">ModelScope</a> ·
+  <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate">ModelScope</a> ·
   <a href="docs/Index_Translate_Series_Technical_Report.pdf">技术报告</a>
 </p>
 

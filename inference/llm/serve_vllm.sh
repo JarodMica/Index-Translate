@@ -12,8 +12,8 @@
 #
 # GPU memory guide (bf16, single card):
 #   2B models: ~8 GB    9B models: ~24 GB
-#   Nailong 9B at full 262K context: use --max-model-len to taste
-#   (the shipped config caps position embeddings at 229376).
+#   Nailong 9B: the shipped config caps position embeddings at 229376;
+#   reduce --max-model-len for lower KV-cache memory use.
 
 set -euo pipefail
 

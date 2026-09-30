@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-六个文本翻译 LLM 的客户端脚本、部署预设、固定 prompt 模板和实测用例。
+Translate、NativeLong、Homura 三个家族的客户端脚本、部署预设、固定 prompt 模板和实测用例。
 它们都走 OpenAI chat completions 协议——用 vLLM（推荐）、SGLang 或任何
 兼容栈起服务，然后把脚本指过去即可。
 
@@ -47,19 +47,18 @@ python syllable_translate.py "我们今天去看电影吧" --syllables 8 --targe
 脚本默认 `--base-url http://127.0.0.1:8000/v1`，可用 `--base-url/--model`
 （或环境变量 `OPENAI_BASE_URL`/`INDEX_MODEL`）指向任意服务器。
 
-## Prompt 与采样口径（与训练严格一致）
+## Prompt
+
+解码与部署默认值统一见[默认设置总表](../../README_zh.md#默认推理参数)。下面的提示词采用对应任务的训练格式。
 
 - **Translate**：单条 user 消息
   `请将以下{源}文本翻译为{目标}，直接输出翻译结果，不要进行任何解释。\n\n{text}`
-  （`auto` 时省略源语种）；贪心解码——temperature 0；关闭思考。
+  （`auto` 时省略源语种）。
 - **NativeLong**：固定方向模板（`prompts/nailong_{zh-en,en-zh,zh-ja,ja-zh}.txt`，
-  把唯一的 `（在这里放入需要翻译的完整…原文）` 占位符替换为全文）；
-  greedy——temperature 0、top_p 1、top_k -1、min_p 0、seed 42、
-  `stop_token_ids=[248044, 248046]`、关闭思考，且**不传 `max_tokens`**，
-  让模型写满剩余窗口。`doc_translate.py` 完整复现了这套口径。
+  把唯一的 `（在这里放入需要翻译的完整…原文）` 占位符替换为全文）。
 - **Homura**：单条 user 消息
-  `请将以下文本翻译为{目标}，译文严格控制在 N 个音节。直接输出翻译结果，不要进行任何解释。\n\n{text}`；
-  temperature 0.3；关闭思考。音节数是近似目标而非硬约束。
+  `请将以下文本翻译为{目标}，译文严格控制在 N 个音节。直接输出翻译结果，不要进行任何解释。\n\n{text}`。
+  音节数是近似目标而非硬约束。
 
 ## 用例
 

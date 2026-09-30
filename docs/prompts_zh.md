@@ -12,4 +12,4 @@
 | **音节受控**（Index-Homura） | 请将以下文本翻译为 `{目标语言}`，译文严格控制在 `N` 个音节。直接输出翻译结果，不要进行任何解释：<br><br>`{源文本}` | Translate the following text into `{target_lang}`, strictly within `N` syllables. Output the translation directly, without any explanation:<br><br>`{source_text}` |
 | **长文档**（Index-NativeLong） | 直接粘贴完整文档，使用固定方向模板（见 [inference/llm/prompts](../inference/llm/prompts)），一次生成完整译文 | Paste the complete document with the fixed per-direction template (see [inference/llm/prompts](../inference/llm/prompts)); the full translation is produced in one generation |
 
-Translate 客户端默认 temperature 为 0（贪心解码），Homura 默认仍为 0.3，两者均关闭思考；NativeLong 使用固定方向模板和贪心解码。完整配置见[文本推理文档](../inference/llm/README_zh.md)。
+各家族的解码默认值与输出预算统一见[默认设置总表](../README_zh.md#默认推理参数)。环境安装和可运行命令见[文本推理文档](../inference/llm/README_zh.md)。

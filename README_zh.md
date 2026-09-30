@@ -65,25 +65,44 @@ python inference/llm/translate.py \
 
 > Hello, world. The weather is nice today. Let's go for a walk in the park.
 
-客户端默认使用贪心解码（temperature 为 0），并关闭思考。更多内容见[实测案例](inference/llm/cases/translate_cases.jsonl)、[文本推理与解码配置](inference/llm/README_zh.md)及[提示词示例](docs/prompts_zh.md)。上面的 4,096 token 配置用于短文本示例；NativeLong 发布配置的窗口上限分别为 **2B 的 262,144 tokens** 与 **9B 的 229,376 tokens**，训练序列长度最高为 128K。上下文窗口需要同时容纳原文和生成的译文。
+更多内容见[实测案例](inference/llm/cases/translate_cases.jsonl)、[文本推理](inference/llm/README_zh.md)及[提示词示例](docs/prompts_zh.md)。上面的 4,096 token 配置用于短文本示例；部署预设见下面的总表。
 
 语音任务请进入对应的 [S2TT 字幕教程](inference/echo-s2tt/README_zh.md)或 [S2ST 配音教程](inference/echo-s2st/README_zh.md)。
 
 ### 默认推理参数
 
-以下为发布推理脚本的默认设置。同一家族不同尺寸采用相同的解码参数；Index-Translate-35B-A3B（preview）使用同一文本客户端。
+这张总表统一列出仓库客户端与发布 Echo 模型包的默认设置。Translate 包含 **2B / 9B / 35B-A3B（preview）**，其余家族包含 **2B / 9B**；同一家族各尺寸使用相同的解码参数。
 
-| 模型 | 默认解码 | 输出预算 |
-|---|---|---|
-| **Index-Translate · 2B / 9B / 35B-A3B（preview）** | 贪心解码，`temperature=0`；关闭思考 | `max_tokens=1024` |
-| **Index-Homura · 2B / 9B** | `temperature=0.3`；关闭思考 | `max_tokens=max(512, 3 * len(text))` |
-| **Index-NativeLong · 2B / 9B** | 贪心解码，`temperature=0`；关闭思考 | 默认不传 `max_tokens`，使用剩余上下文窗口 |
-| **Index-Echo S2TT · 2B / 9B** | 贪心解码，`do_sample=False` | 每个音频窗口 `max_new_tokens=2000` |
-| **Index-Echo S2ST · 2B / 9B** | 转写和翻译使用贪心解码；声音生成使用采样 | 转写和翻译 `max_new_tokens=1024`；声音生成最多 1,500 个 speech tokens |
+**未设置**表示客户端继承后端／模型配置；**—**表示不适用。Echo 的文本生成参数用于转写和翻译，声音生成参数另列。
 
-NativeLong 另设 `top_p=1`、`top_k=-1`、`min_p=0`、`seed=42`、`presence_penalty=0`、`repetition_penalty=1` 和 `stop_token_ids=[248044, 248046]`。Translate 与 Homura 不显式设置 `top_p`、`top_k` 或重复惩罚，这些参数沿用推理服务端默认值。
+| 参数 | [Index-Translate](inference/llm/README_zh.md) | [Index-Homura](inference/llm/README_zh.md) | [Index-NativeLong](inference/llm/README_zh.md) | [Echo S2TT](inference/echo-s2tt/README_zh.md) | [Echo S2ST](inference/echo-s2st/README_zh.md) |
+|---|---|---|---|---|---|
+| 调用入口 | `translate.py` | `syllable_translate.py` | `doc_translate.py` | `s2tt.py` → 模型包 `infer.py` | `dub.py` → 模型包 `DubbingBridgeModel` |
+| 默认权重 | 9B | 9B | 9B（`Index-Nailong`） | 2B | 本地 `./Index-Echo-S2ST-2B` |
+| 文本解码 | 贪心 | 采样 | 贪心 | 贪心（`do_sample=False`） | 贪心（`do_sample=False`） |
+| `temperature` | `0` | `0.3` | `0` | `0` | `0`（文本） |
+| `top_p` | 未设置 | 未设置 | `1` | 未设置 | 未设置（文本） |
+| `top_k` | 未设置 | 未设置 | `-1` | 未设置 | 未设置（文本） |
+| `min_p` | 未设置 | 未设置 | `0` | 未设置 | 未设置（文本） |
+| `presence_penalty` | 未设置 | 未设置 | `0` | — | — |
+| `repetition_penalty` | 未设置 | 未设置 | `1` | 未设置 | 未设置（文本） |
+| `seed` | 未设置 | 未设置 | `42` | 未设置 | `42`（声音） |
+| 思考控制 | `enable_thinking=False` | `enable_thinking=False` | `enable_thinking=False` | 预填空 `<think>` 块 | 预填空 `<think>` 块 |
+| 文本输出预算 | `max_tokens=1024` | `max_tokens=max(512, 3 * len(text))` | 不传 `max_tokens`，由服务端确定上限 | 每窗口 `max_new_tokens=2000` | `max_new_tokens=1024` |
+| 文本停止条件 | 未设置 | 未设置 | `stop_token_ids=[248044, 248046]`；`ignore_eos=False` | Tokenizer EOS / `<\|im_end\|>` | Tokenizer EOS / `<\|im_end\|>` |
+| 流式输出 | 否 | 否 | `stream=True` | 逐窗返回结果 | 声音生成 `stream=False` |
+| `serve_vllm.sh` 窗口（输入 + 输出） | 2B / 9B：`32768`；无 35B 预设 | `32768` | 2B：`262144`；9B：`229376` | — | — |
+| 默认语种／约束 | 源语种 `auto`，目标 `en` | 目标 `en`；必须传 `--syllables` | `zh-en` | `zh-en` | 必须传 `--lang`；源语种按 zh/en 判定 |
+| 音频切窗／历史上下文 | — | — | — | `--max-win 60` 秒；`--ctx-k 5` 个先前窗口 | 建议单句 ≤30 秒；`chunk=False` |
+| 声音采样器 | — | — | — | — | 固定实参 `sampling=25`；CosyVoice RAS 默认 `top_p=0.8`、`top_k=25` |
+| 声音 token 预算 | — | — | — | — | 上限 `min(1500, 20 * m)`；下限 `2 * m` |
+| 声音语速／采样率 | — | — | — | — | `speed=1.0`；`24000` Hz |
+| 主要可调入口 | `--model`、`--temperature`、`--max-tokens` | `--model`、`--syllables`、`--temperature`、`--max-tokens` | `--model`、`--direction`、`--max-tokens` | `--size`、`--temperature`、`--max-new-tokens`、`--max-win`、`--ctx-k`、`--glossary` | `--model-dir`、`--lang`；预算／seed 使用底层 API |
 
-S2TT 的音频窗口上限为 60 秒，使用前 5 个窗口作为上下文。S2ST 声音生成使用 `seed=42`、`sampling=25`、`speed=1.0`，输出音频采样率为 24 kHz。完整用法见[文本推理](inference/llm/README_zh.md)、[S2TT](inference/echo-s2tt/README_zh.md)和 [S2ST](inference/echo-s2st/README_zh.md) 文档。
+- **文本客户端：** 默认地址为 `http://127.0.0.1:8000/v1`，API key 为 `EMPTY`。用 `--base-url`／`--api-key` 或 `OPENAI_BASE_URL`／`OPENAI_API_KEY` 覆盖；`--model` 优先于 `INDEX_MODEL` 和默认权重。35B-A3B 需手动部署，再传 `--model IndexTeam/Index-Translate-35B-A3B`。
+- **预算：** Homura 的 `len(text)` 为输入去除首尾空白后的 Python 字符数。NativeLong 不传 `max_tokens` 时，由服务端确定输出上限，仍受上下文容量和服务端限制影响；传正数 `--max-tokens` 可显式指定上限。窗口包括完整提示词和生成结果，部署时可用 `--max-model-len` 覆盖。
+- **Echo S2ST：** `m` 为对齐后的目标文本 token 数。`sampling=25` 是模型包代码中的固定实参，不是 CLI 开关。公共 `DubbingBridgeModel.dub` 不暴露 `seed` 或 token 预算；请使用[模型卡](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B#configurable-api-parameters)中的底层 `extract`／`synth` API。`chunk=True` 尚未实现。
+- **口径：** 本表是日常推理默认值。技术报告的评测解码与窗口配置另见[评测说明](docs/evaluation_zh.md)。
 
 ## 精选案例
 

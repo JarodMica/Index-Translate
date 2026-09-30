@@ -10,6 +10,8 @@ all in one self-contained package).
 
 ## Quick start
 
+See the [shared settings table](../../README.md#default-inference-settings) for text decoding, speech sampling, token budgets, seed, speed, and sample rate. The table distinguishes CLI options from fixed package settings and lower-level API controls.
+
 ```bash
 # download the package (~13 GB for 2B, ~26 GB for 9B)
 huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir ./Index-Echo-S2ST-2B

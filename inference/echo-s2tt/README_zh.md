@@ -9,6 +9,8 @@
 
 ## 快速开始
 
+解码默认值、token 预算、音频切窗和历史窗口数统一见[默认设置总表](../../README_zh.md#默认推理参数)。`infer.py` 的高级参数可通过 `s2tt.py` 透传。
+
 ```bash
 pip install torch==2.11.0 transformers==5.6.0 safetensors librosa soundfile silero-vad
 # 系统需有 ffmpeg

@@ -10,6 +10,8 @@ sliding context for terminology consistency, optional glossary).
 
 ## Quick start
 
+See the [shared settings table](../../README.md#default-inference-settings) for decoding defaults, token budgets, audio-window length, and history size. Advanced `infer.py` options pass through `s2tt.py`.
+
 ```bash
 pip install torch==2.11.0 transformers==5.6.0 safetensors librosa soundfile silero-vad
 # system: ffmpeg on PATH

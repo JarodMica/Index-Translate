@@ -9,6 +9,8 @@
 
 ## 快速开始
 
+文本解码、声音采样、token 预算、seed、语速和采样率统一见[默认设置总表](../../README_zh.md#默认推理参数)。总表区分 CLI 开关、模型包固定设置和底层 API 可调参数。
+
 ```bash
 # 下载模型包（2B 约 13 GB，9B 约 26 GB）
 huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir ./Index-Echo-S2ST-2B

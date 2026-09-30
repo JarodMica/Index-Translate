@@ -9,13 +9,17 @@
 
 | 模型 | 任务 | 入口 |
 |---|---|---|
-| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) | 覆盖 150 种语言的文本翻译 | [`llm/`](llm/) |
+| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) / [35B-A3B（preview）](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | 覆盖 150 种语言的文本翻译 | [`llm/`](llm/) |
 | [Index-NativeLong-2B](https://huggingface.co/IndexTeam/Index-Nailong-2B) / [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B) | 长文档翻译（2B：262,144；9B：229,376 tokens；中↔英 / 中↔日） | [`llm/`](llm/) |
 | [Index-Homura-2B](https://huggingface.co/IndexTeam/Index-Homura-2B) / [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | 指定目标音节数的翻译 | [`llm/`](llm/) |
 | [Index-Echo-S2ST-2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) / [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | 语音到语音配音（中→英/西/日；英→中/西/日；参考源说话人音色） | [`echo-s2st/`](echo-s2st/) |
 | [Index-Echo-S2TT-2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) / [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | 语音转文字翻译（中文音视频 → 英/日/西字幕） | [`echo-s2tt/`](echo-s2tt/) |
 
 Index-NativeLong 的实际仓库 ID 为 `IndexTeam/Index-Nailong-2B` / `IndexTeam/Index-Nailong-9B`。语音语言范围指当前发布包的接口覆盖。
+
+## 默认推理参数
+
+[默认设置总表](../README_zh.md#默认推理参数)统一对比五个模型家族的解码、输出预算、部署窗口、音频切窗、声音生成和可调入口。默认值以总表为准；下面的教程说明环境安装与任务用法。
 
 ## 快速上手入口
 

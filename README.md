@@ -63,25 +63,44 @@ An output recorded with the released 2B model is:
 
 > Hello, world. The weather is nice today. Let's go for a walk in the park.
 
-The client defaults to greedy decoding (temperature 0) with thinking disabled. See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference and decoding](inference/llm/README.md), and [prompt examples](docs/prompts.md). The 4,096-token setting above is for this short-text example. NativeLong's shipped limits are **262,144 tokens for 2B** and **229,376 for 9B**, with training sequences up to 128K; the context window must hold both input and generated translation.
+See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference](inference/llm/README.md), and [prompt examples](docs/prompts.md). The 4,096-token setting above is a short-text example; the serving presets are listed in the table below.
 
 For audio, use the dedicated [S2TT subtitle guide](inference/echo-s2tt/README.md) or [S2ST dubbing guide](inference/echo-s2st/README.md).
 
 ### Default inference settings
 
-These are the defaults used by the released inference scripts. The same decoding settings apply across sizes within each family; Index-Translate-35B-A3B (preview) uses the same text client.
+This is the shared reference for the repository clients and the released Echo packages. Translate covers **2B / 9B / 35B-A3B (preview)**; the other families cover **2B / 9B**. Decoding defaults are shared across sizes within each family.
 
-| Model | Default decoding | Output budget |
-|---|---|---|
-| **Index-Translate · 2B / 9B / 35B-A3B (preview)** | Greedy, `temperature=0`; thinking disabled | `max_tokens=1024` |
-| **Index-Homura · 2B / 9B** | `temperature=0.3`; thinking disabled | `max_tokens=max(512, 3 * len(text))` |
-| **Index-NativeLong · 2B / 9B** | Greedy, `temperature=0`; thinking disabled | `max_tokens` omitted by default; uses the remaining context window |
-| **Index-Echo S2TT · 2B / 9B** | Greedy, `do_sample=False` | `max_new_tokens=2000` per audio window |
-| **Index-Echo S2ST · 2B / 9B** | Greedy for transcription and translation; sampling for speech generation | `max_new_tokens=1024` for transcription and translation; at most 1,500 speech tokens |
+**Not set** means the client inherits the backend/model configuration; **—** means the setting does not apply. Text-generation rows describe transcription/translation for Echo; speech generation has separate rows.
 
-NativeLong additionally sets `top_p=1`, `top_k=-1`, `min_p=0`, `seed=42`, `presence_penalty=0`, `repetition_penalty=1`, and `stop_token_ids=[248044, 248046]`. Translate and Homura do not explicitly set `top_p`, `top_k`, or repetition penalties; those follow the inference server's defaults.
+| Setting | [Index-Translate](inference/llm/README.md) | [Index-Homura](inference/llm/README.md) | [Index-NativeLong](inference/llm/README.md) | [Echo S2TT](inference/echo-s2tt/README.md) | [Echo S2ST](inference/echo-s2st/README.md) |
+|---|---|---|---|---|---|
+| Entry point | `translate.py` | `syllable_translate.py` | `doc_translate.py` | `s2tt.py` → package `infer.py` | `dub.py` → package `DubbingBridgeModel` |
+| Default checkpoint | 9B | 9B | 9B (`Index-Nailong`) | 2B | Local `./Index-Echo-S2ST-2B` |
+| Text decoding | Greedy | Sampling | Greedy | Greedy (`do_sample=False`) | Greedy (`do_sample=False`) |
+| `temperature` | `0` | `0.3` | `0` | `0` | `0` (text) |
+| `top_p` | Not set | Not set | `1` | Not set | Not set (text) |
+| `top_k` | Not set | Not set | `-1` | Not set | Not set (text) |
+| `min_p` | Not set | Not set | `0` | Not set | Not set (text) |
+| `presence_penalty` | Not set | Not set | `0` | — | — |
+| `repetition_penalty` | Not set | Not set | `1` | Not set | Not set (text) |
+| `seed` | Not set | Not set | `42` | Not set | `42` (speech) |
+| Thinking | `enable_thinking=False` | `enable_thinking=False` | `enable_thinking=False` | Empty `<think>` block prefilled | Empty `<think>` block prefilled |
+| Text output budget | `max_tokens=1024` | `max_tokens=max(512, 3 * len(text))` | `max_tokens` omitted; server selects the cap | `max_new_tokens=2000` per window | `max_new_tokens=1024` |
+| Text stop conditions | Not set | Not set | `stop_token_ids=[248044, 248046]`; `ignore_eos=False` | Tokenizer EOS / `<\|im_end\|>` | Tokenizer EOS / `<\|im_end\|>` |
+| Output streaming | No | No | `stream=True` | Sequential window results | Speech `stream=False` |
+| `serve_vllm.sh` context (input + output) | 2B / 9B: `32768`; no 35B preset | `32768` | 2B: `262144`; 9B: `229376` | — | — |
+| Default language / constraint | Source `auto`, target `en` | Target `en`; `--syllables` required | `zh-en` | `zh-en` | `--lang` required; source inferred as zh/en |
+| Audio window / history | — | — | — | `--max-win 60` seconds; `--ctx-k 5` prior windows | Utterances ≤30 seconds recommended; `chunk=False` |
+| Speech sampler | — | — | — | — | Fixed `sampling=25`; CosyVoice RAS defaults `top_p=0.8`, `top_k=25` |
+| Speech-token budget | — | — | — | — | Maximum `min(1500, 20 * m)`; minimum `2 * m` |
+| Speech speed / sample rate | — | — | — | — | `speed=1.0`; `24000` Hz |
+| Main overrides | `--model`, `--temperature`, `--max-tokens` | `--model`, `--syllables`, `--temperature`, `--max-tokens` | `--model`, `--direction`, `--max-tokens` | `--size`, `--temperature`, `--max-new-tokens`, `--max-win`, `--ctx-k`, `--glossary` | `--model-dir`, `--lang`; lower-level API for budgets / seed |
 
-S2TT uses a 60-second audio-window cap and the previous 5 windows as context. S2ST speech generation uses `seed=42`, `sampling=25`, and `speed=1.0`, with 24 kHz output audio. Full usage is in the [text](inference/llm/README.md), [S2TT](inference/echo-s2tt/README.md), and [S2ST](inference/echo-s2st/README.md) guides.
+- **Text clients:** default to `http://127.0.0.1:8000/v1` with API key `EMPTY`. Use `--base-url` / `--api-key` or `OPENAI_BASE_URL` / `OPENAI_API_KEY`; `--model` overrides `INDEX_MODEL` and the default checkpoint. Serve 35B-A3B manually and select it with `--model IndexTeam/Index-Translate-35B-A3B`.
+- **Budgets:** Homura's `len(text)` is the Python character count after trimming input. NativeLong's omitted `max_tokens` leaves the output cap to the server; context capacity and server limits still apply. Pass a positive `--max-tokens` for an explicit cap. Context includes the full prompt and generated output; override serving limits with `--max-model-len`.
+- **Echo S2ST:** `m` is the aligned target-text token count. `sampling=25` is a fixed package-code argument, not a CLI option. The public `DubbingBridgeModel.dub` wrapper exposes neither `seed` nor token budgets; use the lower-level `extract` / `synth` API documented in the [model card](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B#configurable-api-parameters). `chunk=True` is not implemented.
+- **Scope:** these are usage defaults. The technical report's benchmark decoding and context settings are documented separately in [Evaluation](docs/evaluation.md).
 
 ## Examples
 

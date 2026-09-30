@@ -3,7 +3,7 @@
 [中文](README_zh.md)
 
 Client scripts, serving presets, fixed prompt templates, and captured cases
-for the six text-translation LLMs. All of them speak the OpenAI chat
+for the Translate, NativeLong, and Homura families. All of them speak the OpenAI chat
 completions API — serve with vLLM (recommended), SGLang, or any compatible
 stack, then point the scripts at it.
 
@@ -48,20 +48,18 @@ python syllable_translate.py "我们今天去看电影吧" --syllables 8 --targe
 All scripts default to `--base-url http://127.0.0.1:8000/v1` and take
 `--base-url/--model` (or `OPENAI_BASE_URL`/`INDEX_MODEL`) to hit any server.
 
-## Prompts and decoding (matched to training)
+## Prompts
+
+Decoding and serving defaults are collected in the [shared settings table](../../README.md#default-inference-settings). The prompts below match the task-specific training format.
 
 - **Translate**: single user message
   `请将以下{源}文本翻译为{目标}，直接输出翻译结果，不要进行任何解释。\n\n{text}`
-  (source omitted when `auto`); greedy decoding — temperature 0; thinking disabled.
+  (source omitted when `auto`).
 - **NativeLong**: fixed per-direction templates (`prompts/nailong_{zh-en,en-zh,zh-ja,ja-zh}.txt`,
-  substitute the single `（在这里放入需要翻译的完整…原文）` marker with the full text);
-  greedy decoding — temperature 0, top_p 1, top_k -1, min_p 0, seed 42,
-  `stop_token_ids=[248044, 248046]`, thinking disabled, and **no `max_tokens`**
-  so the model writes into the remaining window. `doc_translate.py` reproduces
-  this profile exactly.
+  substitute the single `（在这里放入需要翻译的完整…原文）` marker with the full text).
 - **Homura**: single user message
-  `请将以下文本翻译为{目标}，译文严格控制在 N 个音节。直接输出翻译结果，不要进行任何解释。\n\n{text}`;
-  temperature 0.3; thinking disabled. Syllable counts are approximate targets,
+  `请将以下文本翻译为{目标}，译文严格控制在 N 个音节。直接输出翻译结果，不要进行任何解释。\n\n{text}`.
+  Syllable counts are approximate targets,
   not hard guarantees.
 
 ## Cases

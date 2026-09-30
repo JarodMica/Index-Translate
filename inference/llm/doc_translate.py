@@ -9,7 +9,7 @@ greedy sampling profile — both are reproduced here exactly:
   * directions: zh-en / en-zh / zh-ja / ja-zh (templates in prompts/)
   * greedy: temperature=0, top_p=1, top_k=-1, min_p=0, seed=42
   * stop_token_ids=[248044, 248046], enable_thinking=False
-  * no max_tokens by default: the model generates into the remaining window
+  * no max_tokens by default: the server selects the output cap within its limits
 
 Usage:
     python doc_translate.py novel.txt --direction zh-en -o novel.en.txt
@@ -77,7 +77,7 @@ def main() -> None:
     ap.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", "http://127.0.0.1:8000/v1"))
     ap.add_argument("--api-key", default=os.environ.get("OPENAI_API_KEY", "EMPTY"))
     ap.add_argument("--max-tokens", type=int, default=0,
-                    help="0 = let the model use the remaining context window (model-card default)")
+                    help="0 = omit max_tokens; the server selects the output cap within its limits")
     args = ap.parse_args()
 
     text = sys.stdin.read() if args.input == "-" else Path(args.input).read_text(encoding="utf-8")

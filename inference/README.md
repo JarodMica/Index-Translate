@@ -9,13 +9,17 @@ Minimal, tested inference scripts and cases for the open-sourced
 
 | Model | Task | Quickstart |
 |---|---|---|
-| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) | text translation across 150 languages | [`llm/`](llm/) |
+| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) / [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | text translation across 150 languages | [`llm/`](llm/) |
 | [Index-NativeLong-2B](https://huggingface.co/IndexTeam/Index-Nailong-2B) / [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B) | long-document translation (2B: 262,144; 9B: 229,376 tokens; zh↔en / zh↔ja) | [`llm/`](llm/) |
 | [Index-Homura-2B](https://huggingface.co/IndexTeam/Index-Homura-2B) / [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | translation with a target syllable count | [`llm/`](llm/) |
 | [Index-Echo-S2ST-2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) / [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | speech-to-speech dubbing (zh→en/es/ja; en→zh/es/ja; voice-conditioned) | [`echo-s2st/`](echo-s2st/) |
 | [Index-Echo-S2TT-2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) / [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | speech-to-text translation (zh audio/video → en/ja/es subtitles) | [`echo-s2tt/`](echo-s2tt/) |
 
 Index-NativeLong uses the repository IDs `IndexTeam/Index-Nailong-2B` / `IndexTeam/Index-Nailong-9B`. Speech language coverage refers to the packaged interfaces.
+
+## Default inference settings
+
+The [shared settings table](../README.md#default-inference-settings) compares all five families: decoding, output budgets, serving contexts, audio windows, speech generation, and available overrides. Use it as the reference for defaults; the guides below cover setup and task-specific usage.
 
 ## Quick-start paths
 

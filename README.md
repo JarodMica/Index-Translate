@@ -10,7 +10,7 @@
   <a href="docs/Index_Translate_Series_Technical_Report.pdf">Technical Report</a>
 </p>
 
-Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages, including Chinese and English**, and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.
+Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages** and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.
 
 - **Index-Translate** translates text, structured content, and community expressions.
 - **Index-Echo** produces translated subtitles or speech conditioned on the source speaker's voice.

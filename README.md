@@ -4,10 +4,10 @@
 <p align="center"><strong>A Multilingual Translation Model Family</strong><br>Text, Speech, Controlled Dubbing, and Long-Document Translation</p>
 
 <p align="center">
-  <a href="https://index-translate.bilibili.com/">Online Demo</a> ·
-  <a href="https://huggingface.co/collections/IndexTeam/index-translate">Hugging Face</a> ·
-  <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate">ModelScope</a> ·
-  <a href="docs/Index_Translate_Series_Technical_Report.pdf">Technical Report</a>
+  <a href="https://index-translate.bilibili.com/">🌐 Online Demo</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
+  <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
+  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 Technical Report</a>
 </p>
 
 Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages** and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.

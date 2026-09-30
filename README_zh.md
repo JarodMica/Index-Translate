@@ -31,7 +31,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 | 模型 | 任务与发布包覆盖 | Hugging Face | ModelScope | 推理 |
 |---|---|---|---|---|
-| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B) | [使用说明](inference/llm/README_zh.md) |
+| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B-preview) | [使用说明](inference/llm/README_zh.md) |
 | **Index-Echo S2TT** | 语音转字幕；发布脚本支持中→英/日/西 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-9B) | [使用说明](inference/echo-s2tt/README_zh.md) |
 | **Index-Echo S2ST** | 语音配音；中→英/西/日，英→中/西/日 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-9B) | [使用说明](inference/echo-s2st/README_zh.md) |
 | **Index-Homura** | 按指定目标音节数翻译 | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Homura-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Homura-9B) | [使用说明](inference/llm/README_zh.md) |
@@ -99,7 +99,7 @@ python inference/llm/translate.py \
 | 声音语速／采样率 | — | — | — | — | `speed=1.0`；`24000` Hz |
 | 主要可调入口 | `--model`、`--temperature`、`--max-tokens` | `--model`、`--syllables`、`--temperature`、`--max-tokens` | `--model`、`--direction`、`--max-tokens` | `--size`、`--temperature`、`--max-new-tokens`、`--max-win`、`--ctx-k`、`--glossary` | `--model-dir`、`--lang`；预算／seed 使用底层 API |
 
-- **文本客户端：** 默认地址为 `http://127.0.0.1:8000/v1`，API key 为 `EMPTY`。用 `--base-url`／`--api-key` 或 `OPENAI_BASE_URL`／`OPENAI_API_KEY` 覆盖；`--model` 优先于 `INDEX_MODEL` 和默认权重。35B-A3B 需手动部署，再传 `--model IndexTeam/Index-Translate-35B-A3B`。
+- **文本客户端：** 默认地址为 `http://127.0.0.1:8000/v1`，API key 为 `EMPTY`。用 `--base-url`／`--api-key` 或 `OPENAI_BASE_URL`／`OPENAI_API_KEY` 覆盖；`--model` 优先于 `INDEX_MODEL` 和默认权重。35B-A3B 需手动部署，再传 `--model IndexTeam/Index-Translate-35B-A3B-preview`。
 - **预算：** Homura 的 `len(text)` 为输入去除首尾空白后的 Python 字符数。NativeLong 不传 `max_tokens` 时，由服务端确定输出上限，仍受上下文容量和服务端限制影响；传正数 `--max-tokens` 可显式指定上限。窗口包括完整提示词和生成结果，部署时可用 `--max-model-len` 覆盖。
 - **Echo S2ST：** `m` 为对齐后的目标文本 token 数。`sampling=25` 是模型包代码中的固定实参，不是 CLI 开关。公共 `DubbingBridgeModel.dub` 不暴露 `seed` 或 token 预算；请使用[模型卡](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B#configurable-api-parameters)中的底层 `extract`／`synth` API。`chunk=True` 尚未实现。
 - **口径：** 本表是日常推理默认值。技术报告的评测解码与窗口配置另见[评测说明](docs/evaluation_zh.md)。

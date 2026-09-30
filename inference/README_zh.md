@@ -9,7 +9,7 @@
 
 | 模型 | 任务 | 入口 |
 |---|---|---|
-| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) / [35B-A3B（preview）](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | 覆盖 150 种语言的文本翻译 | [`llm/`](llm/) |
+| [Index-Translate-2B](https://huggingface.co/IndexTeam/Index-Translate-2B) / [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) / [35B-A3B（preview）](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) | 覆盖 150 种语言的文本翻译 | [`llm/`](llm/) |
 | [Index-NativeLong-2B](https://huggingface.co/IndexTeam/Index-Nailong-2B) / [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B) | 长文档翻译（2B：262,144；9B：229,376 tokens；中↔英 / 中↔日） | [`llm/`](llm/) |
 | [Index-Homura-2B](https://huggingface.co/IndexTeam/Index-Homura-2B) / [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | 指定目标音节数的翻译 | [`llm/`](llm/) |
 | [Index-Echo-S2ST-2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) / [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | 语音到语音配音（中→英/西/日；英→中/西/日；参考源说话人音色） | [`echo-s2st/`](echo-s2st/) |

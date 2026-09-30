@@ -39,7 +39,9 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 **命名说明：** Index-NativeLong 的实际模型仓库 ID 为 `IndexTeam/Index-Nailong-2B` 和 `IndexTeam/Index-Nailong-9B`，运行命令请使用这两个 ID。语音与长文档发布包的语言覆盖见上表，文本模型的 150 种语言覆盖不等同于每个专门模型的接口覆盖。
 
-## 快速上手
+## 推理
+
+### 快速上手
 
 先用 2B 文本模型完成一次翻译。需要 CUDA GPU 和支持 Qwen3.5 的 vLLM 版本，在终端中运行：
 
@@ -66,6 +68,22 @@ python inference/llm/translate.py \
 客户端默认使用贪心解码（temperature 为 0），并关闭思考。更多内容见[实测案例](inference/llm/cases/translate_cases.jsonl)、[文本推理与解码配置](inference/llm/README_zh.md)及[提示词示例](docs/prompts_zh.md)。上面的 4,096 token 配置用于短文本示例；NativeLong 发布配置的窗口上限分别为 **2B 的 262,144 tokens** 与 **9B 的 229,376 tokens**，训练序列长度最高为 128K。上下文窗口需要同时容纳原文和生成的译文。
 
 语音任务请进入对应的 [S2TT 字幕教程](inference/echo-s2tt/README_zh.md)或 [S2ST 配音教程](inference/echo-s2st/README_zh.md)。
+
+### 默认推理参数
+
+以下为发布推理脚本的默认设置。同一家族不同尺寸采用相同的解码参数；Index-Translate-35B-A3B（preview）使用同一文本客户端。
+
+| 模型 | 默认解码 | 输出预算 |
+|---|---|---|
+| **Index-Translate · 2B / 9B / 35B-A3B（preview）** | 贪心解码，`temperature=0`；关闭思考 | `max_tokens=1024` |
+| **Index-Homura · 2B / 9B** | `temperature=0.3`；关闭思考 | `max_tokens=max(512, 3 * len(text))` |
+| **Index-NativeLong · 2B / 9B** | 贪心解码，`temperature=0`；关闭思考 | 默认不传 `max_tokens`，使用剩余上下文窗口 |
+| **Index-Echo S2TT · 2B / 9B** | 贪心解码，`do_sample=False` | 每个音频窗口 `max_new_tokens=2000` |
+| **Index-Echo S2ST · 2B / 9B** | 转写和翻译使用贪心解码；声音生成使用采样 | 转写和翻译 `max_new_tokens=1024`；声音生成最多 1,500 个 speech tokens |
+
+NativeLong 另设 `top_p=1`、`top_k=-1`、`min_p=0`、`seed=42`、`presence_penalty=0`、`repetition_penalty=1` 和 `stop_token_ids=[248044, 248046]`。Translate 与 Homura 不显式设置 `top_p`、`top_k` 或重复惩罚，这些参数沿用推理服务端默认值。
+
+S2TT 的音频窗口上限为 60 秒，使用前 5 个窗口作为上下文。S2ST 声音生成使用 `seed=42`、`sampling=25`、`speed=1.0`，输出音频采样率为 24 kHz。完整用法见[文本推理](inference/llm/README_zh.md)、[S2TT](inference/echo-s2tt/README_zh.md)和 [S2ST](inference/echo-s2st/README_zh.md) 文档。
 
 ## 精选案例
 

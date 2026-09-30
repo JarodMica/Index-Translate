@@ -37,7 +37,9 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 **Naming:** Index-NativeLong is published under the model IDs `IndexTeam/Index-Nailong-2B` and `IndexTeam/Index-Nailong-9B`. Use those IDs in commands. Language support for the speech and long-document packages is listed separately from the text models' 150-language coverage.
 
-## Quick start
+## Inference
+
+### Quick start
 
 Start with the 2B text model on a CUDA GPU using a vLLM build with Qwen3.5 support. From a terminal:
 
@@ -64,6 +66,22 @@ An output recorded with the released 2B model is:
 The client defaults to greedy decoding (temperature 0) with thinking disabled. See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference and decoding](inference/llm/README.md), and [prompt examples](docs/prompts.md). The 4,096-token setting above is for this short-text example. NativeLong's shipped limits are **262,144 tokens for 2B** and **229,376 for 9B**, with training sequences up to 128K; the context window must hold both input and generated translation.
 
 For audio, use the dedicated [S2TT subtitle guide](inference/echo-s2tt/README.md) or [S2ST dubbing guide](inference/echo-s2st/README.md).
+
+### Default inference settings
+
+These are the defaults used by the released inference scripts. The same decoding settings apply across sizes within each family; Index-Translate-35B-A3B (preview) uses the same text client.
+
+| Model | Default decoding | Output budget |
+|---|---|---|
+| **Index-Translate · 2B / 9B / 35B-A3B (preview)** | Greedy, `temperature=0`; thinking disabled | `max_tokens=1024` |
+| **Index-Homura · 2B / 9B** | `temperature=0.3`; thinking disabled | `max_tokens=max(512, 3 * len(text))` |
+| **Index-NativeLong · 2B / 9B** | Greedy, `temperature=0`; thinking disabled | `max_tokens` omitted by default; uses the remaining context window |
+| **Index-Echo S2TT · 2B / 9B** | Greedy, `do_sample=False` | `max_new_tokens=2000` per audio window |
+| **Index-Echo S2ST · 2B / 9B** | Greedy for transcription and translation; sampling for speech generation | `max_new_tokens=1024` for transcription and translation; at most 1,500 speech tokens |
+
+NativeLong additionally sets `top_p=1`, `top_k=-1`, `min_p=0`, `seed=42`, `presence_penalty=0`, `repetition_penalty=1`, and `stop_token_ids=[248044, 248046]`. Translate and Homura do not explicitly set `top_p`, `top_k`, or repetition penalties; those follow the inference server's defaults.
+
+S2TT uses a 60-second audio-window cap and the previous 5 windows as context. S2ST speech generation uses `seed=42`, `sampling=25`, and `speed=1.0`, with 24 kHz output audio. Full usage is in the [text](inference/llm/README.md), [S2TT](inference/echo-s2tt/README.md), and [S2ST](inference/echo-s2st/README.md) guides.
 
 ## Examples
 

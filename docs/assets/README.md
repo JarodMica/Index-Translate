@@ -2,6 +2,14 @@
 
 All charts use the updated official demo data captured on 2026-09-30. `website_chart_data.json` records all 14 radar models, fixed axis ranges, and the 86 displayed values from the 12 bar charts. `seven_category_scores_raw.csv` contains the seven raw radar categories. Values are frozen locally for reproducible figures; no network request is needed when rendering.
 
+## Echo architecture
+
+`index-echo-architecture.pdf` is the speech architecture figure from the technical report. `index-echo-architecture.png` renders the same figure at 200 dpi for the English Hugging Face and ModelScope cards. It shows the S2TT path, the Hidden2CV/CosyVoice3 S2ST path, source-voice conditioning, and the training sequence.
+
+```bash
+pdftoppm -png -r 200 -singlefile docs/assets/index-echo-architecture.pdf docs/assets/index-echo-architecture
+```
+
 ## Radar
 
 The seven axes are WMT, FLORES, instruction following, low-resource translation, subtitle translation, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore; subtitles average OpenSubtitles and MuST-Cinema; books/fiction average OPUS-Books and GuoFeng-Webnovel.

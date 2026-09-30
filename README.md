@@ -61,7 +61,7 @@ An output recorded with the released 2B model is:
 
 > Hello, world. The weather is nice today. Let's go for a walk in the park.
 
-The client uses temperature 0.3 with thinking disabled, so wording can vary between runs. See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference and decoding](inference/llm/README.md), and [prompt examples](docs/prompts.md). The 4,096-token setting above is for this short-text example. NativeLong's shipped limits are **262,144 tokens for 2B** and **229,376 for 9B**, with training sequences up to 128K; the context window must hold both input and generated translation.
+The client defaults to greedy decoding (temperature 0) with thinking disabled. See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference and decoding](inference/llm/README.md), and [prompt examples](docs/prompts.md). The 4,096-token setting above is for this short-text example. NativeLong's shipped limits are **262,144 tokens for 2B** and **229,376 for 9B**, with training sequences up to 128K; the context window must hold both input and generated translation.
 
 For audio, use the dedicated [S2TT subtitle guide](inference/echo-s2tt/README.md) or [S2ST dubbing guide](inference/echo-s2st/README.md).
 

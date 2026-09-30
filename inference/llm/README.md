@@ -52,7 +52,7 @@ All scripts default to `--base-url http://127.0.0.1:8000/v1` and take
 
 - **Translate**: single user message
   `请将以下{源}文本翻译为{目标}，直接输出翻译结果，不要进行任何解释。\n\n{text}`
-  (source omitted when `auto`); temperature 0.3; thinking disabled.
+  (source omitted when `auto`); greedy decoding — temperature 0; thinking disabled.
 - **NativeLong**: fixed per-direction templates (`prompts/nailong_{zh-en,en-zh,zh-ja,ja-zh}.txt`,
   substitute the single `（在这里放入需要翻译的完整…原文）` marker with the full text);
   greedy decoding — temperature 0, top_p 1, top_k -1, min_p 0, seed 42,

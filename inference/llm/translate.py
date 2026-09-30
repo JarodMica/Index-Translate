@@ -70,7 +70,7 @@ def main() -> None:
     ap.add_argument("--base-url", default=os.environ.get("OPENAI_BASE_URL", "http://127.0.0.1:8000/v1"))
     ap.add_argument("--api-key", default=os.environ.get("OPENAI_API_KEY", "EMPTY"))
     ap.add_argument("--max-tokens", type=int, default=1024)
-    ap.add_argument("--temperature", type=float, default=0.3)
+    ap.add_argument("--temperature", type=float, default=0.0)
     args = ap.parse_args()
 
     text = args.text if args.text is not None else sys.stdin.read()

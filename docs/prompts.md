@@ -12,4 +12,4 @@
 | **Syllable-controlled** (Index-Homura) | 请将以下文本翻译为 `{target_lang}`，译文严格控制在 `N` 个音节。直接输出翻译结果，不要进行任何解释：<br><br>`{source_text}` | Translate the following text into `{target_lang}`, strictly within `N` syllables. Output the translation directly, without any explanation:<br><br>`{source_text}` |
 | **Long document** (Index-NativeLong) | 直接粘贴完整文档，使用固定方向模板（见 [inference/llm/prompts](../inference/llm/prompts)），一次生成完整译文 | Paste the complete document with the fixed per-direction template (see [inference/llm/prompts](../inference/llm/prompts)); the full translation is produced in one generation |
 
-The Translate and Homura clients default to temperature 0.3 with thinking disabled. NativeLong uses fixed direction templates and greedy decoding. See the [text inference guide](../inference/llm/README.md) for the full settings.
+The Translate client defaults to temperature 0 (greedy decoding), while Homura defaults to temperature 0.3; both disable thinking. NativeLong uses fixed direction templates and greedy decoding. See the [text inference guide](../inference/llm/README.md) for the full settings.

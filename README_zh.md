@@ -63,7 +63,7 @@ python inference/llm/translate.py \
 
 > Hello, world. The weather is nice today. Let's go for a walk in the park.
 
-客户端默认 temperature 为 0.3，并关闭思考，因此不同运行的措辞可能不同。更多内容见[实测案例](inference/llm/cases/translate_cases.jsonl)、[文本推理与解码配置](inference/llm/README_zh.md)及[提示词示例](docs/prompts_zh.md)。上面的 4,096 token 配置用于短文本示例；NativeLong 发布配置的窗口上限分别为 **2B 的 262,144 tokens** 与 **9B 的 229,376 tokens**，训练序列长度最高为 128K。上下文窗口需要同时容纳原文和生成的译文。
+客户端默认使用贪心解码（temperature 为 0），并关闭思考。更多内容见[实测案例](inference/llm/cases/translate_cases.jsonl)、[文本推理与解码配置](inference/llm/README_zh.md)及[提示词示例](docs/prompts_zh.md)。上面的 4,096 token 配置用于短文本示例；NativeLong 发布配置的窗口上限分别为 **2B 的 262,144 tokens** 与 **9B 的 229,376 tokens**，训练序列长度最高为 128K。上下文窗口需要同时容纳原文和生成的译文。
 
 语音任务请进入对应的 [S2TT 字幕教程](inference/echo-s2tt/README_zh.md)或 [S2ST 配音教程](inference/echo-s2st/README_zh.md)。
 

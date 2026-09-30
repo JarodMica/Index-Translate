@@ -51,7 +51,7 @@ python syllable_translate.py "我们今天去看电影吧" --syllables 8 --targe
 
 - **Translate**：单条 user 消息
   `请将以下{源}文本翻译为{目标}，直接输出翻译结果，不要进行任何解释。\n\n{text}`
-  （`auto` 时省略源语种）；temperature 0.3；关闭思考。
+  （`auto` 时省略源语种）；贪心解码——temperature 0；关闭思考。
 - **NativeLong**：固定方向模板（`prompts/nailong_{zh-en,en-zh,zh-ja,ja-zh}.txt`，
   把唯一的 `（在这里放入需要翻译的完整…原文）` 占位符替换为全文）；
   greedy——temperature 0、top_p 1、top_k -1、min_p 0、seed 42、

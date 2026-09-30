@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <title>LLM 网页翻译 - 设置</title>
+  <style>
+    body {
+      max-width: 560px;
+      margin: 40px auto;
+      padding: 0 20px;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: #222;
+    }
+    h1 { font-size: 20px; }
+    label { display: block; margin: 16px 0 4px; font-weight: 600; }
+    .hint { font-size: 12px; color: #888; margin-top: 2px; }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .presets { margin-top: 6px; }
+    .presets button {
+      font-size: 12px;
+      margin-right: 6px;
+      padding: 3px 8px;
+      border: 1px solid #ccc;
+      background: #f7f7f7;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .actions { margin-top: 24px; }
+    .actions button {
+      padding: 8px 20px;
+      margin-right: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #saveBtn { background: #4a6cf7; color: #fff; }
+    #testBtn { background: #eee; }
+    #clearCacheBtn { background: #eee; }
+    #status { margin-top: 12px; min-height: 20px; white-space: pre-wrap; word-break: break-all; }
+    #status.ok { color: #1a9c46; }
+    #status.error { color: #d33; }
+  </style>
+</head>
+<body>
+  <h1>LLM 网页翻译 — 设置</h1>
+
+  <label for="apiBaseUrl">API 地址（OpenAI 兼容格式）</label>
+  <input id="apiBaseUrl" placeholder="http://localhost:8000/v1" />
+  <div class="presets">
+    快速填入（本地部署）：
+    <button data-url="http://localhost:8000/v1" data-model="Index-Translate-2B">vLLM · Index-Translate-2B</button>
+    <button data-url="http://localhost:8000/v1" data-model="Index-Translate-9B">vLLM · Index-Translate-9B</button>
+    <button data-url="http://localhost:30000/v1" data-model="Index-Translate-2B">SGLang · Index-Translate-2B</button>
+    <button data-url="http://localhost:30000/v1" data-model="Index-Translate-9B">SGLang · Index-Translate-9B</button>
+  </div>
+  <div class="hint">推荐使用本地部署的 <a href="https://huggingface.co/collections/IndexTeam/index-translate" target="_blank" rel="noopener">Index-Translate</a> 系列模型（vLLM / SGLang，OpenAI 兼容接口，无需 API Key）。部署教程见 <a href="https://github.com/bilibili/Index-Translate/tree/main/extension#readme" target="_blank" rel="noopener">README</a>。</div>
+
+  <label for="apiKey">API Key</label>
+  <input id="apiKey" type="password" placeholder="本地模型可留空" />
+
+  <label for="model">模型名称</label>
+  <input id="model" placeholder="Index-Translate-2B（须与部署时的 --served-model-name 一致）" />
+
+  <label for="extraHeaders">额外请求头（可选，JSON 格式）</label>
+  <input id="extraHeaders" placeholder='{"X-Custom-Header": "value"}' />
+  <div class="hint">自建服务如启用了鉴权网关，可在此附加请求头。本地部署一般留空即可。</div>
+
+  <label for="targetLang">目标语言</label>
+  <select id="targetLang">
+    <option value="中文">中文</option>
+    <option value="英文">英文</option>
+    <option value="日文">日文</option>
+    <option value="韩文">韩文</option>
+  </select>
+
+  <div class="actions">
+    <button id="saveBtn">保存设置</button>
+    <button id="testBtn">测试连接</button>
+    <button id="clearCacheBtn">清除翻译缓存</button>
+  </div>
+  <div id="status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>

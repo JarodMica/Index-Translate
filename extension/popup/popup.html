@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      width: 260px;
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      color: #222;
+    }
+    h1 { font-size: 15px; margin: 0 0 12px; }
+    button {
+      display: block;
+      width: 100%;
+      padding: 8px 0;
+      margin-bottom: 8px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    #translateBtn { background: #4a6cf7; color: #fff; }
+    #translateBtn.stop { background: #e05a4e; }
+    #translateBtn:disabled { background: #a9b8f0; cursor: not-allowed; }
+    #restoreBtn { background: #eee; color: #333; }
+    #status {
+      min-height: 18px;
+      font-size: 12px;
+      color: #666;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    #status.error { color: #d33; }
+    #modeRow, .modeRow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      color: #555;
+    }
+    #modeRow select, .modeRow select {
+      flex: 1;
+      padding: 4px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    #progressWrap {
+      display: none;
+      margin-bottom: 8px;
+    }
+    #progressBar {
+      width: 100%;
+      height: 6px;
+      appearance: none;
+      border: none;
+      border-radius: 3px;
+      overflow: hidden;
+      background: #eee;
+    }
+    #progressBar::-webkit-progress-bar { background: #eee; }
+    #progressBar::-webkit-progress-value { background: #4a6cf7; transition: width 0.2s; }
+    #progressText {
+      font-size: 11px;
+      color: #888;
+      text-align: right;
+      margin-top: 2px;
+    }
+    a { font-size: 12px; color: #4a6cf7; }
+  </style>
+</head>
+<body>
+  <h1>LLM 网页翻译</h1>
+  <div id="modeRow">
+    <label for="workMode">翻译方式</label>
+    <select id="workMode">
+      <option value="page">整页翻译</option>
+      <option value="selection">划词翻译</option>
+    </select>
+  </div>
+  <div id="pageSection">
+    <div id="modeRow2" class="modeRow">
+      <label for="displayMode">显示模式</label>
+      <select id="displayMode">
+        <option value="bilingual">双语对照</option>
+        <option value="replace">替换原文</option>
+      </select>
+    </div>
+    <label id="hoverOriginalRow" class="modeRow" style="display: none;">
+      <input type="checkbox" id="hoverOriginal" style="width: auto;" />
+      悬停显示原文
+    </label>
+    <button id="translateBtn">翻译当前页面</button>
+    <button id="restoreBtn">还原页面</button>
+    <div id="progressWrap">
+      <progress id="progressBar" value="0" max="100"></progress>
+      <div id="progressText"></div>
+    </div>
+  </div>
+  <div id="selectionHint" style="display: none; font-size: 12px; color: #666; margin-bottom: 8px;">
+    在网页中划选文字，点击弹出的"译"按钮即可翻译。
+  </div>
+  <label id="autoTranslateRow" style="display: none; align-items: center; gap: 8px; font-size: 12px; color: #555; margin-bottom: 8px;">
+    <input type="checkbox" id="autoTranslate" style="width: auto;" />
+    自动翻译
+  </label>
+  <div id="status"></div>
+  <a href="#" id="openOptions">⚙ 打开设置</a>
+  <script src="popup.js"></script>
+</body>
+</html>

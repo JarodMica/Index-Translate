@@ -1,0 +1,4 @@
+{"model": "IndexTeam/Index-Translate-2B", "source": "auto", "target": "en", "input": "你好，世界。今天天气不错，我们去公园散步吧。", "output": "Hello, world. The weather is nice today. Let's go for a walk in the park."}
+{"model": "IndexTeam/Index-Translate-2B", "source": "auto", "target": "ja", "input": "人工智能正在改变世界。", "output": "人工知能は世界を変えつつあります。"}
+{"model": "IndexTeam/Index-Translate-9B", "source": "en", "target": "zh", "input": "The quick brown fox jumps over the lazy dog.", "output": "敏捷的棕色狐狸跳过懒惰的狗。"}
+{"model": "IndexTeam/Index-Translate-9B", "source": "auto", "target": "en", "input": "人工智能正在改变世界。", "output": "Artificial intelligence is changing the world."}

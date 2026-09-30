@@ -1,0 +1,3 @@
+{"model": "IndexTeam/Index-Nailong-9B", "direction": "zh-en", "input_file": "doc_zh.txt", "output_file": "doc_zh-en.9b.txt"}
+{"model": "IndexTeam/Index-Nailong-9B", "direction": "zh-ja", "input_file": "doc_zh.txt", "output_file": "doc_zh-ja.9b.txt"}
+{"model": "IndexTeam/Index-Nailong-2B", "direction": "en-zh", "input_file": "doc_en.txt", "output_file": "doc_en-zh.2b.txt"}

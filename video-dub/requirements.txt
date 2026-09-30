@@ -1,0 +1,8 @@
+requests>=2.28
+numpy>=1.23
+soundfile>=0.12
+# VAD (recommended; pipeline falls back to ffmpeg silencedetect if absent)
+silero-vad>=5.1; python_version >= "3.8"
+torch>=2.0; python_version >= "3.8"
+# Vocal separation (default on; --no-separate to disable)
+demucs>=4.0

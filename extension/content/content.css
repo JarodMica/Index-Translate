@@ -1,0 +1,71 @@
+/* 插入到页面里的译文块样式 */
+.llm-translation {
+  margin: 4px 0 8px;
+  padding: 4px 8px;
+  border-left: 3px solid #7c9ef8;
+  background: rgba(124, 158, 248, 0.08);
+  color: inherit;
+  font-size: inherit;
+  line-height: 1.6;
+  border-radius: 0 4px 4px 0;
+}
+
+/* ---------- 替换模式 ---------- */
+/* 译文顶替原文显示；悬停段落约 1 秒后切回原文（JS 添加 .llm-show-original 类） */
+.llm-translation-text {
+  border-bottom: 1px dashed rgba(124, 158, 248, 0.55); /* 淡虚线提示"这是译文，可悬停看原文" */
+}
+.llm-original {
+  display: none;
+}
+[data-llm-mode="replace"].llm-show-original > .llm-translation-text {
+  display: none;
+}
+[data-llm-mode="replace"].llm-show-original > .llm-original {
+  display: inline;
+}
+
+/* ---------- 划词翻译 ---------- */
+.llm-select-trigger {
+  position: fixed;
+  z-index: 2147483647;
+  display: none;
+  width: 26px;
+  height: 26px;
+  line-height: 26px;
+  text-align: center;
+  font-size: 13px;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  color: #fff;
+  background: #4a6cf7;
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  user-select: none;
+}
+.llm-select-trigger:hover {
+  background: #3a5be0;
+}
+.llm-select-bubble {
+  position: fixed;
+  z-index: 2147483647;
+  display: none;
+  max-width: 340px;
+  max-height: 240px;
+  overflow: auto;
+  overscroll-behavior: contain; /* 气泡内滚到底后不把滚动传递给页面，避免触发"滚动即关闭" */
+  padding: 10px 12px;
+  font-size: 13px;
+  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  line-height: 1.6;
+  color: #222;
+  background: #fff;
+  border: 1px solid #d8dee9;
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.llm-select-bubble.error {
+  color: #d33;
+}

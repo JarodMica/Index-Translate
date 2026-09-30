@@ -1,0 +1,3 @@
+{"model": "IndexTeam/Index-Homura-2B", "target": "en", "syllables": 8, "input": "我们今天去看电影吧", "output": "Let's go see a movie today."}
+{"model": "IndexTeam/Index-Homura-2B", "target": "ja", "syllables": 6, "input": "明天见", "output": "また明日！"}
+{"model": "IndexTeam/Index-Homura-9B", "target": "en", "syllables": 10, "input": "我们今天去看电影吧", "output": "Let's go see a movie today, shall we?"}

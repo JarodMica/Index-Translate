@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+
+# demo web app: ship the code, ignore runtime data
+demo/uploads/
+demo/results/
+demo/cases/
+demo/*.mp4
+demo/*.srt
+demo/*.segments.json

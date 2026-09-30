@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Index-Dub 视频配音 Demo</title>
+<style>
+  :root { --bg:#141517; --panel:#1d1f23; --line:#2c2f36; --fg:#e6e6e6; --dim:#8a8f98; --acc:#4da3ff; --zh:#ffb86b; --ok:#4d7; --err:#e66; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.6 -apple-system,"PingFang SC",sans-serif; display:flex; justify-content:center; }
+  main { width:1180px; max-width:98vw; padding:18px 0 24px; }
+  h1 { font-size:17px; margin:0 0 2px; }
+  .sub { color:var(--dim); font-size:12px; margin-bottom:14px; }
+
+  .upload { background:var(--panel); border:1px dashed var(--line); border-radius:10px; padding:14px; margin-bottom:14px; transition:border-color .15s; }
+  .upload.drag { border-color:var(--acc); background:#1a2332; }
+  .upload .row1 { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .dropzone { flex:1; min-width:280px; border:1px dashed var(--line); border-radius:8px; padding:14px; text-align:center; color:var(--dim); cursor:pointer; font-size:13px; }
+  .dropzone:hover { border-color:var(--acc); color:var(--fg); }
+  select, .opt input[type=number] { background:#26292f; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:5px 8px; font-size:13px; }
+  button.act { background:var(--acc); color:#0d1117; border:none; border-radius:6px; padding:6px 18px; cursor:pointer; font-size:13px; font-weight:600; }
+  button.act:disabled { opacity:.4; cursor:default; }
+  .opt { display:flex; gap:14px; align-items:center; color:var(--dim); font-size:12px; margin-top:8px; flex-wrap:wrap; }
+
+  .job { background:#181b1f; border:1px solid var(--line); border-radius:8px; padding:10px 12px; margin-top:10px; font-size:12.5px; }
+  .job .jh { display:flex; gap:10px; align-items:center; }
+  .job .st { color:var(--acc); }
+  .job.done .st { color:var(--ok); }
+  .job.error .st { color:var(--err); }
+  .bar { flex:1; height:6px; background:#26292f; border-radius:3px; overflow:hidden; }
+  .bar i { display:block; height:100%; background:var(--acc); width:0; transition:width .3s; }
+  .job .log { color:var(--dim); font-size:11px; margin-top:6px; max-height:72px; overflow-y:auto; font-family:ui-monospace,monospace; white-space:pre-wrap; }
+  .job .view { margin-left:auto; }
+
+  .tabs { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+  .tab { background:#26292f; color:var(--dim); border:1px solid var(--line); border-radius:6px; padding:5px 14px; cursor:pointer; font-size:12.5px; }
+  .tab:hover { border-color:var(--acc); }
+  .tab.on { background:#233246; color:var(--acc); border-color:var(--acc); }
+  .row { display:flex; gap:14px; align-items:stretch; }
+  .vcol { flex:0 0 640px; min-width:0; }
+  .ccol { flex:1; min-width:0; display:flex; flex-direction:column; }
+  .case { background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:10px 12px; }
+  .case .ctitle { font-size:13px; color:var(--acc); margin-bottom:6px; }
+  .case .meta { color:var(--dim); font-size:11.5px; margin-bottom:8px; }
+  .case video { width:100%; border-radius:6px; background:#000; display:block; }
+  .seg-ctl { display:flex; align-items:center; gap:10px; margin-top:8px; }
+  .seg-ctl button { background:#26292f; color:var(--fg); border:1px solid var(--line); border-radius:6px; padding:3px 12px; cursor:pointer; font-size:12.5px; }
+  .seg-ctl button:hover { border-color:var(--acc); }
+  .seg-ctl .rng { color:var(--dim); font-size:12px; font-variant-numeric:tabular-nums; }
+  .seg-ctl label { color:var(--dim); font-size:12px; }
+  .cues { flex:1; min-height:0; max-height:520px; overflow-y:auto; font-size:13px; background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px; }
+  .cue { padding:4px 8px; border-radius:5px; cursor:pointer; margin-bottom:2px; }
+  .cue:hover { background:#26292f; }
+  .cue.on { background:#233246; }
+  .cue .t { color:var(--dim); font-size:11px; font-variant-numeric:tabular-nums; margin-right:8px; }
+  .cue .src { display:block; color:var(--dim); font-size:12px; }
+  .cue .tgt { display:block; color:var(--zh); }
+  .cue .kept-badge { display:inline-block; background:#2c4a6b; color:var(--acc); font-size:10px; border-radius:3px; padding:0 5px; margin-left:6px; vertical-align:1px; }
+  .cue.kept .tgt { color:var(--fg); opacity:.85; }
+  @media (max-width: 1100px) {
+    .row { flex-direction:column; }
+    .vcol { flex:none; width:100%; }
+    .cues { max-height:300px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Index-Dub 视频配音 Demo</h1>
+  <div class="sub">Index S2ST 语音翻译模型 · 上传视频自动配音 · 原文/译文双语字幕随播放滚动高亮 · 点字幕跳转 · 空格键播放/暂停</div>
+
+  <div class="upload" id="uploadBox">
+    <div class="row1">
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="fileInput" accept="video/*,audio/*" style="display:none">
+        <span id="dropText">拖拽视频到这里，或点击选择文件</span>
+      </div>
+      <select id="srcSel"></select>
+      <span style="color:var(--dim)">→</span>
+      <select id="langSel"></select>
+      <button class="act" id="startBtn" disabled>开始配音</button>
+    </div>
+    <div class="opt">
+      <label><input type="checkbox" id="separateChk" checked> 人声分离（有 BGM 建议开）</label>
+      <label>并行请求 <input type="number" id="workersIn" value="4" min="1" max="16" style="width:52px"></label>
+      <span id="svcInfo"></span>
+    </div>
+    <div id="jobs"></div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+  <div class="row">
+    <div class="vcol">
+      <div class="case">
+        <div class="ctitle" id="videoTitle">配音视频</div>
+        <div class="meta" id="videoMeta"></div>
+        <video id="mainVideo" controls preload="metadata" src=""></video>
+        <div class="seg-ctl">
+          <button id="playPause">▶ 播放</button>
+          <span class="rng" id="timeDisplay">0:00 / 0:00</span>
+          <span style="margin-left:auto;">
+            <label><input type="checkbox" id="showSrc" checked> 原文</label>
+            <label style="margin-left:10px;"><input type="checkbox" id="showTgt" checked> 译文</label>
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="ccol">
+      <div class="cues" id="cueList"></div>
+    </div>
+  </div>
+</main>
+
+<script>
+const fmt = s => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+const esc = s => (s || '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const api = p => fetch(p).then(r => r.json());
+
+const video = document.getElementById('mainVideo');
+const cueList = document.getElementById('cueList');
+const playBtn = document.getElementById('playPause');
+const timeDisplay = document.getElementById('timeDisplay');
+const showSrc = document.getElementById('showSrc');
+const showTgt = document.getElementById('showTgt');
+const tabs = document.getElementById('tabs');
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const dropText = document.getElementById('dropText');
+const langSel = document.getElementById('langSel');
+const startBtn = document.getElementById('startBtn');
+const uploadBox = document.getElementById('uploadBox');
+const jobsBox = document.getElementById('jobs');
+
+let SEGMENTS = [], cues = [], lastCur = -2, currentCase = null, pickedFile = null;
+const activePolls = {};
+
+/* ---------- languages ---------- */
+const srcSel = document.getElementById('srcSel');
+let LANGS = { targets: [], sources: [], directions: {} };
+api('/api/langs').then(d => {
+  LANGS = d;
+  srcSel.innerHTML = d.sources.map(l => `<option value="${l.code}">${l.code ? '源：' + l.label : l.label + '（中/英）'}</option>`).join('');
+  refreshTargets();
+});
+srcSel.onchange = refreshTargets;
+function refreshTargets() {
+  const src = srcSel.value;
+  const prev = langSel.value;
+  const allowed = src ? LANGS.directions[src] : LANGS.targets.map(l => l.code);
+  const opts = LANGS.targets.filter(l => allowed.includes(l.code));
+  langSel.innerHTML = opts.map(l => `<option value="${l.code}">${l.label} (${l.code})</option>`).join('');
+  if (opts.some(l => l.code === prev)) langSel.value = prev;
+}
+api('/api/healthz').then(d => {
+  document.getElementById('svcInfo').textContent = d.ok ? 'S2ST 服务已连接' : 'S2ST 服务异常: ' + (d.error || '');
+}).catch(() => {});
+
+/* ---------- upload ---------- */
+dropzone.onclick = () => fileInput.click();
+fileInput.onchange = () => { if (fileInput.files[0]) pickFile(fileInput.files[0]); };
+['dragover', 'dragenter'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add('drag'); }));
+['dragleave', 'drop'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.remove('drag'); }));
+uploadBox.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if (f) pickFile(f);
+});
+function pickFile(f) {
+  pickedFile = f;
+  dropText.textContent = `${f.name}（${(f.size / 1048576).toFixed(1)} MB）`;
+  startBtn.disabled = false;
+}
+
+startBtn.onclick = () => {
+  if (!pickedFile) return;
+  const fd = new FormData();
+  fd.append('file', pickedFile);
+  fd.append('lang', langSel.value);
+  fd.append('src_lang', srcSel.value);
+  fd.append('separate', document.getElementById('separateChk').checked);
+  fd.append('workers', document.getElementById('workersIn').value || 4);
+  startBtn.disabled = true;
+  fetch('/api/dub', { method: 'POST', body: fd }).then(r => r.json()).then(d => {
+    startBtn.disabled = false;
+    if (!d.ok) { alert(d.error || '上传失败'); return; }
+    addJobCard(d.job_id, pickedFile.name, langSel.value);
+    pollJob(d.job_id);
+  }).catch(e => { startBtn.disabled = false; alert('上传失败: ' + e); });
+};
+
+/* ---------- jobs ---------- */
+function addJobCard(id, name, lang) {
+  const div = document.createElement('div');
+  div.className = 'job';
+  div.id = 'job-' + id;
+  div.innerHTML = `
+    <div class="jh">
+      <b>${esc(name)}</b><span>→ ${lang}</span>
+      <span class="st">排队中</span>
+      <div class="bar"><i></i></div>
+      <button class="view" style="display:none">查看</button>
+    </div>
+    <div class="log"></div>`;
+  jobsBox.prepend(div);
+  div.querySelector('.view').onclick = () => loadCase(id);
+}
+
+function pollJob(id) {
+  if (activePolls[id]) return;
+  activePolls[id] = setInterval(() => {
+    api('/api/jobs/' + id).then(j => {
+      const card = document.getElementById('job-' + id);
+      if (!card) { clearInterval(activePolls[id]); return; }
+      const st = card.querySelector('.st');
+      const bar = card.querySelector('.bar i');
+      const log = card.querySelector('.log');
+      const STEPS = { queued: 0, extract: 5, separate: 15, segment: 25, dub: 0, assemble: 92, mux: 96, done: 100 };
+      let pct = STEPS[j.step] ?? 0;
+      if (j.step === 'dub' && j.seg_total) pct = 25 + 65 * j.seg_done / j.seg_total;
+      bar.style.width = pct + '%';
+      st.textContent = j.step === 'dub' && j.seg_total
+        ? `${j.step_label} ${j.seg_done}/${j.seg_total}` : j.step_label;
+      log.textContent = (j.log || []).slice(-6).join('\n');
+      log.scrollTop = log.scrollHeight;
+      if (j.status === 'done' || j.status === 'error') {
+        clearInterval(activePolls[id]);
+        delete activePolls[id];
+        card.classList.add(j.status);
+        if (j.status === 'done') {
+          st.textContent = '✅ 完成';
+          card.querySelector('.view').style.display = '';
+          refreshCases(j.result && j.result.case_id);
+        } else {
+          st.textContent = '❌ ' + (j.error || '失败');
+        }
+      }
+    }).catch(() => {});
+  }, 1500);
+}
+
+/* resume tracking jobs that are still running (e.g. after page reload) */
+api('/api/jobs').then(d => {
+  (d.jobs || []).forEach(j => {
+    addJobCard(j.id, j.filename, j.lang);
+    if (j.status === 'running') pollJob(j.id);
+    else {
+      const card = document.getElementById('job-' + j.id);
+      card.classList.add(j.status);
+      card.querySelector('.st').textContent = j.status === 'done' ? '✅ 完成' : '❌ ' + (j.error || '失败');
+      if (j.status === 'done') card.querySelector('.view').style.display = '';
+    }
+  });
+});
+
+/* ---------- cases ---------- */
+function refreshCases(selectId) {
+  api('/api/cases').then(d => {
+    tabs.innerHTML = '';
+    (d.cases || []).forEach(c => {
+      const b = document.createElement('button');
+      b.className = 'tab' + (c.id === currentCase ? ' on' : '');
+      b.textContent = c.tab || c.id;
+      b.onclick = () => loadCase(c.id);
+      tabs.appendChild(b);
+    });
+    if (selectId) loadCase(selectId);
+    else if (!currentCase && d.cases && d.cases.length) loadCase(d.cases[0].id);
+  });
+}
+
+function loadCase(id) {
+  if (id === currentCase) return;
+  api('/api/cases/' + id).then(d => {
+    if (!d.meta) return;
+    currentCase = id;
+    SEGMENTS = d.segments || [];
+    document.getElementById('videoTitle').textContent = d.meta.title;
+    document.getElementById('videoMeta').textContent = d.meta.meta || '';
+    video.pause();
+    video.src = d.meta.video;
+    cueList.innerHTML = '';
+    lastCur = -2;
+    SEGMENTS.forEach(seg => {
+      const div = document.createElement('div');
+      div.className = 'cue' + (seg.kept ? ' kept' : '');
+      const badge = seg.kept ? '<span class="kept-badge">原声</span>' : '';
+      div.innerHTML = `
+        <span class="t">${fmt(seg.start)}</span>${badge}
+        <div class="src" dir="auto" style="display:${showSrc.checked ? 'block' : 'none'}">${esc(seg.src)}</div>
+        <div class="tgt" dir="auto" style="display:${showTgt.checked ? 'block' : 'none'}">${esc(seg.text)}</div>
+      `;
+      div.onclick = () => { video.currentTime = seg.start; video.play(); };
+      cueList.appendChild(div);
+    });
+    cues = [...cueList.querySelectorAll('.cue')];
+    api('/api/cases').then(dd => (dd.cases || []).forEach((c, i) => {
+      if (tabs.children[i]) tabs.children[i].classList.toggle('on', c.id === id);
+    }));
+  });
+}
+refreshCases();
+
+/* ---------- player ---------- */
+playBtn.onclick = () => { if (video.paused) video.play(); else video.pause(); };
+video.onplay = () => playBtn.textContent = '⏸ 暂停';
+video.onpause = () => playBtn.textContent = '▶ 播放';
+
+document.addEventListener('keydown', e => {
+  if (e.code !== 'Space') return;
+  const tag = (e.target.tagName || '').toLowerCase();
+  if (tag === 'button' || tag === 'input' || tag === 'textarea' || tag === 'select') return;
+  e.preventDefault();
+  if (video.paused) video.play(); else video.pause();
+});
+
+video.addEventListener('timeupdate', () => {
+  timeDisplay.textContent = `${fmt(video.currentTime)} / ${fmt(video.duration || 0)}`;
+  const cur = SEGMENTS.findIndex(s => video.currentTime >= s.start && video.currentTime < s.end);
+  if (cur === lastCur) return;
+  if (lastCur >= 0 && cues[lastCur]) cues[lastCur].classList.remove('on');
+  lastCur = cur;
+  if (cur >= 0) {
+    cues[cur].classList.add('on');
+    cueList.scrollTop = cues[cur].offsetTop - cueList.clientHeight / 2;
+  }
+});
+
+showSrc.onchange = () => cues.forEach(c => c.querySelector('.src').style.display = showSrc.checked ? 'block' : 'none');
+showTgt.onchange = () => cues.forEach(c => c.querySelector('.tgt').style.display = showTgt.checked ? 'block' : 'none');
+</script>
+</body>
+</html>

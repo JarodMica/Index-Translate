@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "LLM Page Translator",
+  "version": "0.1.0",
+  "description": "网页双语翻译插件，配合本地部署的 Index-Translate 模型（vLLM / SGLang）使用",
+  "permissions": ["storage", "activeTab", "scripting", "declarativeNetRequest"],
+  "host_permissions": ["<all_urls>"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "LLM Page Translator"
+  },
+  "options_page": "options/options.html",
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*"],
+      "js": ["content/content.js"],
+      "css": ["content/content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

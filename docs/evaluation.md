@@ -10,7 +10,8 @@ Multilingual text translation with instruction following across 150 languages. F
 
 | Model | FLORES<br>COMET-22 | WMT24++<br>COMET-22 | WMT26<br>Judge | instTrans<br>Quality | instTrans<br>IFscore | IFMTBench<br>XCOMET-XXL | IFMTBench<br>IFscore | Vertical<br>mean | MEME |
 |---|---|---|---|---|---|---|---|---|---|
-| **Index-Translate-9B** | **0.8789** | 0.8601 | 75.35 | 0.6771 | **0.8209** | 0.7957 | 0.8760 | 0.8451 | 0.7387 |
+| **Index-Translate-35B-A3B (preview)** | **0.8794** | 0.8586 | 76.76 | 0.6901 | **0.8336** | 0.7926 | 0.8991 | 0.8438 | 0.7405 |
+| **Index-Translate-9B** | 0.8789 | 0.8601 | 75.35 | 0.6771 | 0.8209 | 0.7957 | 0.8760 | 0.8451 | 0.7387 |
 | **Index-Translate-2B** | 0.8655 | 0.8489 | 60.26 | 0.5391 | 0.7569 | 0.7712 | 0.7584 | 0.8377 | 0.6443 |
 | Hy-MT2-1.8B | 0.8522 | 0.8401 | 49.35 | 0.3181 | 0.4932 | 0.7493 | 0.7161 | 0.8314 | 0.3643 |
 | Hy-MT2-7B | 0.8747 | 0.8593 | 60.51 | 0.5143 | 0.6079 | 0.8049 | 0.8741 | 0.8335 | 0.5139 |
@@ -22,12 +23,36 @@ Multilingual text translation with instruction following across 150 languages. F
 | Qwen3.5-35B-A3B | 0.8570 | 0.8290 | 71.33 | 0.3690 | 0.5204 | 0.7589 | 0.7822 | 0.8267 | 0.6447 |
 | DeepSeek-V4.1-Flash | 0.8762 | 0.8510 | 83.55 | 0.6068 | 0.6374 | 0.7817 | 0.9090 | 0.8432 | **0.7424** |
 | GPT-5.6-Sol | 0.8650 | 0.8469 | **89.10** | **0.6902** | 0.7624 | 0.7946 | **0.9367** | 0.8311 | 0.7194 |
-| Gemini 3.5 Flash Lite | 0.8750 | 0.8497 | 79.52 | 0.6068 | 0.6374 | — | 0.7764 | 0.8131 | 0.7034 |
+| Gemini 3.5 Flash Lite | 0.8750 | 0.8497 | 79.52 | 0.6068 | 0.6374 | 0.7764 | 0.8854 | 0.8131 | 0.7034 |
+
+#### Low-resource translation and instruction following
+
+FLORES_minor_pair covers 104,000 inputs across 1,040 translation directions among 62 languages. instTrans_minor contains 2,793 instruction-translation tasks from Chinese or English into low-resource languages; quality and IFscore are reported separately using GPT-5.6-Sol judgments. Off-target is the percentage of outputs in a language other than the target language; lower is better. Other scores use a 0–1 scale, with higher being better. Bold marks the best value in each column.
+
+| Model | FLORES_minor_pair<br>COMET-22 ↑ | FLORES_minor_pair<br>XCOMET-XXL ↑ | FLORES_minor_pair<br>off-target ↓ | instTrans_minor<br>Quality ↑ | instTrans_minor<br>IFscore ↑ | instTrans_minor<br>off-target ↓ |
+|---|---:|---:|---:|---:|---:|---:|
+| **Index-Translate-35B-A3B (preview)** | 0.8168 | 0.7164 | 2.4% | 0.5151 | 0.7715 | 4.05% |
+| **Index-Translate-9B** | 0.7992 | 0.6805 | 4.0% | 0.5222 | **0.7725** | **3.47%** |
+| **Index-Translate-2B** | 0.7377 | 0.4817 | 4.2% | 0.3050 | 0.6586 | 3.97% |
+| Hy-MT2-1.8B | 0.3163 | 0.2014 | 54.2% | 0.0412 | 0.1313 | 65.27% |
+| Hy-MT2-7B | 0.4626 | 0.3334 | 35.7% | 0.1121 | 0.2405 | 45.40% |
+| Hy-MT2-30B-A3B | 0.6746 | 0.5359 | 14.5% | 0.2246 | 0.4449 | 15.47% |
+| TranslateGemma-12B | 0.8021 | 0.6217 | 1.7% | 0.2412 | 0.2682 | 5.37% |
+| North-Small-Translate (218B-A25B) | 0.6855 | 0.4919 | 13.2% | 0.2436 | 0.2902 | 26.89% |
+| Qwen3.5-2B (base) | 0.3716 | 0.1852 | 39.1% | 0.0069 | 0.0549 | 73.54% |
+| Qwen3.5-9B (base) | 0.6774 | 0.4502 | 11.2% | 0.1318 | 0.3532 | 18.51% |
+| Qwen3.5-35B-A3B | 0.7854 | 0.6257 | 3.5% | 0.2874 | 0.4458 | 11.60% |
+| DeepSeek-V4.1-Flash | **0.8333** | **0.7297** | **1.3%** | 0.4793 | 0.5854 | 5.73% |
+| GPT-5.6-Sol | 0.7669 | 0.6918 | 10.4% | **0.5757** | 0.6866 | 7.73% |
+| Gemini 3.5 Flash Lite | 0.8122 | 0.6995 | 3.3% | 0.3927 | 0.5584 | 12.18% |
+
+Among the three Index-Translate models, 35B-A3B (preview) has the highest FLORES_minor_pair COMET-22 and XCOMET-XXL scores (**0.8168 / 0.7164**), with a **2.4%** off-target rate. On instTrans_minor, Index-Translate-9B achieves the highest IFscore (**0.7725**) and lowest off-target rate (**3.47%**) among all compared models; its quality score is **0.5222**.
 
 General capabilities (answer accuracy %) — Index-Translate-9B exceeds Hy-MT2-7B on all four benchmarks, while remaining below the Qwen3.5-9B base:
 
 | Model | C-Eval | GPQA-Diamond | INCLUDE | MMMLU |
 |---|---|---|---|---|
+| Index-Translate-35B-A3B (preview) | 77.6 | 49.1 | 68.8 | 71.9 |
 | Index-Translate-9B | 69.6 | 36.3 | 63.1 | 66.6 |
 | Hy-MT2-7B | 57.4 | 30.5 | 50.3 | 52.3 |
 | Qwen3.5-9B (base) | **86.6** | **75.8** | **70.2** | **75.9** |
@@ -93,14 +118,6 @@ Extends training to complete documents, increasing sequence length from 4K to 12
 \* Some GLM requests were refused; its Books scores average the remaining samples.
 
 For more experimental results and analysis, please refer to our [technical report](Index_Translate_Series_Technical_Report.pdf).
-
-## 35B-A3B preview results
-
-The technical report also includes preview evaluation of Index-Translate-35B-A3B. The download table lists the released 2B and 9B checkpoints; the 35B-A3B WMT26 result is pending.
-
-| Model | FLORES COMET-22 ↑ | WMT24++ COMET-22 ↑ | WMT26 ↑ | instTrans Quality ↑ | instTrans IFscore ↑ | IFMTBench XCOMET-XXL ↑ | IFMTBench IFscore ↑ | Vertical ↑ | MEME ↑ |
-|---|---|---|---|---|---|---|---|---|---|
-| Index-Translate-35B-A3B (preview) | 0.8796 | 0.8580 | — | 0.6815 | 0.8304 | 0.7917 | 0.8941 | 0.8434 | 0.7385 |
 
 ## IFMTBench preprocessing
 

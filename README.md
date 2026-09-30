@@ -17,19 +17,19 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 - **Index-Homura** adjusts translations toward a specified target syllable count.
 - **Index-NativeLong** translates complete documents with context across passages.
 
-<p align="center"><img src="docs/assets/benchmark-radar.en.svg" width="760" alt="Seven-category comparison of Index-Translate 2B and 9B text models"></p>
+<p align="center"><img src="docs/assets/benchmark-radar.en.svg" width="760" alt="Seven-category comparison of Index-Translate 35B-A3B preview, 9B, and 2B"></p>
 
-The radar uses the demo's category aggregates, normalized with fixed per-axis min–max ranges across the full comparison set; it is not an accuracy percentage. The dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
+The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
 [Models](#models) · [Quick start](#quick-start) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo)
 
 ## Models
 
-The links below provide **2B and 9B** checkpoints. The text family also includes **35B-A3B**, whose preview evaluation is in the [technical report](docs/Index_Translate_Series_Technical_Report.pdf); its WMT26 result is pending.
+The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints. Evaluation results are included in the [comparison tables](docs/evaluation.md).
 
 | Model | Task and released package coverage | Hugging Face | ModelScope | Inference |
 |---|---|---|---|---|
-| **Index-Translate** | Text translation and instructions across 150 languages | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) | [Guide](inference/llm/README.md) |
+| **Index-Translate** | Text translation and instructions across 150 languages | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B) | [Guide](inference/llm/README.md) |
 | **Index-Echo S2TT** | Speech → subtitles; packaged script: zh→en/ja/es | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-9B) | [Guide](inference/echo-s2tt/README.md) |
 | **Index-Echo S2ST** | Speech → speech; zh→en/es/ja, en→zh/es/ja | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-9B) | [Guide](inference/echo-s2st/README.md) |
 | **Index-Homura** | Translation with a target syllable count | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Homura-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Homura-9B) | [Guide](inference/llm/README.md) |
@@ -121,6 +121,10 @@ Positions are measured by source characters. The full-document output keeps the 
 
 ### Watch speech translation
 
+![Index-Echo evaluation](docs/assets/echo_benchmark_overview.en.svg)
+
+The S2ST panels compare the deployed 2B system, a pipeline, and SeamlessM4T-v2. This demo comparison is separate from the six-direction matched study in the report; SeamlessM4T-v2 does not clone the source voice.
+
 <table>
 <tr><th>Speech-to-speech dubbing</th><th>Multilingual subtitles</th></tr>
 <tr>
@@ -134,10 +138,15 @@ Click either preview to watch the video, or [open Index-Echo](https://index-tran
 
 ## Evaluation
 
-Selected text-translation results are shown below. FLORES uses COMET-22; WMT26 uses a judge score. instTrans reports translation quality and instruction following separately. MEME measures translation quality for community and cultural expressions. Higher is better within each column; scales differ across columns.
+![Updated text translation benchmarks](docs/assets/text_benchmark_overview.en.svg)
+
+The charts reproduce the updated demo comparison. *35B-A3B is the preview model. The instruction panels average instTrans and IFMTBench: Quality combines instTrans quality and IFMTBench XCOMET-XXL, while IFscore averages their instruction scores. Individual benchmark metrics remain separate in the tables below.
+
+The following tables cover general text translation, low-resource translation, and low-resource instruction following. FLORES uses COMET-22; WMT26 uses a judge score. instTrans reports translation quality and instruction following separately. MEME measures translation quality for community and cultural expressions. Higher is better for every metric in the first table below; scales differ across columns.
 
 | Model | FLORES ↑ | WMT26 ↑ | instTrans quality ↑ | instTrans IFscore ↑ | MEME ↑ |
 |---|---:|---:|---:|---:|---:|
+| **Index-Translate-35B-A3B (preview)** | 0.8794 | 76.76 | 0.6901 | 0.8336 | 0.7405 |
 | **Index-Translate-9B** | 0.8789 | 75.35 | 0.6771 | 0.8209 | 0.7387 |
 | **Index-Translate-2B** | 0.8655 | 60.26 | 0.5391 | 0.7569 | 0.6443 |
 | Hy-MT2-7B | 0.8747 | 60.51 | 0.5143 | 0.6079 | 0.5139 |
@@ -146,7 +155,34 @@ Selected text-translation results are shown below. FLORES uses COMET-22; WMT26 u
 | GPT-5.6-Sol | 0.8650 | 89.10 | 0.6902 | 0.7624 | 0.7194 |
 | Gemini 3.5 Flash Lite | 0.8750 | 79.52 | 0.6068 | 0.6374 | 0.7034 |
 
-[Full tables](docs/evaluation.md) retain all comparison models, WMT24++, IFMTBench, domain averages, general capabilities, speech, SandGlass, and long-document results, including the 35B-A3B preview. Detailed settings and analysis are in the [technical report](docs/Index_Translate_Series_Technical_Report.pdf).
+### Low-resource translation and instruction following
+
+FLORES_minor_pair evaluates general translation in low-resource languages; instTrans_minor reports translation quality and instruction following separately. Off-target is the percentage of outputs in a language other than the target language; lower is better. Higher is better for the other metrics. Bold marks the best value in each column of this table.
+
+| Model | FLORES_minor_pair<br>COMET-22 ↑ | FLORES_minor_pair<br>XCOMET-XXL ↑ | FLORES_minor_pair<br>off-target ↓ | instTrans_minor<br>Quality ↑ | instTrans_minor<br>IFscore ↑ | instTrans_minor<br>off-target ↓ |
+|---|---:|---:|---:|---:|---:|---:|
+| **Index-Translate-35B-A3B (preview)** | 0.8168 | 0.7164 | 2.4% | 0.5151 | 0.7715 | 4.05% |
+| **Index-Translate-9B** | 0.7992 | 0.6805 | 4.0% | 0.5222 | **0.7725** | **3.47%** |
+| **Index-Translate-2B** | 0.7377 | 0.4817 | 4.2% | 0.3050 | 0.6586 | 3.97% |
+| Hy-MT2-7B | 0.4626 | 0.3334 | 35.7% | 0.1121 | 0.2405 | 45.40% |
+| Hy-MT2-30B-A3B | 0.6746 | 0.5359 | 14.5% | 0.2246 | 0.4449 | 15.47% |
+| DeepSeek-V4.1-Flash | **0.8333** | **0.7297** | **1.3%** | 0.4793 | 0.5854 | 5.73% |
+| GPT-5.6-Sol | 0.7669 | 0.6918 | 10.4% | **0.5757** | 0.6866 | 7.73% |
+| Gemini 3.5 Flash Lite | 0.8122 | 0.6995 | 3.3% | 0.3927 | 0.5584 | 12.18% |
+
+Among the three Index-Translate models, 35B-A3B (preview) has the highest FLORES_minor_pair COMET-22 and XCOMET-XXL scores (**0.8168 / 0.7164**), with a **2.4%** off-target rate. On instTrans_minor, Index-Translate-9B achieves the highest IFscore (**0.7725**) and lowest off-target rate (**3.47%**) among all compared models; its quality score is **0.5222**.
+
+[Full tables](docs/evaluation.md) retain all comparison models, low-resource metrics, WMT24++, IFMTBench, domain averages, general capabilities, speech, SandGlass, and long-document results. Detailed settings and analysis are in the [technical report](docs/Index_Translate_Series_Technical_Report.pdf).
+
+### Index-Homura and Index-NativeLong
+
+![Index-Homura evaluation](docs/assets/homura_benchmark_overview.en.svg)
+
+SandGlass overall score and length adherence from the demo; the overall score differs from the separate translation-quality metric in the detailed tables.
+
+![Index-NativeLong 64K evaluation](docs/assets/nativelong_benchmark_overview.en.svg)
+
+GuoFeng and BWB Track A3 at 64K Chinese-side tokens.
 
 For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the target syllable count** on SandGlass. Index-NativeLong-9B scores **0.7891 / 0.7683 / 0.8848** on GuoFeng / BWB / Books. The full tables include translation-quality tradeoffs and evaluation notes.
 
@@ -167,7 +203,7 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 
 ## News
 
-- **2026-09-30:** released Index-Translate, with 2B / 9B model weights on Hugging Face and ModelScope, the technical report, and the online demo.
+- **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
 
 ## TODO
 
@@ -180,10 +216,10 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 
 ```bibtex
 @techreport{indextranslate2026,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Lusheng Zhang and
+          Qisi Chen and Yanshan Zhou and Ji Qi and Jingying Liu and
+          Yuang Feng and Ziang Cui and Tianxing Yan},
   title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
-  author={Li, Tianjiao and Yu, Mengran and Shi, Chenyu and Zhang, Lusheng and
-          Chen, Qisi and Zhou, Yanshan and Qi, Ji and Liu, Jingying and
-          Feng, Yuang and Cui, Ziang and Yan, Tianxing},
   institution={Index LLM Team},
   year={2026},
   month={September}

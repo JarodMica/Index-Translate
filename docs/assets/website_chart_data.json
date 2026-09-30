@@ -1,0 +1,668 @@
+{
+  "source": "Official demo, 2026-09-30 updated local build",
+  "public_url": "https://index-translate.bilibili.com/?p=/site/home.html",
+  "radar": {
+    "source": "seven_category_scores_raw.csv",
+    "sha256": "1e4ea50e6798703711196e36c2ab0cf51837a4fb9bb6ab492e4cfa37b71b4af9",
+    "categories": [
+      {
+        "key": "WMT",
+        "label": "WMT"
+      },
+      {
+        "key": "FLORES",
+        "label": "FLORES"
+      },
+      {
+        "key": "Instruction Following",
+        "label": "指令遵循"
+      },
+      {
+        "key": "Low-resource Translation",
+        "label": "小语种"
+      },
+      {
+        "key": "Subtitle Translation",
+        "label": "字幕翻译"
+      },
+      {
+        "key": "MEME",
+        "label": "MEME"
+      },
+      {
+        "key": "Book Translation",
+        "label": "书籍网文"
+      }
+    ],
+    "models": [
+      {
+        "name": "deepseek_v4.1_flash",
+        "values": [
+          0.851,
+          0.8762,
+          0.7732,
+          0.8333,
+          0.8359,
+          0.7424,
+          0.8118
+        ]
+      },
+      {
+        "name": "gpt-5.6-sol",
+        "values": [
+          0.8469,
+          0.865,
+          0.84955,
+          0.7669,
+          0.809,
+          0.7194,
+          0.79585
+        ]
+      },
+      {
+        "name": "gemini-3.5-flash-lite",
+        "values": [
+          0.8497,
+          0.875,
+          0.7614,
+          0.8122,
+          0.8332,
+          0.7034,
+          0.7411
+        ]
+      },
+      {
+        "name": "Hy-MT2-1.8B",
+        "values": [
+          0.8401,
+          0.8522,
+          0.60465,
+          0.3163,
+          0.8128,
+          0.3643,
+          0.80295
+        ]
+      },
+      {
+        "name": "Hy-MT2-7B",
+        "values": [
+          0.8593,
+          0.8747,
+          0.741,
+          0.4626,
+          0.8241,
+          0.5139,
+          0.7915
+        ]
+      },
+      {
+        "name": "Hy-MT2-30B-A3B",
+        "values": [
+          0.8624,
+          0.8787,
+          0.7722,
+          0.6746,
+          0.835,
+          0.5812,
+          0.8182
+        ]
+      },
+      {
+        "name": "translategemma-12b-it",
+        "values": [
+          0.8524,
+          0.8732,
+          0.298,
+          0.8021,
+          0.8286,
+          0.4281,
+          0.8034
+        ]
+      },
+      {
+        "name": "Qwen3.5-2B",
+        "values": [
+          0.6933,
+          0.6983,
+          0.31335,
+          0.3716,
+          0.7311,
+          0.2062,
+          0.7167
+        ]
+      },
+      {
+        "name": "Qwen3.5-9B",
+        "values": [
+          0.8073,
+          0.8316,
+          0.32945,
+          0.6774,
+          0.81,
+          0.5728,
+          0.7866
+        ]
+      },
+      {
+        "name": "Qwen3.5-35B-A3B",
+        "values": [
+          0.829,
+          0.857,
+          0.6513,
+          0.7854,
+          0.8184,
+          0.6447,
+          0.78945
+        ]
+      },
+      {
+        "name": "CohereLabs/North-Small-Translate-1.0",
+        "values": [
+          0.8578,
+          0.8784,
+          0.69645,
+          0.6855,
+          0.83055,
+          0.6836,
+          0.7979
+        ]
+      },
+      {
+        "name": "Index-Translate-2B",
+        "values": [
+          0.8489,
+          0.8655,
+          0.75765,
+          0.7377,
+          0.82975,
+          0.6443,
+          0.8095
+        ]
+      },
+      {
+        "name": "Index-Translate-9B",
+        "values": [
+          0.8601,
+          0.8789,
+          0.84845,
+          0.7992,
+          0.83515,
+          0.7387,
+          0.81775
+        ]
+      },
+      {
+        "name": "Index-Translate-35B-A3B",
+        "values": [
+          0.8586,
+          0.8794,
+          0.86635,
+          0.8168,
+          0.8343,
+          0.7405,
+          0.8152
+        ]
+      }
+    ],
+    "ranges": [
+      {
+        "min": 0.6933,
+        "max": 0.8624
+      },
+      {
+        "min": 0.6983,
+        "max": 0.8794
+      },
+      {
+        "min": 0.298,
+        "max": 0.86635
+      },
+      {
+        "min": 0.3163,
+        "max": 0.8333
+      },
+      {
+        "min": 0.7311,
+        "max": 0.8359
+      },
+      {
+        "min": 0.2062,
+        "max": 0.7424
+      },
+      {
+        "min": 0.7167,
+        "max": 0.8182
+      }
+    ]
+  },
+  "charts": [
+    {
+      "title": "通用翻译 · FLORES-200 与 WMT24++ · COMET-22 ↑",
+      "caption": "通用翻译\nFLORES-200 与 WMT24++ · COMET-22 ↑",
+      "description": "越高越好。FLORES-200 / WMT24++：Index-Translate-35B：0.8794 / 0.8586；Index-Translate-9B：0.8789 / 0.8601；Index-Translate-2B：0.8655 / 0.8489；Hy-MT2-30B-A3B：0.8787 / 0.8624；gpt-5.6-sol：0.8650 / 0.8469；gemini-3.5-flash-lite：0.8750 / 0.8497。",
+      "bars": [
+        {
+          "label": "Index-Translate-35B · FLORES-200",
+          "value": 0.8794
+        },
+        {
+          "label": "Index-Translate-35B · WMT24++",
+          "value": 0.8586
+        },
+        {
+          "label": "Index-Translate-9B · FLORES-200",
+          "value": 0.8789
+        },
+        {
+          "label": "Index-Translate-9B · WMT24++",
+          "value": 0.8601
+        },
+        {
+          "label": "Index-Translate-2B · FLORES-200",
+          "value": 0.8655
+        },
+        {
+          "label": "Index-Translate-2B · WMT24++",
+          "value": 0.8489
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · FLORES-200",
+          "value": 0.8787
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · WMT24++",
+          "value": 0.8624
+        },
+        {
+          "label": "gpt-5.6-sol · FLORES-200",
+          "value": 0.865
+        },
+        {
+          "label": "gpt-5.6-sol · WMT24++",
+          "value": 0.8469
+        },
+        {
+          "label": "gemini-3.5-flash-lite · FLORES-200",
+          "value": 0.875
+        },
+        {
+          "label": "gemini-3.5-flash-lite · WMT24++",
+          "value": 0.8497
+        }
+      ]
+    },
+    {
+      "title": "指令遵循 · instTrans 与 IFMTBench · Quality score / IFscore 均值 ↑",
+      "caption": "指令遵循\ninstTrans 与 IFMTBench · Quality score / IFscore 均值 ↑",
+      "description": "越高越好。Quality score / IFscore（instTrans 与 IFMTBench 均值）：Index-Translate-35B：0.7414 / 0.8664；Index-Translate-9B：0.7364 / 0.8485；Index-Translate-2B：0.6552 / 0.7577；Hy-MT2-30B-A3B：0.6951 / 0.7722；gpt-5.6-sol：0.7424 / 0.8496；gemini-3.5-flash-lite：0.6916 / 0.7614。",
+      "bars": [
+        {
+          "label": "Index-Translate-35B · Quality score",
+          "value": 0.7414
+        },
+        {
+          "label": "Index-Translate-35B · IFscore",
+          "value": 0.8664
+        },
+        {
+          "label": "Index-Translate-9B · Quality score",
+          "value": 0.7364
+        },
+        {
+          "label": "Index-Translate-9B · IFscore",
+          "value": 0.8485
+        },
+        {
+          "label": "Index-Translate-2B · Quality score",
+          "value": 0.6552
+        },
+        {
+          "label": "Index-Translate-2B · IFscore",
+          "value": 0.7577
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · Quality score",
+          "value": 0.6951
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · IFscore",
+          "value": 0.7722
+        },
+        {
+          "label": "gpt-5.6-sol · Quality score",
+          "value": 0.7424
+        },
+        {
+          "label": "gpt-5.6-sol · IFscore",
+          "value": 0.8496
+        },
+        {
+          "label": "gemini-3.5-flash-lite · Quality score",
+          "value": 0.6916
+        },
+        {
+          "label": "gemini-3.5-flash-lite · IFscore",
+          "value": 0.7614
+        }
+      ]
+    },
+    {
+      "title": "垂类翻译均值 · 5项测试集 · COMET-22 ↑",
+      "caption": "垂类翻译均值\n5项测试集 · COMET-22 ↑",
+      "description": "越高越好。OPUS-Books、医学等五项垂类等权均值：Index-Translate-35B：0.8438；Index-Translate-9B：0.8451；Index-Translate-2B：0.8377；Hy-MT2-30B-A3B：0.8459；gpt-5.6-sol：0.8311；gemini-3.5-flash-lite：0.8131。",
+      "bars": [
+        {
+          "label": "Index-Translate-35B",
+          "value": 0.8438
+        },
+        {
+          "label": "Index-Translate-9B",
+          "value": 0.8451
+        },
+        {
+          "label": "Index-Translate-2B",
+          "value": 0.8377
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 0.8459
+        },
+        {
+          "label": "gpt-5.6-sol",
+          "value": 0.8311
+        },
+        {
+          "label": "gemini-3.5-flash-lite",
+          "value": 0.8131
+        }
+      ]
+    },
+    {
+      "title": "梗翻译 · MEME ↑",
+      "caption": "梗翻译\nMEME · 文化表达 ↑",
+      "description": "越高越好。Index-Translate-35B：0.7405；Index-Translate-9B：0.7387；Index-Translate-2B：0.6443；Hy-MT2-30B-A3B：0.5812；gpt-5.6-sol：0.7194；gemini-3.5-flash-lite：0.7034。",
+      "bars": [
+        {
+          "label": "Index-Translate-35B",
+          "value": 0.7405
+        },
+        {
+          "label": "Index-Translate-9B",
+          "value": 0.7387
+        },
+        {
+          "label": "Index-Translate-2B",
+          "value": 0.6443
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 0.5812
+        },
+        {
+          "label": "gpt-5.6-sol",
+          "value": 0.7194
+        },
+        {
+          "label": "gemini-3.5-flash-lite",
+          "value": 0.7034
+        }
+      ]
+    },
+    {
+      "title": "小语种翻译 · FLORES_minor 与 instTrans_minor · COMET-22 / IFscore ↑",
+      "caption": "小语种翻译\nFLORES_minor 与 instTrans_minor · COMET-22 / IFscore ↑",
+      "description": "越高越好。FLORES_minor / instTrans_minor IFscore：Index-Translate-35B：0.8168 / 0.7715；Index-Translate-9B：0.7992 / 0.7725；Index-Translate-2B：0.7377 / 0.6586；Hy-MT2-30B-A3B：0.6746 / 0.4449；gpt-5.6-sol：0.7669 / 0.6866；gemini-3.5-flash-lite：0.8122 / 0.5584。",
+      "bars": [
+        {
+          "label": "Index-Translate-35B · FLORES_minor",
+          "value": 0.8168
+        },
+        {
+          "label": "Index-Translate-35B · instTrans_minor IFscore",
+          "value": 0.7715
+        },
+        {
+          "label": "Index-Translate-9B · FLORES_minor",
+          "value": 0.7992
+        },
+        {
+          "label": "Index-Translate-9B · instTrans_minor IFscore",
+          "value": 0.7725
+        },
+        {
+          "label": "Index-Translate-2B · FLORES_minor",
+          "value": 0.7377
+        },
+        {
+          "label": "Index-Translate-2B · instTrans_minor IFscore",
+          "value": 0.6586
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · FLORES_minor",
+          "value": 0.6746
+        },
+        {
+          "label": "Hy-MT2-30B-A3B · instTrans_minor IFscore",
+          "value": 0.4449
+        },
+        {
+          "label": "gpt-5.6-sol · FLORES_minor",
+          "value": 0.7669
+        },
+        {
+          "label": "gpt-5.6-sol · instTrans_minor IFscore",
+          "value": 0.6866
+        },
+        {
+          "label": "gemini-3.5-flash-lite · FLORES_minor",
+          "value": 0.8122
+        },
+        {
+          "label": "gemini-3.5-flash-lite · instTrans_minor IFscore",
+          "value": 0.5584
+        }
+      ]
+    },
+    {
+      "title": "S2TT语音翻译质量 · MT judge ↑",
+      "caption": "S2TT语音翻译质量\nMT judge ↑",
+      "description": "越高越好。Index-Echo-9B：0.857；Index-Echo-2B：0.825；gemini-3.1-pro-think：0.849；firered_audio：0.448",
+      "bars": [
+        {
+          "label": "Index-Echo-9B",
+          "value": 0.857
+        },
+        {
+          "label": "Index-Echo-2B",
+          "value": 0.825
+        },
+        {
+          "label": "gemini-3.1-pro-think",
+          "value": 0.849
+        },
+        {
+          "label": "firered_audio",
+          "value": 0.448
+        }
+      ]
+    },
+    {
+      "title": "Index-Echo · S2ST WER/CER 对比均值",
+      "caption": "S2ST WER/CER 均值\nWER/CER ↓ · 仅显示均值",
+      "description": "对比 Index-Echo-2B 落地版、级联 pipeline 与 SeamlessM4T-v2 均值。EN WER: Echo 0.039, Pipe 0.042, Seamless 0.066；ES WER: Echo 0.090, Pipe 0.131, Seamless 0.058；JA CER: Echo 0.027, Pipe 0.123, Seamless 0.468。WER/CER 越低越好。",
+      "bars": [
+        {
+          "label": "EN WER · Index-Echo",
+          "value": 0.039
+        },
+        {
+          "label": "EN WER · Pipeline",
+          "value": 0.042
+        },
+        {
+          "label": "EN WER · SeamlessM4T-v2",
+          "value": 0.066
+        },
+        {
+          "label": "ES WER · Index-Echo",
+          "value": 0.09
+        },
+        {
+          "label": "ES WER · Pipeline",
+          "value": 0.131
+        },
+        {
+          "label": "ES WER · SeamlessM4T-v2",
+          "value": 0.058
+        },
+        {
+          "label": "JA CER · Index-Echo",
+          "value": 0.027
+        },
+        {
+          "label": "JA CER · Pipeline",
+          "value": 0.123
+        },
+        {
+          "label": "JA CER · SeamlessM4T-v2",
+          "value": 0.468
+        }
+      ]
+    },
+    {
+      "title": "Index-Echo · S2ST 说话人相似度对比",
+      "caption": "S2ST说话人相似度\nsource-speaker cosine ↑",
+      "description": "对源说话人的音色 cosine 相似度均值。EN: Echo 0.715, Pipe 0.724, Seamless 0.077；ES: Echo 0.744, Pipe 0.748, Seamless 0.099；JA: Echo 0.785, Pipe 0.779, Seamless 0.140。SeamlessM4T-v2 未做音色克隆。越高越好。",
+      "bars": [
+        {
+          "label": "EN · Index-Echo",
+          "value": 0.715
+        },
+        {
+          "label": "EN · Pipeline",
+          "value": 0.724
+        },
+        {
+          "label": "EN · SeamlessM4T-v2",
+          "value": 0.077
+        },
+        {
+          "label": "ES · Index-Echo",
+          "value": 0.744
+        },
+        {
+          "label": "ES · Pipeline",
+          "value": 0.748
+        },
+        {
+          "label": "ES · SeamlessM4T-v2",
+          "value": 0.099
+        },
+        {
+          "label": "JA · Index-Echo",
+          "value": 0.785
+        },
+        {
+          "label": "JA · Pipeline",
+          "value": 0.779
+        },
+        {
+          "label": "JA · SeamlessM4T-v2",
+          "value": 0.14
+        }
+      ]
+    },
+    {
+      "title": "音节控制综合表现 · SandGlass · score ↑",
+      "caption": "音节控制综合表现\nSandGlass · score ↑",
+      "description": "越高越好。Index-Homura-9B：0.8660；Hy-MT2-7B：0.6700；Hy-MT2-30B-A3B：0.6566；Qwen3.5-9B：0.5946",
+      "bars": [
+        {
+          "label": "Index-Homura-9B",
+          "value": 0.866
+        },
+        {
+          "label": "Hy-MT2-7B",
+          "value": 0.67
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 0.6566
+        },
+        {
+          "label": "Qwen3.5-9B",
+          "value": 0.5946
+        }
+      ]
+    },
+    {
+      "title": "长度控制命中率 · SandGlass · dev ≤ 10% ↑",
+      "caption": "长度控制命中率\nSandGlass · dev ≤ 10% ↑",
+      "description": "越高越好。Index-Homura-9B：81.92%；Hy-MT2-7B：18.86%；Hy-MT2-30B-A3B：22.39%；Qwen3.5-9B：16.39%",
+      "bars": [
+        {
+          "label": "Index-Homura-9B",
+          "value": 81.92
+        },
+        {
+          "label": "Hy-MT2-7B",
+          "value": 18.86
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 22.39
+        },
+        {
+          "label": "Qwen3.5-9B",
+          "value": 16.39
+        }
+      ]
+    },
+    {
+      "title": "GuoFeng · 中 → 英 · 64K tokens · 原表分数 ↑",
+      "caption": "GuoFeng · 中 → 英\n64K tokens · 原表分数 ↑",
+      "description": "越高越好。Index-NaiLong 9B：0.7382；North-Small：0.2353；Qwen3.8 Flash：0.4939；Hy-MT2-30B-A3B：0.0664",
+      "bars": [
+        {
+          "label": "Index-NaiLong 9B",
+          "value": 0.7382
+        },
+        {
+          "label": "North-Small",
+          "value": 0.2353
+        },
+        {
+          "label": "Qwen3.8 Flash",
+          "value": 0.4939
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 0.0664
+        }
+      ]
+    },
+    {
+      "title": "BWB · 中 → 英 · 64K tokens · 原表分数 ↑",
+      "caption": "BWB · 中 → 英\n64K tokens · 原表分数 ↑",
+      "description": "越高越好。Index-NaiLong 9B：0.7440；North-Small：0.2196；Qwen3.8 Flash：0.5106；Hy-MT2-30B-A3B：0.1103",
+      "bars": [
+        {
+          "label": "Index-NaiLong 9B",
+          "value": 0.744
+        },
+        {
+          "label": "North-Small",
+          "value": 0.2196
+        },
+        {
+          "label": "Qwen3.8 Flash",
+          "value": 0.5106
+        },
+        {
+          "label": "Hy-MT2-30B-A3B",
+          "value": 0.1103
+        }
+      ]
+    }
+  ]
+}

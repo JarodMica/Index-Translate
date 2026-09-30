@@ -17,19 +17,21 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 - **Index-Homura**：根据指定的目标音节数调整译文。
 - **Index-NativeLong**：输入完整文档，利用上下文维持前后联系。
 
-<p align="center"><img src="docs/assets/benchmark-radar.zh.svg" width="760" alt="Index-Translate 2B 与 9B 文本模型的七维翻译能力对比"></p>
+<p align="center"><img src="docs/assets/benchmark-radar.zh.svg" width="760" alt="Index-Translate 35B-A3B preview、9B 与 2B 文本模型的七维翻译能力对比"></p>
 
-雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
+新版雷达图包含 **35B-A3B（preview）、9B 和 2B**，归一化范围覆盖全部 14 款模型；七个维度依次为 WMT、FLORES、指令遵循、小语种、字幕翻译、MEME 和书籍网文。指令遵循取 instTrans 与 IFMTBench IFscore 的均值。
+
+雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。灰色虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
 
 [模型下载](#模型下载) · [快速上手](#快速上手) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo)
 
 ## 模型下载
 
-下表提供已发布的 **2B 与 9B** 权重。文本模型家族还包含 **35B-A3B**，[技术报告](docs/Index_Translate_Series_Technical_Report.pdf)已给出其预览评测，WMT26 结果待补充。
+下表提供 **2B、9B 与 35B-A3B（preview）** 文本模型权重，评测结果见[完整评测表](docs/evaluation_zh.md)。
 
 | 模型 | 任务与发布包覆盖 | Hugging Face | ModelScope | 推理 |
 |---|---|---|---|---|
-| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) | [使用说明](inference/llm/README_zh.md) |
+| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B) | [使用说明](inference/llm/README_zh.md) |
 | **Index-Echo S2TT** | 语音转字幕；发布脚本支持中→英/日/西 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-9B) | [使用说明](inference/echo-s2tt/README_zh.md) |
 | **Index-Echo S2ST** | 语音配音；中→英/西/日，英→中/西/日 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-9B) | [使用说明](inference/echo-s2st/README_zh.md) |
 | **Index-Homura** | 按指定目标音节数翻译 | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Homura-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Homura-9B) | [使用说明](inference/llm/README_zh.md) |
@@ -121,6 +123,10 @@ python inference/llm/translate.py \
 
 ### 观看语音翻译演示
 
+![Index-Echo 评测](docs/assets/echo_benchmark_overview.zh.svg)
+
+S2ST 图对比落地版 2B、级联 Pipeline 与 SeamlessM4T-v2，与报告中的六方向同规模对比口径不同；SeamlessM4T-v2 未做音色克隆。
+
 <table>
 <tr><th>语音配音</th><th>多语言字幕</th></tr>
 <tr>
@@ -134,10 +140,15 @@ python inference/llm/translate.py \
 
 ## 评测结果
 
-下面展示部分文本翻译结果。FLORES 使用 COMET-22，WMT26 使用 judge 分数；instTrans 分别统计译文质量和指令遵循，MEME 关注社区与文化表达的翻译质量。各列均为越高越好，不同列的量纲不宜直接比较。
+![文本翻译最新评测](docs/assets/text_benchmark_overview.zh.svg)
+
+柱状图沿用新版 Demo 的对比模型和汇总方式，*35B-A3B 为 preview。指令翻译 Quality 为 instTrans 质量分与 IFMTBench XCOMET-XXL 的均值，IFscore 为两项指令遵循分数的均值；下表仍分别列出各项原始指标。
+
+下面分别展示通用文本翻译、小语种通用翻译与小语种指令遵循结果。FLORES 使用 COMET-22，WMT26 使用 judge 分数；instTrans 分别统计译文质量和指令遵循，MEME 关注社区与文化表达的翻译质量。下方第一张表各列均为越高越好，不同列的量纲不宜直接比较。
 
 | 模型 | FLORES ↑ | WMT26 ↑ | instTrans 质量 ↑ | instTrans 指令遵循 ↑ | MEME ↑ |
 |---|---:|---:|---:|---:|---:|
+| **Index-Translate-35B-A3B (preview)** | 0.8794 | 76.76 | 0.6901 | 0.8336 | 0.7405 |
 | **Index-Translate-9B** | 0.8789 | 75.35 | 0.6771 | 0.8209 | 0.7387 |
 | **Index-Translate-2B** | 0.8655 | 60.26 | 0.5391 | 0.7569 | 0.6443 |
 | Hy-MT2-7B | 0.8747 | 60.51 | 0.5143 | 0.6079 | 0.5139 |
@@ -146,9 +157,36 @@ python inference/llm/translate.py \
 | GPT-5.6-Sol | 0.8650 | 89.10 | 0.6902 | 0.7624 | 0.7194 |
 | Gemini 3.5 Flash Lite | 0.8750 | 79.52 | 0.6068 | 0.6374 | 0.7034 |
 
-[完整评测表](docs/evaluation_zh.md)保留全部对比模型，以及 WMT24++、IFMTBench、垂类均值、通用能力、语音、SandGlass 和长文档结果，并收录 35B-A3B 预览评测。详细设置与分析见[技术报告](docs/Index_Translate_Series_Technical_Report.pdf)。
+### 小语种翻译与指令遵循
+
+FLORES_minor_pair 衡量小语种通用翻译，instTrans_minor 分别衡量译文质量与指令遵循。off-target 为未使用目标语言的输出比例，越低越好；其余指标越高越好。加粗表示本表各列最优值。
+
+| 模型 | FLORES_minor_pair<br>COMET-22 ↑ | FLORES_minor_pair<br>XCOMET-XXL ↑ | FLORES_minor_pair<br>off-target ↓ | instTrans_minor<br>Quality ↑ | instTrans_minor<br>IFscore ↑ | instTrans_minor<br>off-target ↓ |
+|---|---:|---:|---:|---:|---:|---:|
+| **Index-Translate-35B-A3B (preview)** | 0.8168 | 0.7164 | 2.4% | 0.5151 | 0.7715 | 4.05% |
+| **Index-Translate-9B** | 0.7992 | 0.6805 | 4.0% | 0.5222 | **0.7725** | **3.47%** |
+| **Index-Translate-2B** | 0.7377 | 0.4817 | 4.2% | 0.3050 | 0.6586 | 3.97% |
+| Hy-MT2-7B | 0.4626 | 0.3334 | 35.7% | 0.1121 | 0.2405 | 45.40% |
+| Hy-MT2-30B-A3B | 0.6746 | 0.5359 | 14.5% | 0.2246 | 0.4449 | 15.47% |
+| DeepSeek-V4.1-Flash | **0.8333** | **0.7297** | **1.3%** | 0.4793 | 0.5854 | 5.73% |
+| GPT-5.6-Sol | 0.7669 | 0.6918 | 10.4% | **0.5757** | 0.6866 | 7.73% |
+| Gemini 3.5 Flash Lite | 0.8122 | 0.6995 | 3.3% | 0.3927 | 0.5584 | 12.18% |
+
+在三个 Index-Translate 模型中，35B-A3B (preview) 的 FLORES_minor_pair COMET-22 和 XCOMET-XXL 最高，分别为 **0.8168 / 0.7164**，off-target 为 **2.4%**。在 instTrans_minor 上，Index-Translate-9B 在全部对比模型中取得最高 IFscore（**0.7725**）和最低 off-target（**3.47%**），译文质量为 **0.5222**。
+
+[完整评测表](docs/evaluation_zh.md)保留全部对比模型，以及完整小语种指标、WMT24++、IFMTBench、垂类均值、通用能力、语音、SandGlass 和长文档结果。详细设置与分析见[技术报告](docs/Index_Translate_Series_Technical_Report.pdf)。
 
 专门模型方面，Index-Homura-9B 在 SandGlass 上有 **81.92%** 的输出与目标音节数偏差不超过 10%；Index-NativeLong-9B 在 GuoFeng / BWB / Books 上的得分分别为 **0.7891 / 0.7683 / 0.8848**。完整表格同时给出译文质量权衡和评测说明。
+
+### Index-Homura 与 Index-NativeLong
+
+![Index-Homura 评测](docs/assets/homura_benchmark_overview.zh.svg)
+
+沿用 Demo 的 SandGlass 综合分与音节控制命中率；综合分与明细表中的独立翻译质量指标不同。
+
+![Index-NativeLong 64K 评测](docs/assets/nativelong_benchmark_overview.zh.svg)
+
+GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 
 ## Benchmarks
 
@@ -167,7 +205,7 @@ python inference/llm/translate.py \
 
 ## 最新动态
 
-- **2026-09-30：** Index-Translate 正式发布，2B / 9B 模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
+- **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
 
 ## TODO
 
@@ -180,10 +218,10 @@ python inference/llm/translate.py \
 
 ```bibtex
 @techreport{indextranslate2026,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Lusheng Zhang and
+          Qisi Chen and Yanshan Zhou and Ji Qi and Jingying Liu and
+          Yuang Feng and Ziang Cui and Tianxing Yan},
   title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
-  author={Li, Tianjiao and Yu, Mengran and Shi, Chenyu and Zhang, Lusheng and
-          Chen, Qisi and Zhou, Yanshan and Qi, Ji and Liu, Jingying and
-          Feng, Yuang and Cui, Ziang and Yan, Tianxing},
   institution={Index LLM Team},
   year={2026},
   month={September}

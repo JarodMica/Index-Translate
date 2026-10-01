@@ -25,7 +25,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。灰色虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
 
-[模型下载](#模型下载) · [快速上手](#快速上手) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo)
+[模型下载](#模型下载) · [快速上手](#快速上手) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
 
 ## 模型下载
 
@@ -259,7 +259,13 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 - [ ] 为 Index-Echo 增加更多语种支持。
 - [ ] 发布更大规模的模型。
 
-## 引用
+## 论文与引用
+
+- **Index-Translate：** [A Multilingual Translation Model Family — Text, Speech, Controlled Dubbing, and Long-Document Translation](https://arxiv.org/abs/2609.40181) · [🤗 HF Papers](https://huggingface.co/papers/2609.40181)
+- **HOMURA：** [Taming the Sand-Glass for Time-Constrained LLM Translation via Reinforcement Learning](https://arxiv.org/abs/2601.10187) · [🤗 HF Papers](https://huggingface.co/papers/2601.10187)
+- **RIVAL：** [Reinforcement Learning with Iterative and Adversarial Optimization for Machine Translation](https://arxiv.org/abs/2506.05070) · [🤗 HF Papers](https://huggingface.co/papers/2506.05070)
+
+如果使用本系列模型或相关方法，欢迎引用对应论文：
 
 ```bibtex
 @techreport{indextranslate2026,
@@ -269,7 +275,32 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
   title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
   institution={Index LLM Team},
   year={2026},
-  month={September}
+  month={September},
+  eprint={2609.40181},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2609.40181}
+}
+
+@misc{homura2026,
+  author={Ziang Cui and Mengran Yu and Chenyu Shi and Yingxuan Shi and Tianjiao Li},
+  title={HOMURA: Taming the Sand-Glass for Time-Constrained LLM Translation via Reinforcement Learning},
+  year={2026},
+  eprint={2601.10187},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2601.10187}
+}
+
+@misc{rival2025,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Yanjun Zhao and
+          Xiaojing Liu and Qiang Zhang and Qi Zhang and Xuanjing Huang and Jiayin Wang},
+  title={RIVAL: Reinforcement Learning with Iterative and Adversarial Optimization for Machine Translation},
+  year={2025},
+  eprint={2506.05070},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2506.05070}
 }
 ```
 

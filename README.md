@@ -23,7 +23,7 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 
 The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
-[Models](#models) · [Quick start](#quick-start) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo)
+[Models](#models) · [Quick start](#quick-start) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
 
 ## Models
 
@@ -257,7 +257,13 @@ Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion a
 - [ ] Add support for more languages to Index-Echo.
 - [ ] Release larger models.
 
-## Citation
+## Papers and citation
+
+- **Index-Translate:** [A Multilingual Translation Model Family — Text, Speech, Controlled Dubbing, and Long-Document Translation](https://arxiv.org/abs/2609.40181) · [🤗 HF Papers](https://huggingface.co/papers/2609.40181)
+- **HOMURA:** [Taming the Sand-Glass for Time-Constrained LLM Translation via Reinforcement Learning](https://arxiv.org/abs/2601.10187) · [🤗 HF Papers](https://huggingface.co/papers/2601.10187)
+- **RIVAL:** [Reinforcement Learning with Iterative and Adversarial Optimization for Machine Translation](https://arxiv.org/abs/2506.05070) · [🤗 HF Papers](https://huggingface.co/papers/2506.05070)
+
+If you use this model family or its related methods, please cite the relevant papers:
 
 ```bibtex
 @techreport{indextranslate2026,
@@ -267,7 +273,32 @@ Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion a
   title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
   institution={Index LLM Team},
   year={2026},
-  month={September}
+  month={September},
+  eprint={2609.40181},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2609.40181}
+}
+
+@misc{homura2026,
+  author={Ziang Cui and Mengran Yu and Chenyu Shi and Yingxuan Shi and Tianjiao Li},
+  title={HOMURA: Taming the Sand-Glass for Time-Constrained LLM Translation via Reinforcement Learning},
+  year={2026},
+  eprint={2601.10187},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2601.10187}
+}
+
+@misc{rival2025,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Yanjun Zhao and
+          Xiaojing Liu and Qiang Zhang and Qi Zhang and Xuanjing Huang and Jiayin Wang},
+  title={RIVAL: Reinforcement Learning with Iterative and Adversarial Optimization for Machine Translation},
+  year={2025},
+  eprint={2506.05070},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2506.05070}
 }
 ```
 

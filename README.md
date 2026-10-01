@@ -8,7 +8,7 @@
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
   <a href="https://arxiv.org/abs/2609.40181">📚 Technical Report</a> ·
-  <a href="https://huggingface.co/papers/2609.40181">🤗 HF Papers</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9">🤗 Papers Collection</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ Group</a>
 </p>
 
@@ -258,6 +258,8 @@ Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion a
 - [ ] Release larger models.
 
 ## Papers and citation
+
+Browse all three papers in the [🤗 Hugging Face Papers collection](https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9).
 
 - **Index-Translate:** [A Multilingual Translation Model Family — Text, Speech, Controlled Dubbing, and Long-Document Translation](https://arxiv.org/abs/2609.40181) · [🤗 HF Papers](https://huggingface.co/papers/2609.40181)
 - **HOMURA:** [Taming the Sand-Glass for Time-Constrained LLM Translation via Reinforcement Learning](https://arxiv.org/abs/2601.10187) · [🤗 HF Papers](https://huggingface.co/papers/2601.10187)

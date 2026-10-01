@@ -7,7 +7,8 @@
   <a href="https://index-translate.bilibili.com/">🌐 在线 Demo</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
-  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 技术报告</a>
+  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 技术报告</a> ·
+  <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ 交流群</a>
 </p>
 
 Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本模型覆盖**150 种语言**，支持术语、格式、保留内容等翻译指令，并将共同的多语基础扩展到语音、音节可控翻译和长文档翻译。
@@ -239,6 +240,12 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 
 - **[浏览器扩展](extension/README_zh.md)：** 通过本地部署的模型翻译网页，支持 Chrome、Edge 与 Firefox。
 - **[视频配音管线](video-dub/README_zh.md)：** 完成音频提取、人声分离、语音切分、翻译配音及时间轴对齐，输出配音视频。
+
+## 交流社区
+
+欢迎加入 [QQ 交流群（960123527）](https://qm.qq.com/q/xSASqaiEGA)，交流使用体验、反馈问题与建议。也可以扫描下方二维码加入群聊。
+
+<p align="center"><a href="https://qm.qq.com/q/xSASqaiEGA"><img src="docs/assets/qq-group.jpg" width="320" alt="QQ 交流群 960123527 加群二维码"></a></p>
 
 ## 最新动态
 

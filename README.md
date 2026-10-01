@@ -7,7 +7,8 @@
   <a href="https://index-translate.bilibili.com/">🌐 Online Demo</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
-  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 Technical Report</a>
+  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 Technical Report</a> ·
+  <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ Group</a>
 </p>
 
 Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages** and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.
@@ -237,6 +238,12 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 
 - **[Browser extension](extension/README.md):** translate web pages through a locally deployed model using Chrome, Edge, or Firefox.
 - **[Video dubbing pipeline](video-dub/README.md):** extract audio, separate vocals, segment speech, translate and dub, then align the result to the original video.
+
+## Community
+
+Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion and feedback. You can also scan the QR code below to join.
+
+<p align="center"><a href="https://qm.qq.com/q/xSASqaiEGA"><img src="docs/assets/qq-group.jpg" width="320" alt="QR code to join QQ group 960123527"></a></p>
 
 ## News
 

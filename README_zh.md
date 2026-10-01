@@ -7,7 +7,8 @@
   <a href="https://index-translate.bilibili.com/">🌐 在线 Demo</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
-  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 技术报告</a> ·
+  <a href="https://arxiv.org/abs/2609.40181">📚 技术报告</a> ·
+  <a href="https://huggingface.co/papers/2609.40181">🤗 HF Papers</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ 交流群</a>
 </p>
 
@@ -212,7 +213,7 @@ FLORES_minor_pair 衡量小语种通用翻译，instTrans_minor 分别衡量译�
 
 在三个 Index-Translate 模型中，35B-A3B (preview) 的 FLORES_minor_pair COMET-22 和 XCOMET-XXL 最高，分别为 **0.8168 / 0.7164**，off-target 为 **2.4%**。在 instTrans_minor 上，Index-Translate-9B 在全部对比模型中取得最高 IFscore（**0.7725**）和最低 off-target（**3.47%**），译文质量为 **0.5222**。
 
-[完整评测表](docs/evaluation_zh.md)保留全部对比模型，以及完整小语种指标、WMT24++、IFMTBench、垂类均值、通用能力、语音、SandGlass 和长文档结果。详细设置与分析见[技术报告](docs/Index_Translate_Series_Technical_Report.pdf)。
+[完整评测表](docs/evaluation_zh.md)保留全部对比模型，以及完整小语种指标、WMT24++、IFMTBench、垂类均值、通用能力、语音、SandGlass 和长文档结果。详细设置与分析见[技术报告](https://arxiv.org/abs/2609.40181)。
 
 专门模型方面，Index-Homura-9B 在 SandGlass 上有 **81.92%** 的输出与目标音节数偏差不超过 10%；Index-NativeLong-9B 在 GuoFeng / BWB / Books 上的得分分别为 **0.7891 / 0.7683 / 0.8848**。完整表格同时给出译文质量权衡和评测说明。
 
@@ -234,7 +235,7 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 | **MEME** | 社区表达中的含义、自然度与文化语境 | 3,638 条中译英样例；703 个词语、857 个区分后的词义 |
 | **SandGlass** | 译文质量与目标音节数控制 | 3,600 条案例：300 句字幕 × 4 种目标语言 × 3 档长度预算 |
 
-**发布状态：** Benchmark 开源计划见 [TODO](#todo)，开放后会补充下载入口。目前可在[技术报告](docs/Index_Translate_Series_Technical_Report.pdf)中查看评测设置；[IFMTBench 处理说明](docs/evaluation_zh.md#ifmtbench-处理说明)单独列出。
+**发布状态：** Benchmark 开源计划见 [TODO](#todo)，开放后会补充下载入口。目前可在[技术报告](https://arxiv.org/abs/2609.40181)中查看评测设置；[IFMTBench 处理说明](docs/evaluation_zh.md#ifmtbench-处理说明)单独列出。
 
 ## 应用工具
 

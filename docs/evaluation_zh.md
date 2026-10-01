@@ -117,7 +117,7 @@ FLORES_minor_pair 使用 62 种语言之间的 1,040 个翻译方向、104,000 �
 
 \* 部分 GLM 请求被拒，其 Books 得分为剩余样本的均值。
 
-更多实验结果与分析请见[技术报告](Index_Translate_Series_Technical_Report.pdf)。
+更多实验结果与分析请见[技术报告](https://arxiv.org/abs/2609.40181)。
 
 ## IFMTBench 处理说明
 

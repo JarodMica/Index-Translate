@@ -117,7 +117,7 @@ Extends training to complete documents, increasing sequence length from 4K to 12
 
 \* Some GLM requests were refused; its Books scores average the remaining samples.
 
-For more experimental results and analysis, please refer to our [technical report](Index_Translate_Series_Technical_Report.pdf).
+For more experimental results and analysis, please refer to our [technical report](https://arxiv.org/abs/2609.40181).
 
 ## IFMTBench preprocessing
 

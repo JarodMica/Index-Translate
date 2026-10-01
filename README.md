@@ -7,7 +7,8 @@
   <a href="https://index-translate.bilibili.com/">🌐 Online Demo</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
-  <a href="docs/Index_Translate_Series_Technical_Report.pdf">📚 Technical Report</a> ·
+  <a href="https://arxiv.org/abs/2609.40181">📚 Technical Report</a> ·
+  <a href="https://huggingface.co/papers/2609.40181">🤗 HF Papers</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ Group</a>
 </p>
 
@@ -210,7 +211,7 @@ FLORES_minor_pair evaluates general translation in low-resource languages; instT
 
 Among the three Index-Translate models, 35B-A3B (preview) has the highest FLORES_minor_pair COMET-22 and XCOMET-XXL scores (**0.8168 / 0.7164**), with a **2.4%** off-target rate. On instTrans_minor, Index-Translate-9B achieves the highest IFscore (**0.7725**) and lowest off-target rate (**3.47%**) among all compared models; its quality score is **0.5222**.
 
-[Full tables](docs/evaluation.md) retain all comparison models, low-resource metrics, WMT24++, IFMTBench, domain averages, general capabilities, speech, SandGlass, and long-document results. Detailed settings and analysis are in the [technical report](docs/Index_Translate_Series_Technical_Report.pdf).
+[Full tables](docs/evaluation.md) retain all comparison models, low-resource metrics, WMT24++, IFMTBench, domain averages, general capabilities, speech, SandGlass, and long-document results. Detailed settings and analysis are in the [technical report](https://arxiv.org/abs/2609.40181).
 
 ### Index-Homura and Index-NativeLong
 
@@ -232,7 +233,7 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 | **MEME** | Meaning, naturalness, and cultural context in community expressions | 3,638 Chinese-to-English examples; 703 terms and 857 distinct senses |
 | **SandGlass** | Translation quality and control of target syllable counts | 3,600 cases: 300 subtitle sentences × 4 target languages × 3 length budgets |
 
-**Release status:** planned benchmark releases are listed under [TODO](#todo). Download links will be added when available. The [technical report](docs/Index_Translate_Series_Technical_Report.pdf) describes the evaluation now; [IFMTBench preprocessing](docs/evaluation.md#ifmtbench-preprocessing) is documented separately.
+**Release status:** planned benchmark releases are listed under [TODO](#todo). Download links will be added when available. The [technical report](https://arxiv.org/abs/2609.40181) describes the evaluation now; [IFMTBench preprocessing](docs/evaluation.md#ifmtbench-preprocessing) is documented separately.
 
 ## Applications
 

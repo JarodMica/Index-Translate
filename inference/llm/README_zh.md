@@ -35,27 +35,33 @@ python translate.py "你好，世界。今天天气不错。" --target en
 python translate.py "The quick brown fox..." --source en --target zh \
     --model IndexTeam/Index-Translate-2B
 
-# 2. 指令遵循：硬约束（术语指定 / 字典干预）
+# 2. instTrans 格式化硬约束：术语指定（-g / --glossary，自动格式化为【硬性要求】专名/术语对照）
 python translate.py "王平仲采用了更加昂贵的碳纤维材料。碳纤维的好处就是它抗裂缝。" --target en \
-    --glossary "碳纤维:carbon fiber, 抗裂缝:crack resistance"
+    -g "碳纤维:carbon fiber, 抗裂缝:crack resistance"
 
-# 3. 指令遵循：硬约束（格式保留 / JSON、CSV、变量保护）
+# 3. instTrans 格式化硬约束：结构化数据与格式保留（-H / --hard）
 python translate.py '{"user_id": 1024, "message": "您的订单已支付完成。"}' --target en \
-    --instruction "仅翻译 message 字段，严格保留合法 JSON 语法格式与键名"
+    -H "保留源文中的 JSON 格式标记不变"
 
-# 4. 指令遵循：软约束（文风与语气控制）
+# 4. instTrans 格式化软约束：文风与语体（-S / --soft）+ 文体声明（-d / --genre）
 python translate.py "今天下午的会议临时取消了，改天我们再碰一下商量。" --target en \
-    --instruction "调整为严谨、正式、礼貌的商务公文风格"
+    -d "商务邮件" -S "调整为严谨、正式、礼貌的商务公文风格"
 
-# 5. 指令遵循：软约束（领域与语境多义词消歧）
+# 5. instTrans 格式化软约束：领域消歧（-S / --soft）
 python translate.py "The plant is operating at full capacity after the spring upgrade." --target zh \
-    --instruction "语境为工业制造与重工厂房领域，准确消歧专有名词"
+    -d "工业制造" -S "语境为工业制造与重工厂房领域，准确消歧专有名词（如 plant 译为工厂而非植物）"
 
-# 6. 音节受控翻译（Index-Homura，支持结合术语约束）
+# 6. 多条约束组合传参（支持多次 -H 和 -S）
+python translate.py '{"1": "回复 @零岭七 :乱说，外购不算消费啦？[藏狐] #每日一喵#"}' --target en \
+    -d "评论" \
+    -H "保留源文中的 JSON 格式标记不变" \
+    -H "保留以下社交元素不变: @零岭七、[藏狐]、#每日一喵#"
+
+# 7. 音节受控翻译（Index-Homura，支持结合术语约束）
 python syllable_translate.py "我们今天去看电影吧" --syllables 7 --target en \
     --glossary "电影:cinema"
 
-# 7. 长文档翻译（Index-NativeLong，固定方向模板）
+# 8. 长文档翻译（Index-NativeLong，固定方向模板）
 python doc_translate.py novel.txt --direction zh-en -o novel.en.txt
 python doc_translate.py paper.txt --direction en-zh --model IndexTeam/Index-Nailong-2B
 ```
@@ -69,19 +75,24 @@ python doc_translate.py paper.txt --direction en-zh --model IndexTeam/Index-Nail
 Index-Translate 在训练中通过 Rubric-as-Reward (RaR) 和 GRPO 联合优化翻译质量与指令遵循能力，其奖励函数为：
 $$R_{\mathrm{inst}} = g_{\mathrm{lang}} \cdot g_{\mathrm{hard}} \cdot \bigl(q_{\mathrm{qual}} + q_{\mathrm{soft}}\bigr)$$
 
-评测涵盖 **instTrans** 与 **IFMTBench**，支持以下两大类约束：
+评测在官方 **instTrans Benchmark**（包含 3,000 个多场景多语种真实评测用例）与 **IFMTBench** 上展开，全面支持以下 **10 种软硬约束**：
 
 ### 1. 硬约束（Hard Constraints, $g_{\mathrm{hard}}$ 门控）
-硬约束为二进制指标（0 或 1），任何一项违背直接视为不合规：
-- **术语强约束（Terminology / Glossary）**：严格按照给定的映射表输出目标译名。可直接通过 `--glossary "源词:目标词"` 传入，或传入 JSON 字典文件路径。
-- **结构与格式保护（Format Preservation）**：在翻译 JSON、CSV、Markdown 表格、HTML 时，严格保护键名、标签、分隔符、数字、布尔值，仅翻译面向用户的文本内容。
-- **变量与占位符保护（Placeholders / Code）**：在系统提示、文案本地化中，严格保留 `{user_name}`、`%s`、`[1]`、URL 链接等变量不被破坏。
+硬约束为一票否决制二进制指标（0 或 1），任何一项违背直接判定该用例不达标：
+- **术语强对照（term_compliance）**：严格按照给定的映射表输出目标译名。可直接通过 `-g / --glossary "源词:目标词"` 传入，或传入 JSON 字典文件路径，自动组装为 `【硬性要求】专名/术语对照: A→B、C→D`。
+- **结构与格式保护（format_preserve）**：在翻译 JSON、CSV、Markdown 表格、HTML 时，严格保护键名、标签、分隔符、数字、布尔值，仅翻译面向用户的文本内容。
+- **变量与占位符保护（format_preserve）**：在系统提示、文案本地化中，严格保留 `{user_name}`、`%s`、`[123456]`、URL 链接等变量不被破坏。
+- **社交元素保护（social_preserve）**：在翻译社媒动态、弹幕或评论时，原样保留 `@用户名`、`#话题#`、`[表情代码]` 等社交标记。
+- **版式与排版保留（layout_break）**：保留源文的分段、换行、缩进及列表对齐。
+- **音节长度排序（syllable_order）**：在多句字幕配音中，时长较短的句子译文音节数也必须相应较短。
 
 ### 2. 软约束（Soft Constraints, $q_{\mathrm{soft}}$ 连续评分）
-软约束关注语义贴合度、行文自然度与语境适配：
-- **文体风格与语气（Style & Tone）**：正式商务（Formal）、日常随性口语（Casual）、海外社交网络网感（Viral / Gen-Z）、文学典雅（Literary）等风格自由切换。
-- **领域语境消歧（Context Disambiguation）**：输入多义词（如 Plant、Spring、Cell、Crane）时，通过指令声明领域（工业制造 / 温室农业 / 港口工程 / 软件架构），模型能精准选取行业地道译法。
-- **共指消解与跨句一致性（Coreference & Consistency）**：在多句篇章或字幕对话中保持代词指代（他/她/它）与角色称呼前后呼应。
+软约束关注语义贴合度、行文自然度与语境适配（由 LLM Judge 按 0 / 0.5 / 1 打分）：
+- **文体风格与语气（style_consistency）**：正式商务公文（Formal）、日常随性口语（Casual）、海外社交网络网感（Viral / Gen-Z）、文学典雅（Literary）等风格自由切换。
+- **领域语境消歧（context_disambiguate）**：输入多义词（如 Plant、Spring、Cell、Crane）时，通过声明领域语境（工业制造 / 温室农业 / 港口工程 / 软件架构），模型能精准选取行业地道译法。
+- **指代一致性与代词消解（coref_resolution）**：在多角色多主语文本中明确代词指代（他/她/它），避免跨句角色指代混淆。
+- **跨句术语全文统一（term_cross_sentence）**：在篇章级或多句对话中，核心术语全局统一，杜绝同词异译。
+- **学术与公式格式保护（academic_format_preserve）**：在学术论文中完整保留 LaTeX 公式（`$...$`、`\[...\]`）、引用标号（`[@citation]`）与命令，仅翻译正文。
 
 ### 3. 音节控制与术语协同（Homura Syllable Control with Glossary）
 配音与字幕专用模型 **Index-Homura** 不仅支持目标音节数控制（如 `--syllables 7`），**同样支持术语强约束**（`--glossary`）。模型能在紧凑的音节预算下，动态调度虚词与句式，既保证指定术语 100% 出现，又精准贴合目标音节预算。
@@ -90,25 +101,34 @@ $$R_{\mathrm{inst}} = g_{\mathrm{lang}} \cdot g_{\mathrm{hard}} \cdot \bigl(q_{\
 
 ## Prompt 规范
 
-解码与部署默认值统一见[默认设置总表](../../README_zh.md#默认推理参数)。下面的提示词采用对应任务的训练格式：
+解码与部署默认值统一见[默认设置总表](../../README_zh.md#默认推理参数)。客户端自动根据传入的约束选项组装为与模型训练和官方评测完全一致的 **instTrans 规范格式**：
 
-- **Translate（基础翻译）**：
+- **Translate（instTrans 格式化带约束 Prompt）**：
+  当指定 `-H` / `-S` / `-g` / `-i` 约束时自动生成：
+  ```text
+  请将以下{源语言}{文体}翻译成{目标语言}，并且严格遵循所有约束要求。
+
+  【源文】
+  {source_text}
+
+  【约束要求】
+  1. 【硬性要求】...
+  2. 【注意】...
+
+  只输出译文，不要有任何额外说明。
   ```
-  请将以下{源}文本翻译为{目标}，直接输出翻译结果，不要进行任何解释。
+  *(当源文为 JSON 字典且包含格式保留约束时，结尾会自动替换为 instTrans 标准的 JSON 输出指令)*
 
-  {text}
+- **Translate（基础无约束翻译）**：
+  ```text
+  请将以下{源语言}文本翻译为{目标语言}，直接输出翻译结果，不要进行任何解释。
+
+  {source_text}
   ```
   （`auto` 时省略源语种）。
 
-- **Translate（带约束指令与术语）**：
-  ```
-  请将以下{源}文本翻译为{目标}。要求：{任务指令}。严格遵守术语映射表【{术语 -> 译名}】，严禁使用其他译名。直接输出翻译结果，不要进行任何解释。
-
-  {text}
-  ```
-
 - **Homura（音节受控 + 可选术语）**：
-  ```
+  ```text
   请将以下文本翻译为{目标}，译文严格控制在 N 个音节。要求：严格遵守术语映射表【{术语 -> 译名}】。直接输出翻译结果，不要进行任何解释。
 
   {text}
@@ -122,6 +142,6 @@ $$R_{\mathrm{inst}} = g_{\mathrm{lang}} \cdot g_{\mathrm{hard}} \cdot \bigl(q_{\
 ## 用例
 
 - [`cases/translate_cases.jsonl`](cases/translate_cases.jsonl)：基础多语言短文本评测用例。
-- [`cases/instruction_cases.jsonl`](cases/instruction_cases.jsonl)：收录 CSV/JSON 格式保护、术语表强约束、正式/随性文风对比、领域多义词消歧、音节+术语协同等真实运行样本。
+- [`cases/instruction_cases.jsonl`](cases/instruction_cases.jsonl)：收录覆盖 instTrans 10 大软硬约束（术语对照、JSON/CSV 格式保护、占位符变量保护、社媒元素、正式/网感文风对比、领域多义词消歧、跨句术语一致性、学术公式保护、音节+术语协同）的真实运行样本。
 - [`cases/doc_cases.jsonl`](cases/doc_cases.jsonl)：长文档真实输入输出。
 - [`cases/syllable_cases.jsonl`](cases/syllable_cases.jsonl)：音节控制基准用例。

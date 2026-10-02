@@ -41,12 +41,15 @@ import os
 import sys
 from urllib.parse import urlparse
 
-from openai import OpenAI
-
-
-def make_client(base_url: str, api_key: str) -> OpenAI:
+def make_client(base_url: str, api_key: str):
     """OpenAI client; handle proxies properly for local or internal servers."""
-    import httpx
+    try:
+        from openai import OpenAI
+        import httpx
+    except ImportError:
+        sys.stderr.write("Error: missing required packages 'openai' or 'httpx'.\nPlease install via: pip install openai httpx\n")
+        sys.exit(1)
+
     host = urlparse(base_url).hostname or ""
     proxy = os.environ.get("OPENAI_PROXY") or os.environ.get("ALL_PROXY") or os.environ.get("all_proxy")
 
@@ -75,11 +78,11 @@ LANG_NAMES = {
 DEFAULT_MODEL = "IndexTeam/Index-Translate-9B"
 
 
-def parse_glossary(glossary_input: str) -> str:
-    """Parse glossary input from a JSON file, a JSON string, or comma-separated pairs.
-    Returns a standardized string like 'term1 -> target1, term2 -> target2'."""
+def parse_glossary_terms(glossary_input: str) -> list[str]:
+    """Parse glossary input from a JSON file, JSON string, or comma-separated pairs.
+    Returns a list of standardized term pairs like ['term1→target1', 'term2→target2']."""
     if not glossary_input:
-        return ""
+        return []
     glossary_input = glossary_input.strip()
 
     # Case 1: Existing JSON file
@@ -88,7 +91,7 @@ def parse_glossary(glossary_input: str) -> str:
             with open(glossary_input, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if isinstance(data, dict):
-                    return ", ".join(f"{k} -> {v}" for k, v in data.items())
+                    return [f"{k.strip()}→{str(v).strip()}" for k, v in data.items()]
         except Exception as e:
             sys.stderr.write(f"Warning: failed to read glossary file {glossary_input}: {e}\n")
 
@@ -97,11 +100,11 @@ def parse_glossary(glossary_input: str) -> str:
         try:
             data = json.loads(glossary_input)
             if isinstance(data, dict):
-                return ", ".join(f"{k} -> {v}" for k, v in data.items())
+                return [f"{k.strip()}→{str(v).strip()}" for k, v in data.items()]
         except Exception:
             pass
 
-    # Case 3: Delimited pairs, e.g. "term:trans, term2:trans2" or "term->trans"
+    # Case 3: Delimited pairs, e.g. "term:trans, term2:trans2" or "term->trans" / "term→trans"
     pairs = []
     for item in glossary_input.replace("，", ",").split(","):
         item = item.strip()
@@ -109,45 +112,131 @@ def parse_glossary(glossary_input: str) -> str:
             continue
         if "->" in item:
             k, v = item.split("->", 1)
-            pairs.append(f"{k.strip()} -> {v.strip()}")
+            pairs.append(f"{k.strip()}→{v.strip()}")
+        elif "→" in item:
+            k, v = item.split("→", 1)
+            pairs.append(f"{k.strip()}→{v.strip()}")
         elif ":" in item:
             k, v = item.split(":", 1)
-            pairs.append(f"{k.strip()} -> {v.strip()}")
+            pairs.append(f"{k.strip()}→{v.strip()}")
         elif "：" in item:
             k, v = item.split("：", 1)
-            pairs.append(f"{k.strip()} -> {v.strip()}")
+            pairs.append(f"{k.strip()}→{v.strip()}")
         else:
             pairs.append(item)
-    return ", ".join(pairs)
+    return pairs
 
 
-def trans_prompt(text: str, target_lang: str, source_lang: str = "auto",
-                 instruction: str = "", glossary: str = "") -> str:
-    """Construct prompt matching the model's instruction-following training format.
+def trans_prompt(
+    text: str,
+    target_lang: str,
+    source_lang: str = "auto",
+    hard_constraints: list[str] = None,
+    soft_constraints: list[str] = None,
+    glossary: str = "",
+    instruction: str = "",
+    genre: str = "文本",
+) -> str:
+    """Construct prompt matching the model's canonical instTrans training and benchmark format.
     
-    Hard constraints (e.g. glossary mappings, format preservation) and soft constraints
-    (e.g. tone, style, domain disambiguation) are incorporated cleanly into the prompt.
+    Format:
+        请将以下{源语言}{文体}翻译成{目标语言}，并且严格遵循所有约束要求。
+
+        【源文】
+        {source_text}
+
+        【约束要求】
+        1. 【硬性要求】...
+        2. 【注意】...
+
+        只输出译文，不要有任何额外说明。
     """
-    lang_name = LANG_NAMES.get(target_lang.lower(), target_lang)
-    if source_lang and source_lang.lower() not in ("auto", ""):
-        src_name = LANG_NAMES.get(source_lang.lower(), source_lang)
-        prefix = f"请将以下{src_name}文本翻译为{lang_name}"
-    else:
-        prefix = f"请将以下文本翻译为{lang_name}"
+    tgt_name = LANG_NAMES.get(target_lang.lower(), target_lang)
+    has_source = source_lang and source_lang.lower() not in ("auto", "")
+    src_name = LANG_NAMES.get(source_lang.lower(), source_lang) if has_source else ""
 
-    requirements = []
-    if instruction:
-        inst_clean = instruction.strip().rstrip("。")
-        requirements.append(inst_clean)
+    constraints = []
+
+    # 1. Collect hard constraints
+    if hard_constraints:
+        for c in hard_constraints:
+            if not c:
+                continue
+            for line in c.splitlines():
+                line = line.strip().lstrip("0123456789. ")
+                if not line:
+                    continue
+                if not line.startswith("【硬性要求】"):
+                    line = f"【硬性要求】{line}"
+                constraints.append(line)
+
+    # 2. Terminology glossary -> 【硬性要求】专名/术语对照: A→B、C→D
     if glossary:
-        formatted_g = parse_glossary(glossary)
-        if formatted_g:
-            requirements.append(f"严格遵守术语映射表【{formatted_g}】，严禁使用其他译名")
+        terms = parse_glossary_terms(glossary)
+        if terms:
+            constraints.append(f"【硬性要求】专名/术语对照: {'、'.join(terms)}")
 
-    if requirements:
-        req_str = "。要求：" + "，".join(requirements) + "。"
-        return f"{prefix}{req_str}直接输出翻译结果，不要进行任何解释。\n\n{text}"
-    return f"{prefix}，直接输出翻译结果，不要进行任何解释。\n\n{text}"
+    # 3. Collect soft constraints
+    if soft_constraints:
+        for c in soft_constraints:
+            if not c:
+                continue
+            for line in c.splitlines():
+                line = line.strip().lstrip("0123456789. ")
+                if not line:
+                    continue
+                if not (line.startswith("【注意】") or line.startswith("【软性要求】")):
+                    line = f"【注意】{line}"
+                constraints.append(line)
+
+    # 4. General instruction (backward compatibility)
+    if instruction:
+        inst = instruction.strip()
+        if inst:
+            for line in inst.splitlines():
+                line = line.strip().lstrip("0123456789. ")
+                if not line:
+                    continue
+                if line.startswith("【硬性要求】") or line.startswith("【注意】") or line.startswith("【软性要求】"):
+                    constraints.append(line)
+                else:
+                    constraints.append(f"【注意】{line}")
+
+    if constraints:
+        # Canonical instTrans formatted prompt
+        header_src = f"{src_name}{genre}" if src_name else genre
+        header = f"请将以下{header_src}翻译成{tgt_name}，并且严格遵循所有约束要求。"
+        req_lines = [f"{i + 1}. {c}" for i, c in enumerate(constraints)]
+
+        # Check if input is a JSON dict and JSON format preservation is requested
+        stripped = text.strip()
+        is_json = False
+        if stripped.startswith("{") and stripped.endswith("}"):
+            try:
+                obj = json.loads(stripped)
+                if isinstance(obj, dict):
+                    is_json = True
+            except Exception:
+                pass
+
+        if is_json and any("JSON" in c or "json" in c for c in constraints):
+            suffix = "请以相同的 JSON 格式输出翻译结果，key 保持不变，value 为对应译文。只输出 JSON，不要有任何额外说明。"
+        else:
+            suffix = "只输出译文，不要有任何额外说明。"
+
+        return (
+            f"{header}\n\n"
+            f"【源文】\n"
+            f"{stripped}\n\n"
+            f"【约束要求】\n"
+            f"{chr(10).join(req_lines)}\n\n"
+            f"{suffix}"
+        )
+
+    # Plain translation prompt without constraints
+    if src_name:
+        return f"请将以下{src_name}文本翻译为{tgt_name}，直接输出翻译结果，不要进行任何解释。\n\n{text.strip()}"
+    return f"请将以下文本翻译为{tgt_name}，直接输出翻译结果，不要进行任何解释。\n\n{text.strip()}"
 
 
 def strip_think(text: str) -> str:
@@ -158,14 +247,22 @@ def strip_think(text: str) -> str:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser(description="Translate text with Index-Translate models (with instruction following support)")
+    ap = argparse.ArgumentParser(
+        description="Translate text with Index-Translate models (with instTrans formatted instruction following)"
+    )
     ap.add_argument("text", nargs="?", help="text to translate (stdin if omitted)")
     ap.add_argument("--target", "-t", default="en", help="target language code, e.g. en/zh/ja (default: en)")
     ap.add_argument("--source", "-s", default="auto", help="source language code (default: auto)")
-    ap.add_argument("--instruction", "-i", default="",
-                    help="task instruction or constraint (e.g. style, format preservation, domain context)")
+    ap.add_argument("--hard", "-H", action="append", default=[],
+                    help="hard constraint(s) (format preservation, placeholder protection, etc.). Can be repeated.")
+    ap.add_argument("--soft", "-S", action="append", default=[],
+                    help="soft constraint(s) (style/tone, domain context disambiguation, etc.). Can be repeated.")
     ap.add_argument("--glossary", "-g", default="",
-                    help="terminology glossary mapping: 'k:v, k2:v2' or JSON file path")
+                    help="terminology glossary: 'k:v, k2:v2' or JSON file path; formatted as hard terminology constraint")
+    ap.add_argument("--genre", "-d", "--domain", default="文本",
+                    help="genre or domain of the source text (default: 文本, e.g. 专栏文章 / 学术论文 / 字幕 / 评论 / 结构化数据)")
+    ap.add_argument("--instruction", "-i", default="",
+                    help="general task instruction or constraint (formatted into instTrans constraints)")
     ap.add_argument("--raw-prompt", action="store_true",
                     help="send input text directly as raw prompt without template wrapping")
     ap.add_argument("--model", "-m", default=os.environ.get("INDEX_MODEL", DEFAULT_MODEL))
@@ -187,8 +284,11 @@ def main() -> None:
             text=text,
             target_lang=args.target,
             source_lang=args.source,
-            instruction=args.instruction,
+            hard_constraints=args.hard,
+            soft_constraints=args.soft,
             glossary=args.glossary,
+            instruction=args.instruction,
+            genre=args.genre,
         )
 
     client = make_client(args.base_url, args.api_key)

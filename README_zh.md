@@ -76,34 +76,35 @@ python inference/llm/translate.py \
 Index-Translate 深度融合了指令遵循（instTrans）与结构化约束能力。模型不仅能高质量翻译，还支持**硬约束（格式保留、术语字典强干预）**与**软约束（文风语气、领域消歧）**，并通过 `translate.py` 和 `syllable_translate.py` 直接调用：
 
 ```bash
-# 硬约束 1：术语强约束（严格遵守指定术语映射，严禁错译）
+# 硬约束 1：术语强对照（-g / --glossary，自动组装为 instTrans 规范的【硬性要求】专名/术语对照）
 python inference/llm/translate.py \
   "王平仲采用了更加昂贵的碳纤维材料。碳纤维的好处就是它抗裂缝。" \
-  --target en --glossary "碳纤维:carbon fiber, 抗裂缝:crack resistance"
+  --target en -g "碳纤维:carbon fiber, 抗裂缝:crack resistance"
 
-# 硬约束 2：格式与结构保护（仅翻译文本，严格保留 JSON、CSV、Markdown、变量占位符）
+# 硬约束 2：格式与结构保护（-H / --hard，严格保留 JSON、CSV、Markdown、变量占位符不变）
 python inference/llm/translate.py \
   '{"user_id": 1024, "event": "purchase", "message": "您的订单已支付完成。"}' \
-  --target en --instruction "仅翻译 message 字段，严格保留合法 JSON 语法格式与键名"
+  --target en -H "保留源文中的 JSON 格式标记不变"
 
-# 软约束 1：文风与语气控制（正式商务公文 vs 日常口语闲聊 vs 社交网络网感）
+# 软约束 1：文风与语体（-S / --soft，配合 -d / --genre 声明文体）
 python inference/llm/translate.py \
   "今天下午的会议临时取消了，改天我们再碰一下商量。" \
-  --target en --instruction "调整为严谨、正式、礼貌的商务公文风格"
+  --target en -d "商务邮件" -S "调整为严谨、正式、礼貌的商务公文风格"
 
-# 软约束 2：领域语境与多义词消歧（指定工业制造/温室农业等领域语境）
+# 软约束 2：领域语境与多义词消歧（-S / --soft）
 python inference/llm/translate.py \
   "The plant is operating at full capacity after the spring upgrade." \
-  --target zh --instruction "语境为工业制造与重工厂房领域，准确消歧专有名词"
+  --target zh -d "工业制造" -S "语境为工业制造与重工厂房领域，准确消歧专有名词（如 plant 译为工厂而非植物）"
 
-# 音节控制协同：Index-Homura 支持在严格控制目标音节数的同时遵循术语约束
+# 音节控制协同：Index-Homura 支持在严格控制目标音节数的同时遵循术语强约束
 python inference/llm/syllable_translate.py \
   "我们今天去看电影吧" --syllables 7 --target en --glossary "电影:cinema"
 ```
 
-> **约束类型说明：**
-> - **硬约束（Hard Constraints）**：格式保护（JSON/CSV/代码/占位符）、术语指定（Glossary）。不合格直接判定为 0 分，模型训练时采用硬门控保证严格遵守。
-> - **软约束（Soft Constraints）**：风格语气（正式/口语/文学/社交网感）、多义词消歧、跨句指代一致性。渐进打分，兼顾译文地道与语义传达。
+> **instTrans 规范与约束类型说明：**
+> - **规范化 Prompt**：客户端统一按 instTrans 评测基准格式自动拼装（`【源文】` + 编号列表 `1. 【硬性要求】...` / `2. 【注意】...` + 结尾指令）。
+> - **硬约束（Hard Constraints）**：格式保护（JSON/CSV/代码/占位符）、术语指定（Glossary）、社交标记保护、音节排序。违背一项即判 0 分，训练采用硬门控保证执行。
+> - **软约束（Soft Constraints）**：风格语气（正式/口语/文学/社交网感）、多义词消歧、跨句指代一致性、学术公式保护。渐进打分，兼顾译文地道与语义传达。
 > - 完整实现与更多实测用例见[文本推理说明](inference/llm/README_zh.md)与[实测案例集](inference/llm/cases/instruction_cases.jsonl)。
 
 ### 默认推理参数

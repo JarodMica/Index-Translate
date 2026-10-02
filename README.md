@@ -74,34 +74,35 @@ For audio, use the dedicated [S2TT subtitle guide](inference/echo-s2tt/README.md
 Index-Translate deeply integrates instruction-following capabilities (instTrans). It supports both **hard constraints (format preservation, strict terminology glossary enforcement)** and **soft constraints (tone & style, domain disambiguation)** out of the box via `translate.py` and `syllable_translate.py`:
 
 ```bash
-# Hard constraint 1: Strict terminology glossary enforcement
+# Hard constraint 1: Strict terminology glossary enforcement (-g / --glossary)
 python inference/llm/translate.py \
   "王平仲采用了更加昂贵的碳纤维材料。碳纤维的好处就是它抗裂缝。" \
-  --target en --glossary "碳纤维:carbon fiber, 抗裂缝:crack resistance"
+  --target en -g "碳纤维:carbon fiber, 抗裂缝:crack resistance"
 
-# Hard constraint 2: Format & structure preservation (translate text only, preserve JSON/CSV/placeholders)
+# Hard constraint 2: Format & structure preservation (-H / --hard)
 python inference/llm/translate.py \
   '{"user_id": 1024, "event": "purchase", "message": "您的订单已支付完成。"}' \
-  --target en --instruction "仅翻译 message 字段，严格保留合法 JSON 语法格式与键名"
+  --target en -H "保留源文中的 JSON 格式标记不变"
 
-# Soft constraint 1: Tone and style adjustment (formal business vs. casual vs. viral social media)
+# Soft constraint 1: Tone and style adjustment (-S / --soft) + genre (-d / --genre)
 python inference/llm/translate.py \
   "今天下午的会议临时取消了，改天我们再碰一下商量。" \
-  --target en --instruction "调整为严谨、正式、礼貌的商务公文风格"
+  --target en -d "商务邮件" -S "调整为严谨、正式、礼貌的商务公文风格"
 
-# Soft constraint 2: Domain context and word-sense disambiguation (e.g. industrial vs. botanical)
+# Soft constraint 2: Domain context and word-sense disambiguation (-S / --soft)
 python inference/llm/translate.py \
   "The plant is operating at full capacity after the spring upgrade." \
-  --target zh --instruction "语境为工业制造与重工厂房领域，准确消歧专有名词"
+  --target zh -d "工业制造" -S "语境为工业制造与重工厂房领域，准确消歧专有名词（如 plant 译为工厂而非植物）"
 
 # Syllable control synergy: Index-Homura strictly respects syllable budgets while embedding glossaries
 python inference/llm/syllable_translate.py \
   "我们今天去看电影吧" --syllables 7 --target en --glossary "电影:cinema"
 ```
 
-> **Constraint details:**
-> - **Hard Constraints**: Structural formatting (JSON/CSV/code/placeholders) and terminology glossaries. Binary gated ($g_{\mathrm{hard}}$); failure zeros the reward in training.
-> - **Soft Constraints**: Tone/style adaptation, contextual sense disambiguation, and cross-sentence consistency. Evaluated on a graded scale ($q_{\mathrm{soft}}$) for stylistic nuance.
+> **instTrans Specification & Constraint Details:**
+> - **Canonical Prompt**: Automatically formatted by the client into the instTrans benchmark structure (`【源文】` + numbered `1. 【硬性要求】...` / `2. 【注意】...` + suffix instructions).
+> - **Hard Constraints**: Structural formatting (JSON/CSV/code/placeholders), terminology glossaries, social elements, and syllable ordering. Binary gated ($g_{\mathrm{hard}}$); any single failure zeroes the instance score.
+> - **Soft Constraints**: Tone/style adaptation, contextual sense disambiguation, cross-sentence consistency, and LaTeX preservation. Evaluated on a graded scale ($q_{\mathrm{soft}}$).
 > - See the [text inference guide](inference/llm/README.md) and [instruction cases](inference/llm/cases/instruction_cases.jsonl) for full examples.
 
 ### Default inference settings

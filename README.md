@@ -23,7 +23,7 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 
 The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
-[Models](#models) · [Quick start](#quick-start) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+[Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
 
 ## Models
 
@@ -69,6 +69,41 @@ See [captured cases](inference/llm/cases/translate_cases.jsonl), [text inference
 
 For audio, use the dedicated [S2TT subtitle guide](inference/echo-s2tt/README.md) or [S2ST dubbing guide](inference/echo-s2st/README.md).
 
+### Instruction Following & Constrained Translation
+
+Index-Translate deeply integrates instruction-following capabilities (instTrans). It supports both **hard constraints (format preservation, strict terminology glossary enforcement)** and **soft constraints (tone & style, domain disambiguation)** out of the box via `translate.py` and `syllable_translate.py`:
+
+```bash
+# Hard constraint 1: Strict terminology glossary enforcement
+python inference/llm/translate.py \
+  "王平仲采用了更加昂贵的碳纤维材料。碳纤维的好处就是它抗裂缝。" \
+  --target en --glossary "碳纤维:carbon fiber, 抗裂缝:crack resistance"
+
+# Hard constraint 2: Format & structure preservation (translate text only, preserve JSON/CSV/placeholders)
+python inference/llm/translate.py \
+  '{"user_id": 1024, "event": "purchase", "message": "您的订单已支付完成。"}' \
+  --target en --instruction "仅翻译 message 字段，严格保留合法 JSON 语法格式与键名"
+
+# Soft constraint 1: Tone and style adjustment (formal business vs. casual vs. viral social media)
+python inference/llm/translate.py \
+  "今天下午的会议临时取消了，改天我们再碰一下商量。" \
+  --target en --instruction "调整为严谨、正式、礼貌的商务公文风格"
+
+# Soft constraint 2: Domain context and word-sense disambiguation (e.g. industrial vs. botanical)
+python inference/llm/translate.py \
+  "The plant is operating at full capacity after the spring upgrade." \
+  --target zh --instruction "语境为工业制造与重工厂房领域，准确消歧专有名词"
+
+# Syllable control synergy: Index-Homura strictly respects syllable budgets while embedding glossaries
+python inference/llm/syllable_translate.py \
+  "我们今天去看电影吧" --syllables 7 --target en --glossary "电影:cinema"
+```
+
+> **Constraint details:**
+> - **Hard Constraints**: Structural formatting (JSON/CSV/code/placeholders) and terminology glossaries. Binary gated ($g_{\mathrm{hard}}$); failure zeros the reward in training.
+> - **Soft Constraints**: Tone/style adaptation, contextual sense disambiguation, and cross-sentence consistency. Evaluated on a graded scale ($q_{\mathrm{soft}}$) for stylistic nuance.
+> - See the [text inference guide](inference/llm/README.md) and [instruction cases](inference/llm/cases/instruction_cases.jsonl) for full examples.
+
 ### Default inference settings
 
 This is the shared reference for the repository clients and the released Echo packages. Translate covers **2B / 9B / 35B-A3B (preview)**; the other families cover **2B / 9B**. Decoding defaults are shared across sizes within each family.
@@ -97,7 +132,7 @@ This is the shared reference for the repository clients and the released Echo pa
 | Speech sampler | — | — | — | — | Fixed `sampling=25`; CosyVoice RAS defaults `top_p=0.8`, `top_k=25` |
 | Speech-token budget | — | — | — | — | Maximum `min(1500, 20 * m)`; minimum `2 * m` |
 | Speech speed / sample rate | — | — | — | — | `speed=1.0`; `24000` Hz |
-| Main overrides | `--model`, `--temperature`, `--max-tokens` | `--model`, `--syllables`, `--temperature`, `--max-tokens` | `--model`, `--direction`, `--max-tokens` | `--size`, `--temperature`, `--max-new-tokens`, `--max-win`, `--ctx-k`, `--glossary` | `--model-dir`, `--lang`; lower-level API for budgets / seed |
+| Main overrides | `--model`, `--instruction`, `--glossary`, `--temperature`, `--max-tokens` | `--model`, `--syllables`, `--glossary`, `--temperature`, `--max-tokens` | `--model`, `--direction`, `--max-tokens` | `--size`, `--temperature`, `--max-new-tokens`, `--max-win`, `--ctx-k`, `--glossary` | `--model-dir`, `--lang`; lower-level API for budgets / seed |
 
 - **Text clients:** default to `http://127.0.0.1:8000/v1` with API key `EMPTY`. Use `--base-url` / `--api-key` or `OPENAI_BASE_URL` / `OPENAI_API_KEY`; `--model` overrides `INDEX_MODEL` and the default checkpoint. Serve 35B-A3B manually and select it with `--model IndexTeam/Index-Translate-35B-A3B-preview`.
 - **Budgets:** Homura's `len(text)` is the Python character count after trimming input. NativeLong's omitted `max_tokens` leaves the output cap to the server; context capacity and server limits still apply. Pass a positive `--max-tokens` for an explicit cap. Context includes the full prompt and generated output; override serving limits with `--max-model-len`.

@@ -25,7 +25,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。灰色虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
 
-[模型下载](#模型下载) · [快速上手](#快速上手) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
+[模型下载](#模型下载) · [快速上手](#快速上手) · [指令遵循](#指令遵循与约束翻译) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
 
 ## 模型下载
 
@@ -71,6 +71,41 @@ python inference/llm/translate.py \
 
 语音任务请进入对应的 [S2TT 字幕教程](inference/echo-s2tt/README_zh.md)或 [S2ST 配音教程](inference/echo-s2st/README_zh.md)。
 
+### 指令遵循与约束翻译（硬约束 / 软约束）
+
+Index-Translate 深度融合了指令遵循（instTrans）与结构化约束能力。模型不仅能高质量翻译，还支持**硬约束（格式保留、术语字典强干预）**与**软约束（文风语气、领域消歧）**，并通过 `translate.py` 和 `syllable_translate.py` 直接调用：
+
+```bash
+# 硬约束 1：术语强约束（严格遵守指定术语映射，严禁错译）
+python inference/llm/translate.py \
+  "王平仲采用了更加昂贵的碳纤维材料。碳纤维的好处就是它抗裂缝。" \
+  --target en --glossary "碳纤维:carbon fiber, 抗裂缝:crack resistance"
+
+# 硬约束 2：格式与结构保护（仅翻译文本，严格保留 JSON、CSV、Markdown、变量占位符）
+python inference/llm/translate.py \
+  '{"user_id": 1024, "event": "purchase", "message": "您的订单已支付完成。"}' \
+  --target en --instruction "仅翻译 message 字段，严格保留合法 JSON 语法格式与键名"
+
+# 软约束 1：文风与语气控制（正式商务公文 vs 日常口语闲聊 vs 社交网络网感）
+python inference/llm/translate.py \
+  "今天下午的会议临时取消了，改天我们再碰一下商量。" \
+  --target en --instruction "调整为严谨、正式、礼貌的商务公文风格"
+
+# 软约束 2：领域语境与多义词消歧（指定工业制造/温室农业等领域语境）
+python inference/llm/translate.py \
+  "The plant is operating at full capacity after the spring upgrade." \
+  --target zh --instruction "语境为工业制造与重工厂房领域，准确消歧专有名词"
+
+# 音节控制协同：Index-Homura 支持在严格控制目标音节数的同时遵循术语约束
+python inference/llm/syllable_translate.py \
+  "我们今天去看电影吧" --syllables 7 --target en --glossary "电影:cinema"
+```
+
+> **约束类型说明：**
+> - **硬约束（Hard Constraints）**：格式保护（JSON/CSV/代码/占位符）、术语指定（Glossary）。不合格直接判定为 0 分，模型训练时采用硬门控保证严格遵守。
+> - **软约束（Soft Constraints）**：风格语气（正式/口语/文学/社交网感）、多义词消歧、跨句指代一致性。渐进打分，兼顾译文地道与语义传达。
+> - 完整实现与更多实测用例见[文本推理说明](inference/llm/README_zh.md)与[实测案例集](inference/llm/cases/instruction_cases.jsonl)。
+
 ### 默认推理参数
 
 这张总表统一列出仓库客户端与发布 Echo 模型包的默认设置。Translate 包含 **2B / 9B / 35B-A3B（preview）**，其余家族包含 **2B / 9B**；同一家族各尺寸使用相同的解码参数。
@@ -99,7 +134,7 @@ python inference/llm/translate.py \
 | 声音采样器 | — | — | — | — | 固定实参 `sampling=25`；CosyVoice RAS 默认 `top_p=0.8`、`top_k=25` |
 | 声音 token 预算 | — | — | — | — | 上限 `min(1500, 20 * m)`；下限 `2 * m` |
 | 声音语速／采样率 | — | — | — | — | `speed=1.0`；`24000` Hz |
-| 主要可调入口 | `--model`、`--temperature`、`--max-tokens` | `--model`、`--syllables`、`--temperature`、`--max-tokens` | `--model`、`--direction`、`--max-tokens` | `--size`、`--temperature`、`--max-new-tokens`、`--max-win`、`--ctx-k`、`--glossary` | `--model-dir`、`--lang`；预算／seed 使用底层 API |
+| 主要可调入口 | `--model`、`--instruction`、`--glossary`、`--temperature`、`--max-tokens` | `--model`、`--syllables`、`--glossary`、`--temperature`、`--max-tokens` | `--model`、`--direction`、`--max-tokens` | `--size`、`--temperature`、`--max-new-tokens`、`--max-win`、`--ctx-k`、`--glossary` | `--model-dir`、`--lang`；预算／seed 使用底层 API |
 
 - **文本客户端：** 默认地址为 `http://127.0.0.1:8000/v1`，API key 为 `EMPTY`。用 `--base-url`／`--api-key` 或 `OPENAI_BASE_URL`／`OPENAI_API_KEY` 覆盖；`--model` 优先于 `INDEX_MODEL` 和默认权重。35B-A3B 需手动部署，再传 `--model IndexTeam/Index-Translate-35B-A3B-preview`。
 - **预算：** Homura 的 `len(text)` 为输入去除首尾空白后的 Python 字符数。NativeLong 不传 `max_tokens` 时，由服务端确定输出上限，仍受上下文容量和服务端限制影响；传正数 `--max-tokens` 可显式指定上限。窗口包括完整提示词和生成结果，部署时可用 `--max-model-len` 覆盖。

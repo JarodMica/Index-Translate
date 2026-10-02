@@ -128,9 +128,21 @@ def main():
             translations[i] = ""
             sources[i] = ""
             return
+        wav_bytes = r.get("_wav_bytes")
+        if wav_bytes is None:
+            # text-only endpoint (/s2tt): no audio came back; keep the original
+            # voice in the slot but still record the translation (for --srt).
+            dub_wavs[i] = seg_in
+            translations[i] = r.get("text", "")
+            sources[i] = r.get("zh", "")
+            print(f"      [{i + 1}/{len(spans)}] {s:.1f}-{e:.1f}s "
+                  f"text-only response, original audio kept | "
+                  f"{str(r.get('zh', ''))[:40]} -> {str(r.get('text', ''))[:40]}",
+                  flush=True)
+            return
         seg_out = os.path.join(seg_dir, f"out_{i:04d}.wav")
         with open(seg_out, "wb") as f:
-            f.write(r["_wav_bytes"])
+            f.write(wav_bytes)
         dub_wavs[i] = seg_out
         translations[i] = r.get("text", "")
         sources[i] = r.get("zh", "")

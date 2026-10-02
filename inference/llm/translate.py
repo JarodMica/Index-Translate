@@ -30,16 +30,17 @@ def make_client(base_url: str, api_key: str) -> OpenAI:
     return OpenAI(base_url=base_url, api_key=api_key)
 
 # Language code -> Chinese name, as used by the training-side prompt builder.
+# Keys are lowercase: lookups normalize the user-supplied code with .lower().
 LANG_NAMES = {
     "en": "英语", "zh": "中文", "de": "德语", "fr": "法语", "es": "西班牙语",
     "ja": "日语", "ko": "韩语", "pt": "葡萄牙语", "ru": "俄语", "ar": "阿拉伯语",
     "it": "意大利语", "nl": "荷兰语", "pl": "波兰语", "ro": "罗马尼亚语",
     "sv": "瑞典语", "tr": "土耳其语", "hi": "印地语", "vi": "越南语",
     "th": "泰语", "id": "印尼语", "ms": "马来语", "fil": "菲律宾语",
-    "ukr_Cyrl": "乌克兰语", "fas_Arab": "波斯语", "ces_Latn": "捷克语",
-    "ell_Grek": "希腊语", "dan_Latn": "丹麦语", "hun_Latn": "匈牙利语",
-    "fin_Latn": "芬兰语", "nob_Latn": "书面挪威语", "slk_Latn": "斯洛伐克语",
-    "bul_Cyrl": "保加利亚语",
+    "ukr_cyrl": "乌克兰语", "fas_arab": "波斯语", "ces_latn": "捷克语",
+    "ell_grek": "希腊语", "dan_latn": "丹麦语", "hun_latn": "匈牙利语",
+    "fin_latn": "芬兰语", "nob_latn": "书面挪威语", "slk_latn": "斯洛伐克语",
+    "bul_cyrl": "保加利亚语",
 }
 
 DEFAULT_MODEL = "IndexTeam/Index-Translate-9B"

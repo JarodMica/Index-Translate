@@ -68,7 +68,9 @@ document.querySelectorAll(".presets button").forEach((btn) => {
     if (btn.dataset.model) {
       document.getElementById("model").value = btn.dataset.model;
     }
-    document.getElementById("extraHeaders").value = btn.dataset.headers || "";
+    if (btn.dataset.headers !== undefined) {
+      document.getElementById("extraHeaders").value = btn.dataset.headers;
+    }
   });
 });
 

@@ -45,14 +45,17 @@ def make_client(base_url: str, api_key: str) -> OpenAI:
                       http_client=httpx.Client(proxy=proxy, trust_env=False))
     return OpenAI(base_url=base_url, api_key=api_key)
 
-
-# Same code->name table as translate.py (kept self-contained on purpose).
+# Same lowercase code->name table as translate.py (kept self-contained on purpose).
 LANG_NAMES = {
     "en": "英语", "zh": "中文", "de": "德语", "fr": "法语", "es": "西班牙语",
     "ja": "日语", "ko": "韩语", "pt": "葡萄牙语", "ru": "俄语", "ar": "阿拉伯语",
     "it": "意大利语", "nl": "荷兰语", "pl": "波兰语", "ro": "罗马尼亚语",
     "sv": "瑞典语", "tr": "土耳其语", "hi": "印地语", "vi": "越南语",
     "th": "泰语", "id": "印尼语", "ms": "马来语", "fil": "菲律宾语",
+    "ukr_cyrl": "乌克兰语", "fas_arab": "波斯语", "ces_latn": "捷克语",
+    "ell_grek": "希腊语", "dan_latn": "丹麦语", "hun_latn": "匈牙利语",
+    "fin_latn": "芬兰语", "nob_latn": "书面挪威语", "slk_latn": "斯洛伐克语",
+    "bul_cyrl": "保加利亚语",
 }
 
 DEFAULT_MODEL = "IndexTeam/Index-Homura-9B"

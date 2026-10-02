@@ -270,7 +270,7 @@ def create_app(s2st_url):
                "s2st_url": s2st_url, "upload": upload_path, "workdir": workdir,
                "status": "running", "step": "queued", "step_label": "排队中",
                "seg_done": 0, "seg_total": 0, "log": [], "error": None,
-               "created": time.time()}
+               "result": None, "created": time.time()}
         with JOBS_LOCK:
             JOBS[job_id] = job
         threading.Thread(target=run_pipeline, args=(job,), daemon=True).start()

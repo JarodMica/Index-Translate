@@ -60,9 +60,6 @@ def main():
     ap.add_argument("--instr-wav",
                     help="instrumental wav mixed back under the dub "
                          "(only meaningful with --speech-wav)")
-    ap.add_argument("--manifest-in", action="store_true",
-                    help="skip dubbing; load existing <input>.<lang>.segments.json "
-                         "to rebuild subtitles/demo data from a previous run")
     ap.add_argument("--keep-temp", action="store_true",
                     help="keep the temp working directory")
     args = ap.parse_args()
@@ -115,6 +112,7 @@ def main():
     seg_dir = os.path.join(tmp, "segs")
     os.makedirs(seg_dir, exist_ok=True)
     dub_wavs, translations, sources = [None] * len(spans), [None] * len(spans), [None] * len(spans)
+    failed_segs = []
 
     def dub_one(i, s, e):
         seg_in = os.path.join(seg_dir, f"in_{i:04d}.wav")
@@ -127,6 +125,7 @@ def main():
             dub_wavs[i] = seg_in  # fall back to the original voice
             translations[i] = ""
             sources[i] = ""
+            failed_segs.append(i)
             return
         wav_bytes = r.get("_wav_bytes")
         if wav_bytes is None:
@@ -160,9 +159,8 @@ def main():
                     for i, (s, e) in enumerate(spans)]
             for f in futs:  # surface unexpected bugs; per-seg failures are caught inside
                 f.result()
-    failed = sum(1 for w in dub_wavs if w is None)
-    if failed:
-        print(f"      {failed}/{len(spans)} segments failed and were skipped")
+    if failed_segs:
+        print(f"      {len(failed_segs)}/{len(spans)} segments failed and fell back to original voice")
 
     # 5. timeline assembly
     print("[5/6] assembling dubbed timeline ...")

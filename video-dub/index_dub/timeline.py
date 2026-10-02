@@ -11,9 +11,11 @@ from . import media
 def _fit_segment(dub_wav, slot_dur, workdir, idx, sr, max_stretch=1.5):
     """Time-stretch a dubbed segment to fit its slot; returns samples at sr.
 
-    ratio = dub_dur / slot_dur (>1 means the dub is too long and is sped up).
-    The stretch is clamped to ``max_stretch``; anything still too long is
-    truncated, anything short is left as-is (silence follows naturally).
+    ratio = dub_dur / slot_dur (>1 means the dub is too long and is sped up;
+    <1 means the dub is shorter and is slowed down to stretch and fill the slot).
+    The stretch factor is clamped to [1.0 / max_stretch, max_stretch].
+    Any segment still exceeding its slot after maximum acceleration is
+    truncated; silence naturally follows if a segment cannot stretch enough.
     """
     y, y_sr = sf.read(dub_wav)
     if y.ndim > 1:

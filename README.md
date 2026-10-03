@@ -39,6 +39,8 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 **Naming:** Index-NativeLong is published under the model IDs `IndexTeam/Index-Nailong-2B` and `IndexTeam/Index-Nailong-9B`. Use those IDs in commands. Language support for the speech and long-document packages is listed separately from the text models' 150-language coverage.
 
+**Quantized builds (text models):** GGUF for llama.cpp local inference — [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) (all bit-widths in one repository per model; mmproj included) — and FP8 for vLLM serving — [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8). The same repositories are available on [ModelScope](https://modelscope.cn/organization/IndexTeam).
+
 ## Inference
 
 ### Quick start
@@ -284,6 +286,7 @@ Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion a
 
 ## News
 
+- **2026-10-03:** released official quantized builds of the 2B / 9B / 35B-A3B (preview) text models: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
 
 ## TODO
@@ -292,6 +295,8 @@ Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion a
 - [ ] Open-source instTrans, SandGlass-V2, nailong-bench, and meme-bench.
 - [ ] Add support for more languages to Index-Echo.
 - [ ] Release larger models.
+- [ ] Release QAT (quantization-aware training) builds for higher-quality low-bit quantization.
+- [ ] Integrate with Unsloth for efficient fine-tuning and inference.
 
 ## Papers and citation
 

@@ -25,7 +25,20 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。灰色虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
 
-[模型下载](#模型下载) · [快速上手](#快速上手) · [指令遵循](#指令遵循与约束翻译) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
+[最新动态](#最新动态) · [模型下载](#模型下载) · [快速上手](#快速上手) · [指令遵循](#指令遵循与约束翻译) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
+
+## 最新动态
+
+- **2026-10-03：** 发布全家族官方量化版本 —— Index-Translate 2B / 9B / 35B-A3B（preview）、Index-Homura 2B / 9B、Index-NativeLong 2B / 9B、Index-Echo S2TT / S2ST 2B / 9B：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj；Index-Echo 仓库为文本 LLM 主干）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
+- **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
+
+## TODO
+
+- [x] 发布全家族官方量化版本（GGUF 用于 llama.cpp 本地推理，FP8 用于 vLLM 部署）。
+- [ ] 发布 Index-Translate-35B-A3B 正式版。
+- [ ] 开源 instTrans、SandGlass-V2、nailong-bench 和 meme-bench。
+- [ ] 为 Index-Echo 增加更多语种支持。
+- [ ] 发布更大规模的模型。
 
 ## 模型下载
 
@@ -293,20 +306,6 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 欢迎加入 [QQ 交流群（960123527）](https://qm.qq.com/q/xSASqaiEGA)，交流使用体验、反馈问题与建议。也可以扫描下方二维码加入群聊。
 
 <p align="center"><a href="https://qm.qq.com/q/xSASqaiEGA"><img src="docs/assets/qq-group.jpg" width="320" alt="QQ 交流群 960123527 加群二维码"></a></p>
-
-## 最新动态
-
-- **2026-10-03：** 发布全家族官方量化版本 —— Index-Translate 2B / 9B / 35B-A3B（preview）、Index-Homura 2B / 9B、Index-NativeLong 2B / 9B、Index-Echo S2TT / S2ST 2B / 9B：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj；Index-Echo 仓库为文本 LLM 主干）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
-- **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
-
-## TODO
-
-- [ ] 发布 Index-Translate-35B-A3B 正式版。
-- [ ] 开源 instTrans、SandGlass-V2、nailong-bench 和 meme-bench。
-- [ ] 为 Index-Echo 增加更多语种支持。
-- [ ] 发布更大规模的模型。
-- [ ] 发布 QAT（量化感知训练）版本，提供更高质量的低比特量化。
-- [ ] 接入 Unsloth，支持高效微调与推理。
 
 ## 论文与引用
 

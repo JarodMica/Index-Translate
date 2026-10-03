@@ -23,7 +23,20 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 
 The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
-[Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+[News](#news) · [Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+
+## News
+
+- **2026-10-03:** released official quantized builds for the whole family — Index-Translate 2B / 9B / 35B-A3B (preview), Index-Homura 2B / 9B, Index-NativeLong 2B / 9B, and Index-Echo S2TT / S2ST 2B / 9B: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included; Index-Echo repositories contain the text LLM backbone) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
+- **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
+
+## TODO
+
+- [x] Release official quantized builds (GGUF for llama.cpp local inference, FP8 for vLLM serving) for the whole family.
+- [ ] Release the official version of Index-Translate-35B-A3B.
+- [ ] Open-source instTrans, SandGlass-V2, nailong-bench, and meme-bench.
+- [ ] Add support for more languages to Index-Echo.
+- [ ] Release larger models.
 
 ## Models
 
@@ -291,20 +304,6 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 Join the [QQ group (960123527)](https://qm.qq.com/q/xSASqaiEGA) for discussion and feedback. You can also scan the QR code below to join.
 
 <p align="center"><a href="https://qm.qq.com/q/xSASqaiEGA"><img src="docs/assets/qq-group.jpg" width="320" alt="QR code to join QQ group 960123527"></a></p>
-
-## News
-
-- **2026-10-03:** released official quantized builds for the whole family — Index-Translate 2B / 9B / 35B-A3B (preview), Index-Homura 2B / 9B, Index-NativeLong 2B / 9B, and Index-Echo S2TT / S2ST 2B / 9B: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included; Index-Echo repositories contain the text LLM backbone) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
-- **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
-
-## TODO
-
-- [ ] Release the official version of Index-Translate-35B-A3B.
-- [ ] Open-source instTrans, SandGlass-V2, nailong-bench, and meme-bench.
-- [ ] Add support for more languages to Index-Echo.
-- [ ] Release larger models.
-- [ ] Release QAT (quantization-aware training) builds for higher-quality low-bit quantization.
-- [ ] Integrate with Unsloth for efficient fine-tuning and inference.
 
 ## Papers and citation
 

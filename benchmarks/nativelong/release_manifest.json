@@ -6,7 +6,8 @@
     "Kept BWB case/book/chapter metadata and official acquisition links",
     "Kept text-free GuoFeng numerical recipe and reconstruction code",
     "Kept evaluation code, component licenses and notices",
-    "Documented absent automated BWB text reconstruction utility"
+    "Documented absent automated BWB text reconstruction utility",
+    "Recommended benchmark citation uses only the Index-Translate technical report; upstream provenance and terms retained"
   ],
   "files": {
     ".gitignore": {
@@ -18,8 +19,8 @@
       "sha256": "eb68e4a1678f57c4f7940f7efb71c64f32fd1d23f6b47e04b25e5b15262f70c3"
     },
     "README.md": {
-      "size": 5495,
-      "sha256": "07c7aa2bc9d965d76333b0e2279693ca1e2add6180ab9032d1fe6eb681f0bf93"
+      "size": 5988,
+      "sha256": "ff5cc0a2ab69ea9005f8f9379c35a376f4aea850a8da6e4bea6bc774c840e5a8"
     },
     "RELEASE_REVIEW.md": {
       "size": 622,

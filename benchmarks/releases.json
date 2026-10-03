@@ -86,7 +86,7 @@
   },
   "insttrans": {
     "repo_id": "IndexTeam/InstTrans-Bench",
-    "revision": "d49e06066501b3c4f95867457a03d3656b39fcc7",
+    "revision": "85e199fe65c776a755277c3c1ca95e87ef37034d",
     "data_files": [
       "data/test.jsonl"
     ],
@@ -98,8 +98,8 @@
       },
       {
         "path": "README.md",
-        "size": 15750,
-        "sha256": "37f26b3e40781cd2256d2e74e0507d0bd5f21eae71dfdde5032d0cc2f10dc663"
+        "size": 15614,
+        "sha256": "3e77bb4e3722ff84f24a8e7552cf85327ff3a61d84ca13ab8a59002e058efc3a"
       },
       {
         "path": "RELEASE_REVIEW.md",
@@ -158,8 +158,8 @@
       },
       {
         "path": "release_manifest.json",
-        "size": 2319,
-        "sha256": "610f7800c40ccdff754e26109d359cac1e52ba3fce2fae1fe31228629c5cfccd"
+        "size": 2444,
+        "sha256": "52d83b8979518d226b5bdac1c6885d3bd74234552303ddc4bb5fdcda05ed49c6"
       },
       {
         "path": "requirements.txt",
@@ -239,7 +239,7 @@
   },
   "nativelong": {
     "repo_id": "IndexTeam/NAtIveLong",
-    "revision": "1b62586ba1b62ed153cd7d195285fcb08e9b0774",
+    "revision": "f0351ff32ca2972f87168a7cd9535c02f64beac9",
     "data_files": [
       "bwb/books.jsonl",
       "bwb/case-index.jsonl",
@@ -258,8 +258,8 @@
       },
       {
         "path": "README.md",
-        "size": 5495,
-        "sha256": "07c7aa2bc9d965d76333b0e2279693ca1e2add6180ab9032d1fe6eb681f0bf93"
+        "size": 5988,
+        "sha256": "ff5cc0a2ab69ea9005f8f9379c35a376f4aea850a8da6e4bea6bc774c840e5a8"
       },
       {
         "path": "RELEASE_REVIEW.md",
@@ -269,7 +269,7 @@
       {
         "path": "SHA256SUMS",
         "size": 5334,
-        "sha256": "c1c8a631d32922aafa6333f30297ed1522cee30039c99eefc5912bb776557f10"
+        "sha256": "3fa41f2290fa5c9792f64423a5971644ed6805862a4cacafb085267dd1b1a844"
       },
       {
         "path": "bwb/README.md",
@@ -528,8 +528,8 @@
       },
       {
         "path": "release_manifest.json",
-        "size": 8634,
-        "sha256": "2bcde4aebbf22e35556d8a1d9eb5f5ea2ac9ce86c8fdb7bc59effceecbc4624b"
+        "size": 8759,
+        "sha256": "9d3027875e819445a6203c86b1bca4f5ac3c86ff0494499d74d15efecc471c47"
       },
       {
         "path": "verification.json",

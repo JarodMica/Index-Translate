@@ -4,7 +4,8 @@
   "changes": [
     "Preserved data and model/Judge prompts",
     "Rejected invalid quality and missing soft-constraint Judge verdicts",
-    "Corrected redaction-policy description"
+    "Corrected redaction-policy description",
+    "Recommended benchmark citation uses only the Index-Translate technical report; upstream provenance and terms retained"
   ],
   "files": {
     ".gitignore": {
@@ -16,8 +17,8 @@
       "sha256": "b91bc996f6333ce709e87c822594cc869f7950089a2ea16034e213c465f27065"
     },
     "README.md": {
-      "size": 15750,
-      "sha256": "37f26b3e40781cd2256d2e74e0507d0bd5f21eae71dfdde5032d0cc2f10dc663"
+      "size": 15614,
+      "sha256": "3e77bb4e3722ff84f24a8e7552cf85327ff3a61d84ca13ab8a59002e058efc3a"
     },
     "RELEASE_REVIEW.md": {
       "size": 467,

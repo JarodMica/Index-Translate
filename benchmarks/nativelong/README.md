@@ -97,13 +97,10 @@ original frozen data, not newly reselected examples.
 
 ## Attribution and terms
 
-- [BWB / BlonDe](https://github.com/EleanorJiang/BlonDe): cite
-  [NAACL 2022](https://aclanthology.org/2022.naacl-main.111/) and the applicable
-  [ACL 2023 annotations](https://aclanthology.org/2023.acl-long.435/).
-- [GuoFeng](https://github.com/longyuewangdcu/GuoFeng-Webnovel): follow the upstream
-  non-commercial research and redistribution conditions and citation guidance
-  for [WMT 2023](https://aclanthology.org/2023.wmt-1.3/) and
-  [WMT 2024](https://aclanthology.org/2024.wmt-1.58/).
+- [BWB / BlonDe](https://github.com/EleanorJiang/BlonDe): upstream source and
+  [terms of use](https://github.com/EleanorJiang/BlonDe/blob/main/TERMS_OF_USE).
+- [GuoFeng](https://github.com/longyuewangdcu/GuoFeng-Webnovel): upstream source,
+  non-commercial research and redistribution conditions.
 - [SEGALE](https://github.com/NVlabs/SEGALE): component notices are in
   `evaluation/NOTICE.md` and the vendored directories.
 - Model family: [Index-Translate](https://github.com/bilibili/Index-Translate).
@@ -111,6 +108,26 @@ original frozen data, not newly reselected examples.
 We grant no additional rights in underlying books or translations. The evaluation
 code is Apache-2.0 under `evaluation/LICENSE`; upstream corpus terms apply
 separately. See [LICENSE.md](LICENSE.md).
+
+## Citation
+
+If you use this benchmark, please cite the [Index-Translate technical report](https://arxiv.org/abs/2609.40181):
+
+```bibtex
+@techreport{indextranslate2026,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Lusheng Zhang and
+          Qisi Chen and Yanshan Zhou and Ji Qi and Jingying Liu and
+          Yuang Feng and Ziang Cui and Tianxing Yan},
+  title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
+  institution={Index LLM Team},
+  year={2026},
+  month={September},
+  eprint={2609.40181},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2609.40181}
+}
+```
 
 ## Benchmark collection
 

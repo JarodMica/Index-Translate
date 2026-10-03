@@ -347,32 +347,25 @@ are not comparable. Report the Judge configuration alongside any new numbers.
 
 ## Links
 
-- Technical report: [Index-Translate Technical Report](https://github.com/bilibili/Index-Translate)
+- Technical report: [Index-Translate Technical Report](https://arxiv.org/abs/2609.40181)
 
 ## Citation
 
-```bibtex
-@misc{indextranslate2026insttransbench,
-  title        = {Instruction-Following Translation Bench},
-  author       = {{Index LLM Team}},
-  year         = {2026},
-  howpublished = {Evaluation benchmark},
-  note         = {InstTrans benchmark of the Index-Translate model family}
-}
-```
-
-Cite the technical report for the model family, the training recipe, and the full
-evaluation suite:
+If you use this benchmark, please cite the [Index-Translate technical report](https://arxiv.org/abs/2609.40181):
 
 ```bibtex
-@misc{indextranslate2026,
-  title        = {Index-Translate: Controllable Multilingual Translation for
-                  Content Production},
-  subtitle     = {Text, Speech, Controlled Dubbing, and Long-Document Translation},
-  author       = {{Index LLM Team}},
-  year         = {2026},
-  howpublished = {Technical report},
-  url          = {https://github.com/bilibili/Index-Translate}
+@techreport{indextranslate2026,
+  author={Tianjiao Li and Mengran Yu and Chenyu Shi and Lusheng Zhang and
+          Qisi Chen and Yanshan Zhou and Ji Qi and Jingying Liu and
+          Yuang Feng and Ziang Cui and Tianxing Yan},
+  title={Index-Translate: A Multilingual Translation Model Family --- Text, Speech, Controlled Dubbing, and Long-Document Translation},
+  institution={Index LLM Team},
+  year={2026},
+  month={September},
+  eprint={2609.40181},
+  archivePrefix={arXiv},
+  primaryClass={cs.CL},
+  url={https://arxiv.org/abs/2609.40181}
 }
 ```
 

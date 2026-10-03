@@ -1,0 +1,15 @@
+{
+  "official_repository": "https://github.com/EleanorJiang/BlonDe",
+  "official_download": "https://drive.google.com/drive/folders/12K1-DWmpEdqkaR_61aogdywsALDg4z1L",
+  "official_terms": "https://github.com/EleanorJiang/BlonDe/blob/main/TERMS_OF_USE",
+  "origin": "Project-defined book-held-out test from BWB official Train; not BWB official 80-document test.",
+  "changes": [
+    "Restore aggregate record order using the documented index permutation.",
+    "Select fixed continuous intervals and paired source/reference windows.",
+    "Assign project case IDs and retain chapter/alignment lineage.",
+    "Publish 84 cases across five source-length bands."
+  ],
+  "record_mapping_basis": "Inverse of sorted(range(record_count), key=lambda i: f'{i}_'); validated project reconstruction rule, not an upstream-provided mapping.",
+  "mapping_scope": "All 1,924 canonical chapters; case endpoints specify the released windows.",
+  "frozen_manifest_sha256": "c57cef5855bf03a6c78b1d65d806b55bc369baa2e83e713cfaf4e0f00a64ed50"
+}

@@ -1,0 +1,13 @@
+/raw/
+/reconstructed/
+/bwb-4k-64k/
+.DS_Store
+__pycache__/
+
+/.venv/
+/runs/
+/predictions/
+/evaluation/vendor/segale/build/
+*.so
+*.o
+*.pyc

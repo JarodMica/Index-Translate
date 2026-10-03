@@ -1,0 +1,30 @@
+{
+  "evaluator_baseline_commit": "c7752c93f099dfb0ffcf9e4acf1e6bbc3234d3d4",
+  "segale_upstream": "https://github.com/NVlabs/SEGALE",
+  "segale_commit": "bc19b2bb2bcde0bc2d6154dc2b86024b673e319c",
+  "vecalign_upstream": "https://github.com/shuoyangd/vecalign",
+  "vecalign_commit": "4f8b714598353a468596e704180a47bb5d3e2abe",
+  "baseline_file_sha256": {
+    "scripts/prepare_document_segale.py": "1338bdb2ddfcb0633344e975ce03c504fb0df59a89f8bc1046bfcce3087409b1",
+    "scripts/run_document_segale_alignment.py": "e308ea086b0c0bc7dd8b91da0586ba32830ef5e1799bfa62db16d831ea89a290",
+    "scripts/vecalign_inprocess.py": "f053dbf3941938c331eac232e1c21a5f50e9f1c5e6d15ef7bc3a2413cb62823b",
+    "scripts/segale_search_policy.py": "37987a526cd11dc12295b440d25405c35ee16cda6707d3571650e63f774768aa",
+    "scripts/evaluate_comet.py": "7009b205b124f28784b40ccd46ac99e874e5078eaa0fb0b11c5684c44262b1bf",
+    "scripts/summarize_document_segale.py": "7e6b65a5e2cf7986aa116303f2dc9ce4227927cc8c9e4ae1acb328db342ef817",
+    "scripts/score_document_chrf.py": "4801d5f73d3a4707faa0eb8aeac4fe9ef34c3bdeef21c68845f3d05b9c7e2c74",
+    "vendor/segale/segale_align.py": "75f3aa7e1853746d5c2091aea160793d340be39c689bcb4836f9835e4e498c19",
+    "vendor/segale/LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "vendor/segale/vecalign/__init__.py": "f5776864925abc613c528e02fe0e7b296c314c0496a72e862f5f777790d20198",
+    "vendor/segale/vecalign/dp_core.pyx": "36b0f8627e224fb6b4b2f84f1e2612ce2113b99f71642b152d54aea416ac96b4",
+    "vendor/segale/vecalign/dp_utils.py": "7fa7ccfa9143c0910a87d8a9ec2d196b68efff108a54cd6951b977d016aaf5e0",
+    "vendor/segale/vecalign/overlap.py": "e73c903c88b7ca77b249c5b0ff9151e8091933f7b9748400a115173f1711668b",
+    "vendor/segale/vecalign/score.py": "85f77388e93f7601e0d115653873630faa1c99c0e2a6abcba193581b72a40cb7",
+    "vendor/segale/vecalign/vecalign.py": "68e6fc2562f9a1746c6c8cdfb945619dba3b676ec19b4f548e0c97e756e24405"
+  },
+  "portable_changes": [
+    "Local CLI replaces deployment wrapper.",
+    "COMET accepts pinned local encoder config/tokenizer; scoring math is unchanged.",
+    "Minimal predictions receive computed text hashes and null unknown metadata.",
+    "Summary adds five-band macro with coverage; missing bands yield null."
+  ]
+}

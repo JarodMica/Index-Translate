@@ -1,0 +1,11 @@
+meme/data/*.jsonl
+insttrans/data/*.jsonl
+sandglass/sandglass_bench.jsonl
+nativelong/bwb/*.jsonl
+nativelong/guofeng/*.jsonl
+nativelong/guofeng/*.tsv
+**/__pycache__/
+**/*.py[cod]
+**/outputs/
+**/.cache/
+**/reconstructed/

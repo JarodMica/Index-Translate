@@ -1,0 +1,2 @@
+datasets>=3.0,<5
+openai>=1.0,<3

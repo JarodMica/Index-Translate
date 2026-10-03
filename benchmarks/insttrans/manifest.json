@@ -1,0 +1,190 @@
+{
+  "schema_version": 1,
+  "name": "Instruction-Following Translation Bench",
+  "benchmark": "translation_instruction",
+  "benchmark_version": "v1",
+  "task": "translation",
+  "license": "cc-by-nc-4.0",
+  "splits": {
+    "test": 3000
+  },
+  "counts": {
+    "cases": 3000,
+    "source_languages": 21,
+    "target_languages": 22,
+    "language_pairs": 61,
+    "constraint_types": 10,
+    "constraint_annotations": 5402
+  },
+  "distributions": {
+    "constraint_id": {
+      "format_preserve": 2098,
+      "style_consistency": 633,
+      "syllable_order": 601,
+      "term_cross_sentence": 508,
+      "term_compliance": 502,
+      "academic_format_preserve": 412,
+      "social_preserve": 316,
+      "layout_break": 266,
+      "context_disambiguate": 42,
+      "coref_resolution": 24
+    },
+    "constraints_per_case": {
+      "1": 1307,
+      "2": 1138,
+      "3": 426,
+      "4": 104,
+      "5": 25
+    },
+    "scenario": {
+      "social": 922,
+      "doc_textbook": 575,
+      "novel": 303,
+      "pgc_subtitle": 302,
+      "column": 300,
+      "academic": 299,
+      "ugc_subtitle": 299
+    },
+    "domain": {
+      "B站动态": 320,
+      "小说": 303,
+      "ogv字幕": 302,
+      "弹幕": 302,
+      "评论": 300,
+      "专栏文章": 300,
+      "学术论文": 299,
+      "UGC字幕": 299,
+      "书籍": 293,
+      "网页文本": 282
+    },
+    "source_lang": {
+      "zh": 2419,
+      "en": 313,
+      "ja": 15,
+      "tr": 15,
+      "fil": 14,
+      "it": 14,
+      "nl": 14,
+      "hi": 14,
+      "de": 14,
+      "sv": 14,
+      "ar": 14,
+      "ko": 14,
+      "id": 14,
+      "fr": 14,
+      "es": 14,
+      "ro": 14,
+      "vi": 14,
+      "ru": 14,
+      "pl": 14,
+      "pt": 14,
+      "th": 14
+    },
+    "target_lang": {
+      "zh": 296,
+      "th": 132,
+      "pt": 132,
+      "tr": 131,
+      "it": 131,
+      "es": 130,
+      "ro": 130,
+      "vi": 130,
+      "ms": 130,
+      "de": 130,
+      "pl": 129,
+      "hi": 129,
+      "ru": 129,
+      "fr": 128,
+      "ko": 128,
+      "id": 128,
+      "sv": 128,
+      "ja": 128,
+      "nl": 128,
+      "fil": 128,
+      "ar": 127,
+      "en": 118
+    }
+  },
+  "constraint_taxonomy": {
+    "hard": [
+      "format_preserve",
+      "layout_break",
+      "term_compliance",
+      "syllable_order",
+      "social_preserve"
+    ],
+    "soft": [
+      "style_consistency",
+      "context_disambiguate",
+      "coref_resolution",
+      "term_cross_sentence",
+      "academic_format_preserve"
+    ]
+  },
+  "prompts": {
+    "model_prompt_version": "insttrans-inference-v1",
+    "quality_judge_prompt_version": "insttrans-quality-judge-v1",
+    "soft_constraint_judge_prompt_version": "insttrans-soft-constraint-judge-v1"
+  },
+  "files": {
+    "data/test.jsonl": {
+      "sha256": "fa47b65120a3c00e8c7e66bfdfe0dd75274de8d100dbd1ce0540d754bd5a4b63",
+      "rows": 3000
+    }
+  },
+  "redaction": {
+    "policy": "provenance identifiers and authorship removed; contact details in text masked with bare uppercase redaction tokens; everything the constraints score is left unchanged",
+    "removed_metadata_fields": [
+      "article_id",
+      "author",
+      "avid",
+      "batch_mode",
+      "book_name",
+      "book_title",
+      "category",
+      "chapter",
+      "chapter_name",
+      "cid",
+      "content_type",
+      "dynamic_id",
+      "dynm_url",
+      "file_path",
+      "language",
+      "mid",
+      "paper_title",
+      "pictures",
+      "pubtime_fans",
+      "raw",
+      "section_heading",
+      "section_index",
+      "summary",
+      "unique_key"
+    ],
+    "masked_in_text": {
+      "cases": 15,
+      "occurrences": {
+        "email": 12,
+        "phone": 40,
+        "qq_group": 3,
+        "wechat_id": 2
+      },
+      "placeholders": {
+        "phone": "PHONE_REDACTED",
+        "email": "EMAIL_REDACTED",
+        "qq_group": "QQ_GROUP_REDACTED",
+        "wechat_id": "WECHAT_ID_REDACTED"
+      },
+      "fields": [
+        "prompt",
+        "reference",
+        "source_text"
+      ]
+    },
+    "deliberately_kept": {
+      "mentions_and_hashtags": "scored by social_preserve; masking them would make the constraint unscoreable",
+      "urls": "inside the HTML that format_preserve scores; CDN filename digit runs were checked against source mid values, no overlap",
+      "bare_digit_runs": "timestamps, game ids and image dimensions are part of the text being translated",
+      "cases_with_mentions_in_source_text": 379
+    }
+  }
+}

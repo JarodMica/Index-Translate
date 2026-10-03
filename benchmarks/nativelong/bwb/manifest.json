@@ -1,0 +1,221 @@
+{
+  "schema_version": "longctx-document-translation-v1",
+  "benchmark_version": "longctx-standard-v3",
+  "release_id": "nativelongbenchmark-bwb-4k-64k-v1",
+  "track_id": "track-a3-bwb-complete-generation-v1",
+  "split": "main",
+  "status": "fixed_model_ready_evaluation_release",
+  "case_count": 84,
+  "work_count": 6,
+  "length_band_counts": {
+    "4k": 24,
+    "8k": 24,
+    "16k": 12,
+    "32k": 12,
+    "64k": 12
+  },
+  "source_token_definition": {
+    "tokenizer_id": "qwen3.5-2b-15852e8",
+    "body_only": true,
+    "chat_template_included": false,
+    "tolerance": 0.05
+  },
+  "construction": {
+    "standard_bands": [
+      "4k",
+      "8k",
+      "16k",
+      "32k",
+      "64k"
+    ],
+    "nested_families": [
+      "start",
+      "interior"
+    ],
+    "interior_start": "nearest chapter boundary to 25% of selected run source tokens",
+    "additional_short_anchors": [
+      "middle",
+      "end"
+    ],
+    "cross_gap_windows": false,
+    "source_and_reference_grow_together": true
+  },
+  "upstream": {
+    "partition_id": "bwb-longdoc-core-v3-ordered",
+    "partition_manifest_sha256": "4867ff398f784648a153f53d312259354a19280cb2e21d7a80ff35fb8b100e67",
+    "test_books_sha256": "8e6b6ccbfbd89da3f4ba68065d2ddf2ca8fac2f94c99648ad818adf727ef3772",
+    "chapter_index_sha256": "690b27302e7fa7d8b7e8d3d69754453da7e3ff319fc57a1402ac176a5c08d8e5",
+    "chapter_index_records": 1924,
+    "run_selection": "longest quality-gated continuous range per test book",
+    "source_mode": "canonical_files",
+    "ordered_material": {
+      "manifest_sha256": "6297fe97d7647aa75a222966141a4b90668df765f52348068e4c566c1fe6c24f",
+      "test_books_sha256": "5319e9aa48f629b26bf9c534dcd1290cc0ea2ac78451115e8a21b3fbdb2ca34a",
+      "frozen_partition_sha256": "a5a9ea23377e1d24888ac6b407189ea3a389fc3119a091895b7c61f1f114768f",
+      "frozen_chapter_index_sha256": "1a4dfd008d24fe118f3300957a3a3cf16950e4962c3ad4f67ef9b91b729f2bc8"
+    },
+    "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "prompt_sha256": "7a3fda6e8ef8b887541e9c80776559d60fa0028015593b30914299b3cd23431c",
+    "tokenizer_id": "qwen3.5-2b-15852e8",
+    "prompt_id": "zh-en-document-v3"
+  },
+  "works": [
+    {
+      "work_id": "45",
+      "title": "Rebirth to a Military Marriage: Good Morning Chief",
+      "domain": "Josei, Romance",
+      "selected_run_id": "bwb-45-run-01",
+      "canonical_interval": [
+        "1",
+        "254"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "63",
+      "interior_start_alignment_unit": 3058,
+      "canonical_interval_statistics": {
+        "chapter_count": 254,
+        "alignment_unit_count": 11066,
+        "source_tokens": 325229,
+        "reference_tokens": 455614
+      }
+    },
+    {
+      "work_id": "57",
+      "title": "My House of Horrors",
+      "domain": "Supernatural, Seinen, Mature, Psychological, Adventure, Drama, Mystery, Horror, Action",
+      "selected_run_id": "bwb-57-run-01",
+      "canonical_interval": [
+        "1",
+        "296"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "76",
+      "interior_start_alignment_unit": 3050,
+      "canonical_interval_statistics": {
+        "chapter_count": 296,
+        "alignment_unit_count": 11838,
+        "source_tokens": 365482,
+        "reference_tokens": 492966
+      }
+    },
+    {
+      "work_id": "69",
+      "title": "Nine Sun God King",
+      "domain": "Xianxia, Fantasy, Martial Arts, Romance, Action, Harem, Mature",
+      "selected_run_id": "bwb-69-run-01",
+      "canonical_interval": [
+        "1",
+        "772"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "232",
+      "interior_start_alignment_unit": 15117,
+      "canonical_interval_statistics": {
+        "chapter_count": 772,
+        "alignment_unit_count": 65722,
+        "source_tokens": 1491429,
+        "reference_tokens": 1973728
+      }
+    },
+    {
+      "work_id": "238",
+      "title": "The Beautiful Time With You",
+      "domain": "Slice Of Life, Romance, Josei",
+      "selected_run_id": "bwb-238-run-02",
+      "canonical_interval": [
+        "59",
+        "370"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "136",
+      "interior_start_alignment_unit": 1903,
+      "canonical_interval_statistics": {
+        "chapter_count": 312,
+        "alignment_unit_count": 7588,
+        "source_tokens": 178468,
+        "reference_tokens": 253441
+      }
+    },
+    {
+      "work_id": "253",
+      "title": "Godly Hunter",
+      "domain": "Ecchi, Mystery, Action, Harem, Sci-fi, Fantasy, Comedy, Adventure, Mature",
+      "selected_run_id": "bwb-253-run-01",
+      "canonical_interval": [
+        "1",
+        "73"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "17",
+      "interior_start_alignment_unit": 1042,
+      "canonical_interval_statistics": {
+        "chapter_count": 73,
+        "alignment_unit_count": 4496,
+        "source_tokens": 113637,
+        "reference_tokens": 139062
+      }
+    },
+    {
+      "work_id": "254",
+      "title": "I’m Not Shouldering This Blame",
+      "domain": "Yaoi, Adventure, Supernatural, Shounen Ai, Action",
+      "selected_run_id": "bwb-254-run-01",
+      "canonical_interval": [
+        "1",
+        "160"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "interior_start_chapter": "44",
+      "interior_start_alignment_unit": 3288,
+      "canonical_interval_statistics": {
+        "chapter_count": 160,
+        "alignment_unit_count": 13209,
+        "source_tokens": 341762,
+        "reference_tokens": 446766
+      }
+    }
+  ],
+  "parent_manifest_sha256": "580044e54e52b3fcfc20a157220b12537e64cb26948cf03ed2ae5412e7ed268e"
+}

@@ -9,6 +9,7 @@
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
   <a href="https://arxiv.org/abs/2609.40181">📚 技术报告</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9">🤗 论文合集</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗 Benchmarks</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ 交流群</a>
 </p>
 
@@ -29,6 +30,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 ## 最新动态
 
+- **2026-10-04：** 发布四个 [Index-Translate benchmarks](#benchmarks)；Hugging Face 提供数据／元数据，GitHub 同步评测脚本和运行说明。
 - **2026-10-03：** 发布全家族官方量化版本 —— Index-Translate 2B / 9B / 35B-A3B（preview）、Index-Homura 2B / 9B、Index-NativeLong 2B / 9B、Index-Echo S2TT / S2ST 2B / 9B：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj；Index-Echo 仓库为文本 LLM 主干）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
 - **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
 
@@ -36,7 +38,8 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 - [x] 发布全家族官方量化版本（GGUF 用于 llama.cpp 本地推理，FP8 用于 vLLM 部署）。
 - [ ] 发布 Index-Translate-35B-A3B 正式版。
-- [ ] 开源 instTrans、SandGlass-V2、nailong-bench 和 meme-bench。
+- [x] 发布 instTrans、MEME、SandGlass 与 NAtIveLong 的数据／元数据和评测代码，见 [Benchmarks](#benchmarks)。
+- [ ] 发布 SandGlass-V2 后续基准。
 - [ ] 为 Index-Echo 增加更多语种支持。
 - [ ] 发布更大规模的模型。
 
@@ -288,13 +291,18 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 
 ## Benchmarks
 
-| Benchmark | 评估内容 | 数据范围 |
-|---|---|---|
-| **instTrans** | 分别衡量译文质量与翻译指令遵循 | 3,000 条中文到 20 种语言的任务，另有 2,793 条低资源任务；10 类约束 |
-| **MEME** | 社区表达中的含义、自然度与文化语境 | 3,638 条中译英样例；703 个词语、857 个区分后的词义 |
-| **SandGlass** | 译文质量与目标音节数控制 | 3,600 条案例：300 句字幕 × 4 种目标语言 × 3 档长度预算 |
+数据与元数据收录于 [🤗 Index-Translate Benchmarks 合集](https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7)，评测脚本、固定版本的数据下载工具和运行说明见 [benchmarks/](benchmarks/README.md)。
 
-**发布状态：** Benchmark 开源计划见 [TODO](#todo)，开放后会补充下载入口。目前可在[技术报告](https://arxiv.org/abs/2609.40181)中查看评测设置；[IFMTBench 处理说明](docs/evaluation_zh.md#ifmtbench-处理说明)单独列出。
+| Benchmark | 公开内容 | 数据下载 | 评测代码与说明 |
+|---|---|---|---|
+| **instTrans** | 3,000 条翻译指令任务；10 类约束 | [🤗 InstTrans-Bench](https://huggingface.co/datasets/IndexTeam/InstTrans-Bench) | [insttrans](benchmarks/insttrans/README.md) |
+| **MEME** | 3,638 条中译英样例；703 个词语、857 个词义 | [🤗 Meme-Translation-Bench](https://huggingface.co/datasets/IndexTeam/Meme-Translation-Bench) | [meme](benchmarks/meme/README.md) |
+| **SandGlass** | 3,600 条案例：300 句字幕 × 4 种目标语言 × 3 档长度预算 | [🤗 Sandglass-Bench](https://huggingface.co/datasets/IndexTeam/Sandglass-Bench) | [sandglass](benchmarks/sandglass/README.md) |
+| **NAtIveLong** | BWB / GuoFeng 各 84 条长文档案例的元数据、评测代码和获取说明 | [🤗 NAtIveLong](https://huggingface.co/datasets/IndexTeam/NAtIveLong) | [nativelong](benchmarks/nativelong/README.md) |
+
+NAtIveLong 不包含小说原文或参考译文；BWB 需自行获取官方语料，GuoFeng 提供本地重建工具。以上 instTrans 发布包不包含评测表中的 2,793 条低资源扩展任务。评测脚本保留原有 prompt；审查修复与验证范围记录在各目录的 `RELEASE_REVIEW.md`，历史成绩未重新评测。各 benchmark 的许可分别见其目录，不能直接套用仓库根目录许可。
+
+[完整评测设置](docs/evaluation_zh.md)与 [IFMTBench 处理说明](docs/evaluation_zh.md#ifmtbench-处理说明)另行列出。
 
 ## 应用工具
 

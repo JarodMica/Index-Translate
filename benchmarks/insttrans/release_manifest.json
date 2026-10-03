@@ -1,0 +1,71 @@
+{
+  "release_version": "public-v1",
+  "source_commit": "aa8b0b2473a712160d00c73460e065dbb93f2d78",
+  "changes": [
+    "Preserved data and model/Judge prompts",
+    "Rejected invalid quality and missing soft-constraint Judge verdicts",
+    "Corrected redaction-policy description"
+  ],
+  "files": {
+    ".gitignore": {
+      "size": 59,
+      "sha256": "b5c9e3ffb21c37794ca1a5be1feccf7c3bc647d32975dcd30e2cbd53d1342481"
+    },
+    "LICENSE": {
+      "size": 478,
+      "sha256": "b91bc996f6333ce709e87c822594cc869f7950089a2ea16034e213c465f27065"
+    },
+    "README.md": {
+      "size": 15750,
+      "sha256": "37f26b3e40781cd2256d2e74e0507d0bd5f21eae71dfdde5032d0cc2f10dc663"
+    },
+    "RELEASE_REVIEW.md": {
+      "size": 467,
+      "sha256": "5e6e41b5125d64af1fd4b31a2492e81b6ffa01374ff747bbef67418e32ab2e14"
+    },
+    "data/test.jsonl": {
+      "size": 28217329,
+      "sha256": "fa47b65120a3c00e8c7e66bfdfe0dd75274de8d100dbd1ce0540d754bd5a4b63"
+    },
+    "eval/__init__.py": {
+      "size": 70,
+      "sha256": "234ead7b864f2fa71729085b56bb7da890189d5b0e0735ae3a8e408c62ca693d"
+    },
+    "eval/constraints.py": {
+      "size": 13656,
+      "sha256": "00cd6f3bb140bfcfaebb1e281790331059aef9f9091b75213e33e67ecd3074e7"
+    },
+    "eval/judge_client.py": {
+      "size": 6974,
+      "sha256": "128a6e9d49059d9ccd184150a5b828857c401f4fa5c4ca6bb811a293d529cb8c"
+    },
+    "eval/metrics.py": {
+      "size": 5416,
+      "sha256": "0ea1a6f53161c5fe1e78dcd2185a9dc7dd1b486fbcfb37913b790e25efe114af"
+    },
+    "eval/prompts.py": {
+      "size": 5614,
+      "sha256": "31cb0335333c8a0bfebd2c12d078760468570a2548c03ef7296c307af24473a7"
+    },
+    "eval/syllable.py": {
+      "size": 40979,
+      "sha256": "aa0036d763fbce3db89225ab12f64f5f7dcdfb8fc5e40ab1d78ab5b4aea968f6"
+    },
+    "evaluate.py": {
+      "size": 7457,
+      "sha256": "519a021d16e2b42f8201f4f1e2a8d4782c568920573855eff8c58760f3d3e0f8"
+    },
+    "manifest.json": {
+      "size": 4414,
+      "sha256": "a96183a99e4b65b3dc7927262c65a18c2d9a69b298ecc1826264742e4b8196eb"
+    },
+    "prepare_inputs.py": {
+      "size": 1370,
+      "sha256": "3647aa8cec5442d645f5c6725ebda4bfcd51a16ab2135f5a898a2c190c909365"
+    },
+    "requirements.txt": {
+      "size": 148,
+      "sha256": "1331e4402ee21b315cda8a73a3d2f27a27c6fdf9def708f427cacdeeb95d78b4"
+    }
+  }
+}

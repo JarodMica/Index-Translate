@@ -1,0 +1,17 @@
+{
+  "bge": {
+    "repo_id": "BAAI/bge-m3",
+    "revision": "5617a9f61b028005a4858fdac845db406aefb181",
+    "files": ["config.json", "tokenizer.json", "tokenizer_config.json", "special_tokens_map.json", "sentencepiece.bpe.model", "pytorch_model.bin"]
+  },
+  "comet": {
+    "repo_id": "Unbabel/wmt22-comet-da",
+    "revision": "2760a223ac957f30acfb18c8aa649b01cf1d75f2",
+    "files": ["checkpoints/model.ckpt", "hparams.yaml"]
+  },
+  "encoder": {
+    "repo_id": "xlm-roberta-large",
+    "revision": "c23d21b0620b635a76227c604d44e43a9f0ee389",
+    "files": ["config.json", "tokenizer.json", "tokenizer_config.json", "sentencepiece.bpe.model"]
+  }
+}

@@ -9,6 +9,7 @@
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
   <a href="https://arxiv.org/abs/2609.40181">📚 Technical Report</a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9">🤗 Papers Collection</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗 Benchmarks</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ Group</a>
 </p>
 
@@ -27,6 +28,7 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 ## News
 
+- **2026-10-04:** released four [Index-Translate benchmarks](#benchmarks), with datasets/metadata on Hugging Face and evaluation scripts and guides on GitHub.
 - **2026-10-03:** released official quantized builds for the whole family — Index-Translate 2B / 9B / 35B-A3B (preview), Index-Homura 2B / 9B, Index-NativeLong 2B / 9B, and Index-Echo S2TT / S2ST 2B / 9B: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included; Index-Echo repositories contain the text LLM backbone) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
 
@@ -34,7 +36,8 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 - [x] Release official quantized builds (GGUF for llama.cpp local inference, FP8 for vLLM serving) for the whole family.
 - [ ] Release the official version of Index-Translate-35B-A3B.
-- [ ] Open-source instTrans, SandGlass-V2, nailong-bench, and meme-bench.
+- [x] Release instTrans, MEME, SandGlass and NAtIveLong data/metadata and evaluation code; see [Benchmarks](#benchmarks).
+- [ ] Release the follow-up SandGlass-V2 benchmark.
 - [ ] Add support for more languages to Index-Echo.
 - [ ] Release larger models.
 
@@ -286,13 +289,18 @@ For the specialized models, Index-Homura-9B reaches **81.92% within 10% of the t
 
 ## Benchmarks
 
-| Benchmark | What it evaluates | Coverage |
-|---|---|---|
-| **instTrans** | Translation quality and compliance with user instructions, scored separately | 3,000 Chinese-to-20-language tasks, plus 2,793 low-resource tasks; 10 constraint types |
-| **MEME** | Meaning, naturalness, and cultural context in community expressions | 3,638 Chinese-to-English examples; 703 terms and 857 distinct senses |
-| **SandGlass** | Translation quality and control of target syllable counts | 3,600 cases: 300 subtitle sentences × 4 target languages × 3 length budgets |
+Find the datasets and metadata in the [🤗 Index-Translate Benchmarks collection](https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7). Evaluation scripts, a pinned data downloader and run instructions are available in [benchmarks/](benchmarks/README.md).
 
-**Release status:** planned benchmark releases are listed under [TODO](#todo). Download links will be added when available. The [technical report](https://arxiv.org/abs/2609.40181) describes the evaluation now; [IFMTBench preprocessing](docs/evaluation.md#ifmtbench-preprocessing) is documented separately.
+| Benchmark | Public release | Dataset | Evaluation code and guide |
+|---|---|---|---|
+| **instTrans** | 3,000 translation instruction tasks; 10 constraint types | [🤗 InstTrans-Bench](https://huggingface.co/datasets/IndexTeam/InstTrans-Bench) | [insttrans](benchmarks/insttrans/README.md) |
+| **MEME** | 3,638 Chinese-to-English cases; 703 terms and 857 senses | [🤗 Meme-Translation-Bench](https://huggingface.co/datasets/IndexTeam/Meme-Translation-Bench) | [meme](benchmarks/meme/README.md) |
+| **SandGlass** | 3,600 cases: 300 subtitles × 4 target languages × 3 length budgets | [🤗 Sandglass-Bench](https://huggingface.co/datasets/IndexTeam/Sandglass-Bench) | [sandglass](benchmarks/sandglass/README.md) |
+| **NAtIveLong** | Metadata for 84 BWB and 84 GuoFeng long-document cases, evaluation code and acquisition instructions | [🤗 NAtIveLong](https://huggingface.co/datasets/IndexTeam/NAtIveLong) | [nativelong](benchmarks/nativelong/README.md) |
+
+NAtIveLong includes no source novels or reference translations: obtain official BWB data separately; GuoFeng provides a local reconstruction tool. The instTrans release does not include the 2,793 low-resource extension tasks in the evaluation tables. Original prompts are preserved; each directory's `RELEASE_REVIEW.md` records review changes and validation limits. Historical scores have not been rerun. Each benchmark has its own licensing terms; the repository's root license does not replace them.
+
+See the [full evaluation settings](docs/evaluation.md) and [IFMTBench preprocessing](docs/evaluation.md#ifmtbench-preprocessing) for other results.
 
 ## Applications
 

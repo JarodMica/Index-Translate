@@ -1,0 +1,13 @@
+{
+  "official_repository": "https://github.com/longyuewangdcu/GuoFeng-Webnovel",
+  "official_access": "https://forms.gle/YqJPkfLgGmACbnbU6",
+  "official_terms": "https://github.com/longyuewangdcu/GuoFeng-Webnovel#copyright-and-licence",
+  "input": "GuoFeng V1 Train: train.zh and train.en; UTF-8",
+  "row_coordinates": "1-based physical lines in official files, including structural tag lines",
+  "character_coordinates": "0-based Unicode code points, half-open, after removing CR/LF only",
+  "construction": "Select the ordered units in each case; concatenate retained spans within each raw line, then join units with LF, including empty units.",
+  "unit_count": 31666,
+  "frozen_manifest_sha256": "09a65cd1db112437992a2c8d913f58ec53c06757cae74a18562b50c710936a46",
+  "known_source_issue": "The frozen 127-dylr start-8k/start-32k source contains an undefined row; preserved for reproduction.",
+  "parent_recipe_sha256": "812b547dd917213222ccb926b9f29d364481516164ad81136a63592ae4dec355"
+}

@@ -1,0 +1,71 @@
+{
+  "release_version": "public-v1",
+  "source_commit": "c925102f6105dcd0eb7d165537c5a417330c1d4a",
+  "changes": [
+    "Preserved data and model/Judge prompts",
+    "Hardened score-token parsing; documented parsing audit",
+    "Corrected published loading and collection links"
+  ],
+  "files": {
+    ".gitignore": {
+      "size": 59,
+      "sha256": "b5c9e3ffb21c37794ca1a5be1feccf7c3bc647d32975dcd30e2cbd53d1342481"
+    },
+    "LICENSE": {
+      "size": 478,
+      "sha256": "b91bc996f6333ce709e87c822594cc869f7950089a2ea16034e213c465f27065"
+    },
+    "README.md": {
+      "size": 16077,
+      "sha256": "00e026e9fe4cda9f5f7050b923deba333b5ffe0fd9c310473991c778daced5b9"
+    },
+    "RELEASE_REVIEW.md": {
+      "size": 464,
+      "sha256": "e1b800afdf5099f98b982497eae02b3e87d96e7352789a67268e9a6ef525e9bc"
+    },
+    "data/definitions.jsonl": {
+      "size": 1288653,
+      "sha256": "135c99a2f91db465ae3b226dc9afc737f2f5fcb1b0d546ba92bd4b4da216be67"
+    },
+    "data/test.jsonl": {
+      "size": 6949488,
+      "sha256": "9e505e97cca4a20efc83030eb2b05de2d42ec1dd2384409094091689ed982466"
+    },
+    "eval/__init__.py": {
+      "size": 43,
+      "sha256": "366877ed2bd61208ab4137f036d1b521a79241929a0d57e9e961bce07ae04189"
+    },
+    "eval/judge_client.py": {
+      "size": 4328,
+      "sha256": "73321f17af1daa7101df8a1ab0e43eb2728612b8a3054e63b7e8103e4098d246"
+    },
+    "eval/metrics.py": {
+      "size": 1881,
+      "sha256": "c1c5394063bcebb29afaf43096c5f2977c62b4a340fbb21872f28ee6f495c6c4"
+    },
+    "eval/prompts.py": {
+      "size": 5750,
+      "sha256": "ec4fe27abce3078d68f34779cb177292683f96bcb933b400870bd3c4ee342673"
+    },
+    "eval/score_parser.py": {
+      "size": 1376,
+      "sha256": "e59869f07ae1d5970f9f90155f7fa20b0fc2f49a63013d9003665b28942b2bb4"
+    },
+    "evaluate.py": {
+      "size": 9773,
+      "sha256": "e38bcf2c0705a8f66772940fa709de3048876efebc64b1d722c9cfe5c4522b6f"
+    },
+    "manifest.json": {
+      "size": 1065,
+      "sha256": "cf27f92947d8a14827b8920c3fa941e229b090e6e24951e7c80a7df4fda36c92"
+    },
+    "prepare_inputs.py": {
+      "size": 1190,
+      "sha256": "8c9465f4b03109786e2030a9c484a6f6b6af3a07a41c590157e5f57cbd344597"
+    },
+    "requirements.txt": {
+      "size": 32,
+      "sha256": "8a288e453b77f1bda1428c5f3d16492ded956115a877c33d86d3c0f5ad627e02"
+    }
+  }
+}

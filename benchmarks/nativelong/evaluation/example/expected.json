@@ -1,0 +1,41 @@
+{
+  "description": "Observed CPU scores for the handwritten demonstration; not benchmark/model results.",
+  "case_count": 2,
+  "scored_case_count": 2,
+  "segale_comet": 0.9509138117233913,
+  "document_macro_chrf2": 91.299417511499,
+  "five_band_macro": null,
+  "cases": [
+    {
+      "case_id": "example-rain",
+      "segale_comet": 0.9703752895196279,
+      "na_ratio": 0.0,
+      "chrf2": 100.0
+    },
+    {
+      "case_id": "example-library",
+      "segale_comet": 0.9314523339271545,
+      "na_ratio": 0.0,
+      "chrf2": 82.598835022998
+    }
+  ],
+  "runtime": {
+    "python": "3.11.15",
+    "torch": "2.5.0",
+    "packages": {
+      "segale": "0.1.0",
+      "spacy": "3.8.4",
+      "transformers": "4.51.3",
+      "unbabel-comet": "2.2.7",
+      "numpy": "1.23.5"
+    },
+    "comet_checkpoint_sha256": "e213091cde220f97b89f8bdfa750c458cfea741ad62affb455b59900210ff2af",
+    "comet_gpus": 0,
+    "comet_batch_size": 8
+  },
+  "alignment_sha256": "4f52da5c6ee5cc3b35b11a4f56868953e590a448ce34ace6a4071b60629cd952",
+  "baseline_comparison": {
+    "evaluator_commit": "c7752c93f099dfb0ffcf9e4acf1e6bbc3234d3d4",
+    "per_case_scores_diagnostics_and_aggregate": "exactly_equal_on_this_example"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "benchmark": "sandglass",
+  "version": "public-v1",
+  "splits": {
+    "test": 3600
+  },
+  "source_sentences": 300,
+  "target_languages": [
+    "en",
+    "ja",
+    "es",
+    "ar"
+  ],
+  "target_kinds": [
+    "short",
+    "natural",
+    "long"
+  ],
+  "data_sha256": "88cb4506ff5dd95ba171ab746bbf7fcf3d4e12df27b51d6554673c3f4bc4b6f1",
+  "changes": [
+    "Removed metadata.file_name",
+    "Added composite case_id",
+    "Replaced engine-specific runner with prediction-only evaluator; strict Judge parsing; configuration-keyed cache"
+  ],
+  "source_commit": "3fd0753c632071d56cec3de5f109d0d7d4c40f34"
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "name": "Meme Translation Bench",
+  "benchmark": "meme_translation",
+  "benchmark_version": "v1",
+  "task": "translation",
+  "license": "cc-by-nc-4.0",
+  "source_language": "zh",
+  "target_language": "en",
+  "splits": {
+    "test": 3638
+  },
+  "counts": {
+    "cases": 3638,
+    "terms": 703,
+    "definitions": 857,
+    "examples": 2410,
+    "polysemous_terms": 120
+  },
+  "distributions": {
+    "text_type": {
+      "bullet": 881,
+      "description": 68,
+      "review": 2162,
+      "title": 527
+    }
+  },
+  "prompts": {
+    "model_prompt_version": "meme-translation-inference-v1",
+    "judge_prompt_version": "meme-translation-judge-v1",
+    "judge_template_sha256": "209d235847c0bd51a9617b8b6353e02bcd776773b953d7cb51ff39cdcecce200"
+  },
+  "files": {
+    "data/test.jsonl": {
+      "sha256": "9e505e97cca4a20efc83030eb2b05de2d42ec1dd2384409094091689ed982466",
+      "rows": 3638
+    },
+    "data/definitions.jsonl": {
+      "sha256": "135c99a2f91db465ae3b226dc9afc737f2f5fcb1b0d546ba92bd4b4da216be67",
+      "rows": 857
+    }
+  }
+}

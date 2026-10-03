@@ -1,0 +1,193 @@
+{
+  "schema_version": "longctx-document-translation-v1",
+  "benchmark_version": "longctx-standard-v3",
+  "track_id": "track-b-guofeng-complete-generation-v3",
+  "split": "main",
+  "status": "fixed_model_ready_evaluation_release",
+  "case_count": 84,
+  "work_count": 6,
+  "length_band_counts": {
+    "4k": 24,
+    "8k": 24,
+    "16k": 12,
+    "32k": 12,
+    "64k": 12
+  },
+  "source_token_definition": {
+    "tokenizer_id": "qwen3.5-2b-15852e8",
+    "body_only": true,
+    "chat_template_included": false,
+    "special_tokens_included": false,
+    "tolerance": 0.05
+  },
+  "construction": {
+    "standard_bands": [
+      "4k",
+      "8k",
+      "16k",
+      "32k",
+      "64k"
+    ],
+    "paired_long_family": "start",
+    "additional_short_anchors": [
+      "middle",
+      "end"
+    ],
+    "source_and_reference_grow_together": true,
+    "alignment_rows_preserved": true,
+    "additional_long_anchor": "interior"
+  },
+  "upstream": {
+    "partition_id": "guofeng-longdoc-core-v2",
+    "source_sha256": "d8fe7757e3f5e8c8628f65596985e0f5a5920d53b1b2f929d8503737e2e3350d",
+    "reference_sha256": "fbbf68426f0dcfe9e94b3bb4730fd35c388cdc47cfa427e0f743e6d0c8ba0b0a",
+    "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+    "cleaning_policy_sha256": "c10e55089a3e86d118a733fa8aad53da172514c5a5ce61b73aed1214bc34be71",
+    "prompt_sha256": "7a3fda6e8ef8b887541e9c80776559d60fa0028015593b30914299b3cd23431c",
+    "cleaning_event_count_for_selected_books": 7609
+  },
+  "works": [
+    {
+      "work_id": "45-jsys",
+      "title": "绝世药神",
+      "domain": "东方玄幻、炼丹与修炼",
+      "canonical_interval": [
+        "jsys_1704",
+        "jsys_1772"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 69,
+        "alignment_unit_count": 7818,
+        "source_tokens": 100063,
+        "reference_tokens": 134809
+      }
+    },
+    {
+      "work_id": "86-wzxajddyx",
+      "title": "我只想安静地打游戏",
+      "domain": "游戏、异次元与都市幻想",
+      "canonical_interval": [
+        "wzxajddyx_0101",
+        "wzxajddyx_0175"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 75,
+        "alignment_unit_count": 4524,
+        "source_tokens": 100815,
+        "reference_tokens": 126638
+      }
+    },
+    {
+      "work_id": "175-frnmjydl",
+      "title": "夫人你马甲又掉了",
+      "domain": "现代都市、校园与女性向情感",
+      "canonical_interval": [
+        "1",
+        "60"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 60,
+        "alignment_unit_count": 6457,
+        "source_tokens": 95021,
+        "reference_tokens": 116268
+      }
+    },
+    {
+      "work_id": "152-dwyx",
+      "title": "低维游戏",
+      "domain": "科幻、世界构建与文明演化",
+      "canonical_interval": [
+        "1",
+        "100"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 100,
+        "alignment_unit_count": 4203,
+        "source_tokens": 139786,
+        "reference_tokens": 170630
+      }
+    },
+    {
+      "work_id": "127-dylr",
+      "title": "大医凌然",
+      "domain": "医疗、喜剧与职业生活",
+      "canonical_interval": [
+        "dylr_0001",
+        "dylr_0045"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 45,
+        "alignment_unit_count": 4458,
+        "source_tokens": 73413,
+        "reference_tokens": 109106
+      }
+    },
+    {
+      "work_id": "134-kcsfcyxks",
+      "title": "亏成首富从游戏开始",
+      "domain": "游戏制作、商业经营与讽刺喜剧",
+      "canonical_interval": [
+        "kcsfcyxks_0003",
+        "kcsfcyxks_0050"
+      ],
+      "case_count": 14,
+      "length_bands": {
+        "4k": 4,
+        "8k": 4,
+        "16k": 2,
+        "32k": 2,
+        "64k": 2
+      },
+      "canonical_interval_statistics": {
+        "chapter_count": 48,
+        "alignment_unit_count": 4755,
+        "source_tokens": 71251,
+        "reference_tokens": 95887
+      }
+    }
+  ],
+  "prompt_id": "zh-en-document-v3",
+  "prompt_sha256": "7a3fda6e8ef8b887541e9c80776559d60fa0028015593b30914299b3cd23431c",
+  "parent_manifest_sha256": "e1715ad0316ccee49368271d904544769dceaa1fefe06e72a09d755ee3c77883",
+  "release_id": "nativelongbenchmark-guofeng-4k-64k-v1"
+}

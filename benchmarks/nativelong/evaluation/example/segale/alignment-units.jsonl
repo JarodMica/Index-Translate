@@ -1,0 +1,12 @@
+{"case_id": "example-rain", "alignment_unit_index": 0, "source": "早晨下了一场雨。", "reference": "It rained in the morning."}
+{"case_id": "example-rain", "alignment_unit_index": 1, "source": "小林带着一把蓝色的伞出门。", "reference": "Xiaolin left home with a blue umbrella."}
+{"case_id": "example-rain", "alignment_unit_index": 2, "source": "他在车站遇见了邻居。", "reference": "He met his neighbor at the station."}
+{"case_id": "example-rain", "alignment_unit_index": 3, "source": "两个人一起等了十分钟。", "reference": "They waited together for ten minutes."}
+{"case_id": "example-rain", "alignment_unit_index": 4, "source": "公交车到达时，雨已经停了。", "reference": "The rain had stopped by the time the bus arrived."}
+{"case_id": "example-rain", "alignment_unit_index": 5, "source": "小林收起雨伞，向司机问好。", "reference": "Xiaolin closed his umbrella and greeted the driver."}
+{"case_id": "example-library", "alignment_unit_index": 0, "source": "镇上的图书馆每周一休息。", "reference": "The town library is closed every Monday."}
+{"case_id": "example-library", "alignment_unit_index": 1, "source": "星期二，阿梅把两本书放进书包。", "reference": "On Tuesday, Amei put two books in her bag."}
+{"case_id": "example-library", "alignment_unit_index": 2, "source": "她骑车来到图书馆门口。", "reference": "She rode her bicycle to the library."}
+{"case_id": "example-library", "alignment_unit_index": 3, "source": "管理员告诉她，新书在二楼。", "reference": "The librarian told her that the new books were on the second floor."}
+{"case_id": "example-library", "alignment_unit_index": 4, "source": "阿梅还了旧书，又借了一本关于海洋的书。", "reference": "Amei returned the old books and borrowed a book about the ocean."}
+{"case_id": "example-library", "alignment_unit_index": 5, "source": "回家以后，她把书里的第一幅图画给弟弟看。", "reference": "After returning home, she showed her younger brother the first picture in the book."}

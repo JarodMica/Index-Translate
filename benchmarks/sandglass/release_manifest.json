@@ -1,0 +1,61 @@
+{
+  "release_version": "public-v1",
+  "source_commit": "3fd0753c632071d56cec3de5f109d0d7d4c40f34",
+  "changes": [
+    "Removed video provenance filenames and added composite case IDs",
+    "Preserved source prompts, labels, scoring fields and syllable modules",
+    "Introduced engine-independent saved-prediction evaluation and configuration-keyed Judge cache",
+    "Strict score parsing, fixed missing-prediction denominator, slope and per-group summaries",
+    "Removed internal endpoint; supplied dependencies and dataset card"
+  ],
+  "files": {
+    ".gitignore": {
+      "size": 323,
+      "sha256": "ac5afc7a604f2b286e6d558619ad61423e21782a5b3012a3be37fa0285403c21"
+    },
+    "LICENSE": {
+      "size": 1066,
+      "sha256": "ee251bdaec233ec4aa961573ef8f9d6fd8ce88d5fda8d9e1b3efa507afb8f8cf"
+    },
+    "README.md": {
+      "size": 8753,
+      "sha256": "aab12eae9078127f3c2a3f088ecc255b2d18f8ff55bfa85923b846b31180482d"
+    },
+    "RELEASE_REVIEW.md": {
+      "size": 709,
+      "sha256": "44b449038055be24412c643972223c4b3df582ede1ccf8b8e79764cd08497b9a"
+    },
+    "evaluate.py": {
+      "size": 8141,
+      "sha256": "a830540726b1051568e934d19c929190bcf98e4eb7eab15d4ecc14fd94054161"
+    },
+    "judge_prompt.py": {
+      "size": 2477,
+      "sha256": "005deb8de734346f4cfa291540ee8677fdaf34396dd3b34c573fda13f2a2ed4a"
+    },
+    "manifest.json": {
+      "size": 603,
+      "sha256": "87d3e3c49cfab883c033f767aab151a7ef907c38f95bb06196400d556620e1db"
+    },
+    "prepare_inputs.py": {
+      "size": 821,
+      "sha256": "8a5500d29155f16fc7789bd657ccfcc347c5d5d73d6a74cd2173f5ca9ba124f9"
+    },
+    "requirements.txt": {
+      "size": 172,
+      "sha256": "412a78f1784ceca05ab40e2548e4ee69ec2cd3aeb35faf89ab34d44f68a835a0"
+    },
+    "sandglass_bench.jsonl": {
+      "size": 8811840,
+      "sha256": "88cb4506ff5dd95ba171ab746bbf7fcf3d4e12df27b51d6554673c3f4bc4b6f1"
+    },
+    "syllable_calculation.py": {
+      "size": 14136,
+      "sha256": "48837eef20c49f82c38bb6a7531d5f411e0cfdcc44a8957fa9f33051b2f982f8"
+    },
+    "syllable_calculation_v2.py": {
+      "size": 41488,
+      "sha256": "101cf92b0ebd27a9cc4074cf3420129e5643e81b3f0a309c8ef24d9bcfe9ccb7"
+    }
+  }
+}

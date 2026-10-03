@@ -28,13 +28,14 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 ## News
 
+- **2026-10-04:** released **NVFP4 (W4A4) quantized builds** for the whole family (`-FP4` repositories on Hugging Face and ModelScope), calibrated with llm-compressor (35B-A3B MoE with NVIDIA ModelOpt) — maximum serving throughput on NVIDIA Blackwell GPUs (B200 / RTX 50 series); on Hopper/Ampere, vLLM loads them with weight-only dequantization, so the FP8 builds remain the recommended choice there.
 - **2026-10-04:** released four [Index-Translate benchmarks](#benchmarks), with datasets/metadata on Hugging Face and evaluation scripts and guides on GitHub.
 - **2026-10-03:** released official quantized builds for the whole family — Index-Translate 2B / 9B / 35B-A3B (preview), Index-Homura 2B / 9B, Index-NativeLong 2B / 9B, and Index-Echo S2TT / S2ST 2B / 9B: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included; Index-Echo repositories contain the text LLM backbone) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
 
 ## TODO
 
-- [x] Release official quantized builds (GGUF for llama.cpp local inference, FP8 for vLLM serving) for the whole family.
+- [x] Release official quantized builds (GGUF for llama.cpp local inference, FP8 and NVFP4 for vLLM serving) for the whole family.
 - [ ] Release the official version of Index-Translate-35B-A3B.
 - [x] Release instTrans, MEME, SandGlass and NAtIveLong data/metadata and evaluation code; see [Benchmarks](#benchmarks).
 - [ ] Release the follow-up SandGlass-V2 benchmark.
@@ -55,15 +56,15 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 **Naming:** Index-NativeLong is published under the model IDs `IndexTeam/Index-Nailong-2B` and `IndexTeam/Index-Nailong-9B`. Use those IDs in commands. Language support for the speech and long-document packages is listed separately from the text models' 150-language coverage.
 
-**Quantized builds:** every model above is also published in **GGUF** (llama.cpp local inference; all bit-widths in one repository per model, vision mmproj included where applicable) and **FP8** (compressed-tensors W8A8, ready for vLLM serving). For the Index-Echo speech models, the GGUF repositories contain the **text LLM backbone only**, while the FP8 repositories ship the **complete pipeline** with an FP8-quantized LLM. All repositories are mirrored on [ModelScope](https://modelscope.cn/organization/IndexTeam).
+**Quantized builds:** every model above is also published in **GGUF** (llama.cpp local inference; all bit-widths in one repository per model, vision mmproj included where applicable), **FP8** (compressed-tensors W8A8, ready for vLLM serving), and **FP4** (compressed-tensors NVFP4 W4A4, for Blackwell GPUs). For the Index-Echo speech models, the GGUF repositories contain the **text LLM backbone only**, while the FP8/FP4 repositories ship the **complete pipeline** with a quantized LLM. All repositories are mirrored on [ModelScope](https://modelscope.cn/organization/IndexTeam).
 
-| Model | GGUF (llama.cpp) | FP8 (vLLM) |
-|---|---|---|
-| **Index-Translate** | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8) |
-| **Index-Homura** | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP8) |
-| **Index-NativeLong** | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP8) |
-| **Index-Echo S2TT** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-GGUF) (LLM backbone) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP8) (full pipeline) |
-| **Index-Echo S2ST** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-GGUF) (LLM backbone) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP8) (full pipeline) |
+| Model | GGUF (llama.cpp) | FP8 (vLLM) | FP4 (vLLM, Blackwell) |
+|---|---|---|---|
+| **Index-Translate** | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP4) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP4) |
+| **Index-Homura** | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP4) |
+| **Index-NativeLong** | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP4) |
+| **Index-Echo S2TT** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-GGUF) (LLM backbone) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP8) (full pipeline) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP4) (full pipeline) |
+| **Index-Echo S2ST** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-GGUF) (LLM backbone) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP8) (full pipeline) | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP4) (full pipeline) |
 
 ## Inference
 

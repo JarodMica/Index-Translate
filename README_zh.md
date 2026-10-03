@@ -30,13 +30,14 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 ## 最新动态
 
+- **2026-10-04：** 发布全家族 **NVFP4（W4A4）量化版本**（Hugging Face 与 ModelScope 的 `-FP4` 仓库），使用 llm-compressor 校准量化（35B-A3B MoE 使用 NVIDIA ModelOpt）—— 在 NVIDIA Blackwell GPU（B200 / RTX 50 系列）上可获得最高推理吞吐；在 Hopper/Ampere 上 vLLM 会以权重反量化方式加载，建议继续使用 FP8 版本。
 - **2026-10-04：** 发布四个 [Index-Translate benchmarks](#benchmarks)；Hugging Face 提供数据／元数据，GitHub 同步评测脚本和运行说明。
 - **2026-10-03：** 发布全家族官方量化版本 —— Index-Translate 2B / 9B / 35B-A3B（preview）、Index-Homura 2B / 9B、Index-NativeLong 2B / 9B、Index-Echo S2TT / S2ST 2B / 9B：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj；Index-Echo 仓库为文本 LLM 主干）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
 - **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
 
 ## TODO
 
-- [x] 发布全家族官方量化版本（GGUF 用于 llama.cpp 本地推理，FP8 用于 vLLM 部署）。
+- [x] 发布全家族官方量化版本（GGUF 用于 llama.cpp 本地推理，FP8 与 NVFP4 用于 vLLM 部署）。
 - [ ] 发布 Index-Translate-35B-A3B 正式版。
 - [x] 发布 instTrans、MEME、SandGlass 与 NAtIveLong 的数据／元数据和评测代码，见 [Benchmarks](#benchmarks)。
 - [ ] 发布 SandGlass-V2 后续基准。
@@ -57,15 +58,15 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 **命名说明：** Index-NativeLong 的实际模型仓库 ID 为 `IndexTeam/Index-Nailong-2B` 和 `IndexTeam/Index-Nailong-9B`，运行命令请使用这两个 ID。语音与长文档发布包的语言覆盖见上表，文本模型的 150 种语言覆盖不等同于每个专门模型的接口覆盖。
 
-**量化版本：** 以上全部模型均同步发布 **GGUF**（适用于 llama.cpp 本地推理；每个模型的全部位宽在同一仓库，含视觉 mmproj）与 **FP8**（compressed-tensors W8A8，适用于 vLLM 部署）。其中 Index-Echo 语音模型的 GGUF 仓库**仅包含文本 LLM 主干**，FP8 仓库则包含**完整管线**（LLM 为 FP8 量化）。所有仓库在 [ModelScope](https://modelscope.cn/organization/IndexTeam) 同步开放。
+**量化版本：** 以上全部模型均同步发布 **GGUF**（适用于 llama.cpp 本地推理；每个模型的全部位宽在同一仓库，含视觉 mmproj）、**FP8**（compressed-tensors W8A8，适用于 vLLM 部署）与 **FP4**（compressed-tensors NVFP4 W4A4，面向 Blackwell GPU）。其中 Index-Echo 语音模型的 GGUF 仓库**仅包含文本 LLM 主干**，FP8/FP4 仓库则包含**完整管线**（LLM 为量化版本）。所有仓库在 [ModelScope](https://modelscope.cn/organization/IndexTeam) 同步开放。
 
-| 模型 | GGUF（llama.cpp） | FP8（vLLM） |
-|---|---|---|
-| **Index-Translate** | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8) |
-| **Index-Homura** | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP8) |
-| **Index-NativeLong** | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP8) |
-| **Index-Echo S2TT** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP8)（完整管线） |
-| **Index-Echo S2ST** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP8)（完整管线） |
+| 模型 | GGUF（llama.cpp） | FP8（vLLM） | FP4（vLLM，Blackwell） |
+|---|---|---|---|
+| **Index-Translate** | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP4) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP4) |
+| **Index-Homura** | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP4) |
+| **Index-NativeLong** | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP8) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP4) |
+| **Index-Echo S2TT** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP8)（完整管线） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP4)（完整管线） |
+| **Index-Echo S2ST** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP8)（完整管线） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP4) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP4)（完整管线） |
 
 ## 推理
 

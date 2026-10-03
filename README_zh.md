@@ -41,7 +41,15 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 **命名说明：** Index-NativeLong 的实际模型仓库 ID 为 `IndexTeam/Index-Nailong-2B` 和 `IndexTeam/Index-Nailong-9B`，运行命令请使用这两个 ID。语音与长文档发布包的语言覆盖见上表，文本模型的 150 种语言覆盖不等同于每个专门模型的接口覆盖。
 
-**量化版本（文本模型）：** 适用于 llama.cpp 本地推理的 GGUF —— [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF)（每个模型的全部位宽在同一仓库，含视觉 mmproj）——以及适用于 vLLM 部署的 FP8 —— [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8)。以上仓库在 [ModelScope](https://modelscope.cn/organization/IndexTeam) 同步开放。
+**量化版本：** 以上全部模型均同步发布 **GGUF**（适用于 llama.cpp 本地推理；每个模型的全部位宽在同一仓库，含视觉 mmproj）与 **FP8**（compressed-tensors W8A8，适用于 vLLM 部署）。其中 Index-Echo 语音模型的 GGUF 仓库**仅包含文本 LLM 主干**，FP8 仓库则包含**完整管线**（LLM 为 FP8 量化）。所有仓库在 [ModelScope](https://modelscope.cn/organization/IndexTeam) 同步开放。
+
+| 模型 | GGUF（llama.cpp） | FP8（vLLM） |
+|---|---|---|
+| **Index-Translate** | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-GGUF) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B-FP8) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview-FP8) |
+| **Index-Homura** | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B-FP8) |
+| **Index-NativeLong** | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-GGUF) | [2B](https://huggingface.co/IndexTeam/Index-Nailong-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Nailong-9B-FP8) |
+| **Index-Echo S2TT** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B-FP8)（完整管线） |
+| **Index-Echo S2ST** | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-GGUF) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-GGUF)（LLM 主干） | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B-FP8) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B-FP8)（完整管线） |
 
 ## 推理
 
@@ -288,7 +296,7 @@ GuoFeng 与 BWB Track A3 的 64K 中文侧 token 档位结果。
 
 ## 最新动态
 
-- **2026-10-03：** 发布 2B / 9B / 35B-A3B（preview）文本模型的官方量化版本：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
+- **2026-10-03：** 发布全家族官方量化版本 —— Index-Translate 2B / 9B / 35B-A3B（preview）、Index-Homura 2B / 9B、Index-NativeLong 2B / 9B、Index-Echo S2TT / S2ST 2B / 9B：适用于 llama.cpp 本地推理的 GGUF（F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS，每个模型全部位宽在同一仓库，含视觉 mmproj；Index-Echo 仓库为文本 LLM 主干）与适用于 vLLM 部署的 FP8（compressed-tensors W8A8），已在 Hugging Face 与 ModelScope 同步开放。
 - **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
 
 ## TODO

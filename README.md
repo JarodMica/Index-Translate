@@ -4,13 +4,13 @@
 <p align="center"><strong>A Multilingual Translation Model Family</strong><br>Text, Speech, Controlled Dubbing, and Long-Document Translation</p>
 
 <p align="center">
-  <a href="https://index-translate.bilibili.com/">🌐 Online Demo</a> ·
-  <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗 Hugging Face</a> ·
-  <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt=""> ModelScope</a> ·
-  <a href="https://arxiv.org/abs/2609.40181">📚 Technical Report</a> ·
-  <a href="https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9">🤗 Papers Collection</a> ·
-  <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗 Benchmarks</a> ·
-  <a href="https://qm.qq.com/q/xSASqaiEGA">🐧 QQ Group</a>
+  <a href="https://index-translate.bilibili.com/">🌐&nbsp;Demo</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗&nbsp;Hugging&nbsp;Face</a> ·
+  <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt="">&nbsp;ModelScope</a> ·
+  <a href="https://arxiv.org/abs/2609.40181">📚&nbsp;Report</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate-papers-6abe1f5452920941ea0682d9">🤗&nbsp;Papers</a> ·
+  <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗&nbsp;Benchmarks</a> ·
+  <a href="https://qm.qq.com/q/xSASqaiEGA">🐧&nbsp;QQ</a>
 </p>
 
 Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages** and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.

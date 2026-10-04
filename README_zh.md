@@ -30,7 +30,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 ## 最新动态
 
-- **2026-10-04：** 在 [index-translate.bilibili.com/v1](https://index-translate.bilibili.com) 上线 35B-A3B 公网 API 接口，基于 8×A100 集群驱动。完全兼容 OpenAI 接口规范，具备 64 路并发、100ms 动态微批处理（Micro-batching）与单 IP 限流防护。支持通过 [call_api.py](inference/llm/call_api.py) 免 GPU 快速调用。
+- **2026-10-04：** 正式开放 35B-A3B 免费公网 API 接口（[index-translate.bilibili.com/v1](https://index-translate.bilibili.com)），完全兼容 OpenAI 规范。支持通过 [call_api.py](inference/llm/call_api.py) 免 GPU 快速调用。
 - **2026-10-04：** 发布四个 [Index-Translate benchmarks](#benchmarks)；Hugging Face 提供数据／元数据，GitHub 同步评测脚本和运行说明。
 - **2026-10-03：** 发布全家族官方量化版本（Hugging Face 与 ModelScope 同步开放）—— 包含适用于 llama.cpp 本地推理的 **GGUF**，以及适用于 vLLM 部署的 **FP8**（W8A8）与 **NVFP4**（W4A4，面向 Blackwell GPU）。
 - **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
@@ -71,9 +71,9 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 ### 快速上手
 
-#### 方式一：公网 API 快速调用（无需本地 GPU）
+#### 方式一：免费公网 API 快速调用（无需本地 GPU）
 
-你可以直接调用我们部署在 8×A100 专用集群上的 35B-A3B 模型，无需本地显卡环境：
+你可以直接免费调用公网 35B-A3B 模型接口，无需本地显卡环境：
 
 ```bash
 # 使用零外部依赖 Python 脚本直接调用

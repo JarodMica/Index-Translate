@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
-"""Index-Translate Public API Invocation Script.
+"""Index-Translate Free Public API Invocation Script.
 
-Directly call the live Index-Translate-35B / 9B / 2B API on https://index-translate.bilibili.com/v1
-Powered by an 8x A100 GPU cluster with dynamic micro-batch aggregation,
-FIFO request queueing, and per-IP rate limiting.
+Directly call the free public Index-Translate-35B / 9B / 2B API on https://index-translate.bilibili.com/v1
+Fully OpenAI-compatible endpoints with streaming SSE and instruction-following support.
 
 Usage:
     # 1. Quick translation (defaults to 35B model, translating to English)

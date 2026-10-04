@@ -28,7 +28,7 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 ## News
 
-- **2026-10-04:** deployed public API endpoints on [index-translate.bilibili.com/v1](https://index-translate.bilibili.com) powered by an 8×A100 cluster for 35B-A3B quantized inference. Fully OpenAI-compatible, featuring 64-way concurrency, 100ms dynamic micro-batching, and per-IP rate limiting. Try it with [call_api.py](inference/llm/call_api.py).
+- **2026-10-04:** released free public API endpoints on [index-translate.bilibili.com/v1](https://index-translate.bilibili.com) for Index-Translate-35B-A3B. Fully OpenAI-compatible. Try it with [call_api.py](inference/llm/call_api.py).
 - **2026-10-04:** released four [Index-Translate benchmarks](#benchmarks), with datasets/metadata on Hugging Face and evaluation scripts and guides on GitHub.
 - **2026-10-03:** released official quantized builds across the family on Hugging Face and ModelScope — **GGUF** for llama.cpp local inference, alongside **FP8** (W8A8) and **NVFP4** (W4A4, Blackwell-optimized) for vLLM serving.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
@@ -69,9 +69,9 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 ### Quick start
 
-#### Option 1: Online API (Zero GPU Setup)
+#### Option 1: Free Online API (Zero GPU Setup)
 
-You can call our dedicated 8×A100 35B-A3B cluster directly without local GPUs:
+You can call our free online API directly without local GPUs:
 
 ```bash
 # Using the zero-dependency Python script

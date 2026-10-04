@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Index-Translate Free Public API Invocation Script.
 
-Directly call the free public Index-Translate-35B / 9B / 2B API on https://index-translate.bilibili.com/v1
-Fully OpenAI-compatible endpoints with streaming SSE and instruction-following support.
+Directly call the free public Index-Translate API on https://index-translate.bilibili.com/v1.
 
 Usage:
     # 1. Quick translation (defaults to 35B model, translating to English)
@@ -152,7 +151,7 @@ def call_completion(
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Call Index-Translate Public API")
+    ap = argparse.ArgumentParser(description="Call Index-Translate Free Public API")
     ap.add_argument("text", nargs="?", help="Text to translate (reads stdin if omitted)")
     ap.add_argument("--target", "-t", default="en", help="Target language code, e.g. en/zh/ja (default: en)")
     ap.add_argument("--source", "-s", default="auto", help="Source language code (default: auto)")

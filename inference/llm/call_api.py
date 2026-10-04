@@ -202,6 +202,17 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
             content_length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(content_length)
 
+            # Ensure enable_thinking=False is sent by default to prevent CoT reasoning from replacing translation text
+            try:
+                payload = json.loads(body.decode("utf-8"))
+                if "chat_template_kwargs" not in payload or not isinstance(payload.get("chat_template_kwargs"), dict):
+                    payload["chat_template_kwargs"] = {}
+                if "enable_thinking" not in payload["chat_template_kwargs"]:
+                    payload["chat_template_kwargs"]["enable_thinking"] = False
+                body = json.dumps(payload).encode("utf-8")
+            except Exception:
+                pass
+
             upstream_url = f"{api_base.rstrip('/')}/chat/completions"
             req = urllib.request.Request(
                 upstream_url,

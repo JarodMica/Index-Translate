@@ -28,9 +28,8 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 ## News
 
-- **2026-10-04:** released **NVFP4 (W4A4) quantized builds** for the whole family (`-FP4` repositories on Hugging Face and ModelScope), calibrated with llm-compressor (35B-A3B MoE with NVIDIA ModelOpt) — maximum serving throughput on NVIDIA Blackwell GPUs (B200 / RTX 50 series); on Hopper/Ampere, vLLM loads them with weight-only dequantization, so the FP8 builds remain the recommended choice there.
 - **2026-10-04:** released four [Index-Translate benchmarks](#benchmarks), with datasets/metadata on Hugging Face and evaluation scripts and guides on GitHub.
-- **2026-10-03:** released official quantized builds for the whole family — Index-Translate 2B / 9B / 35B-A3B (preview), Index-Homura 2B / 9B, Index-NativeLong 2B / 9B, and Index-Echo S2TT / S2ST 2B / 9B: GGUF for llama.cpp local inference (F16 + Q8_0/Q6_K/Q5/Q4/Q3/Q2_K/IQ4_XS, all bit-widths in one repository per model, vision mmproj included; Index-Echo repositories contain the text LLM backbone) and FP8 (compressed-tensors W8A8) for vLLM serving, on Hugging Face and ModelScope.
+- **2026-10-03:** released official quantized builds across the family on Hugging Face and ModelScope — **GGUF** for llama.cpp local inference, alongside **FP8** (W8A8) and **NVFP4** (W4A4, Blackwell-optimized) for vLLM serving.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
 
 ## TODO

@@ -23,12 +23,17 @@ Usage:
 
     # 6. Read from stdin
     cat document.txt | python call_api.py -t en
+
+    # 7. Start local OpenAI-compatible bridge proxy (e.g. for Immersive Translate / 沉浸式翻译)
+    python call_api.py --serve
 """
 
 import argparse
+import http.server
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 
@@ -150,6 +155,111 @@ def call_completion(
         sys.exit(1)
 
 
+def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
+    """Run lightweight OpenAI-compatible local proxy server for browser extensions like Immersive Translate."""
+
+    class ProxyHandler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, format, *args):
+            sys.stderr.write(f"[{time.strftime('%Y-%m-%d %H:%M:%S')}] {args[0]} {args[1]}\n")
+
+        def do_OPTIONS(self):
+            self.send_response(200)
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "*")
+            self.send_header("Access-Control-Max-Age", "86400")
+            self.end_headers()
+
+        def do_GET(self):
+            if self.path in ("/v1/models", "/models"):
+                body = json.dumps({
+                    "object": "list",
+                    "data": [
+                        {"id": "Index-Translate-35B-A3B", "object": "model"},
+                        {"id": "Index-Translate-2B", "object": "model"},
+                        {"id": "Index-Translate-9B", "object": "model"},
+                    ],
+                }).encode("utf-8")
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+            else:
+                self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "text/plain; charset=utf-8")
+                self.end_headers()
+                self.wfile.write(b"Index-Translate Proxy Ready\n")
+
+        def do_POST(self):
+            if not (self.path.endswith("/chat/completions") or self.path.endswith("/completions")):
+                self.send_response(404)
+                self.end_headers()
+                return
+
+            content_length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(content_length)
+
+            upstream_url = f"{api_base.rstrip('/')}/chat/completions"
+            req = urllib.request.Request(
+                upstream_url,
+                data=body,
+                headers={
+                    "Content-Type": "application/json",
+                    "User-Agent": "Index-Translate-Client/1.0",
+                },
+                method="POST",
+            )
+
+            try:
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    self.send_response(resp.status)
+                    self.send_header("Access-Control-Allow-Origin", "*")
+                    for k, v in resp.headers.items():
+                        if k.lower() in ("content-type", "cache-control"):
+                            self.send_header(k, v)
+                    self.end_headers()
+
+                    while True:
+                        chunk = resp.read(1024)
+                        if not chunk:
+                            break
+                        self.wfile.write(chunk)
+                        self.wfile.flush()
+            except urllib.error.HTTPError as e:
+                err_data = e.read()
+                self.send_response(e.code)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(err_data)
+            except Exception as e:
+                self.send_response(502)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Content-Type", "application/json")
+                self.end_headers()
+                self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
+
+    server = http.server.ThreadingHTTPServer(("0.0.0.0", port), ProxyHandler)
+    print("=" * 60)
+    print(f"Index-Translate Local Proxy started on http://127.0.0.1:{port}/v1")
+    print(f"Upstream API: {api_base}")
+    print()
+    print("沉浸式翻译 (Immersive Translate) 配置指南:")
+    print("  1. 翻译服务选择: 自定义 (OpenAI 兼容)")
+    print(f"  2. 接口地址 (API URL): http://127.0.0.1:{port}/v1")
+    print("  3. 模型 (Model): Index-Translate-35B-A3B")
+    print("  4. API Key: 随意填写 (如 index)")
+    print("=" * 60, flush=True)
+    try:
+        server.serve_forever()
+    except KeyboardInterrupt:
+        print("\nStopping proxy...")
+        server.server_close()
+
+
 def main():
     ap = argparse.ArgumentParser(description="Call Index-Translate Free Public API")
     ap.add_argument("text", nargs="?", help="Text to translate (reads stdin if omitted)")
@@ -161,8 +271,23 @@ def main():
     ap.add_argument("--api-base", default=DEFAULT_API_BASE, help=f"API Base URL (default: {DEFAULT_API_BASE})")
     ap.add_argument("--max-tokens", type=int, default=1024, help="Max tokens to generate (default: 1024)")
     ap.add_argument("--stream", action="store_true", help="Stream translation tokens (SSE)")
+    ap.add_argument(
+        "--serve",
+        "--proxy",
+        nargs="?",
+        const=8080,
+        type=int,
+        default=None,
+        dest="serve_port",
+        help="Start local OpenAI-compatible bridge proxy (default port: 8080) for tools like Immersive Translate",
+    )
 
     args = ap.parse_args()
+
+    if args.serve_port is not None:
+        run_proxy_server(port=args.serve_port, api_base=args.api_base)
+        return
+
     text = args.text if args.text is not None else sys.stdin.read()
     text = text.strip()
     if not text:

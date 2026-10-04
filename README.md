@@ -28,6 +28,7 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 
 ## News
 
+- **2026-10-04:** deployed public API endpoints on [index-translate.bilibili.com/v1](https://index-translate.bilibili.com) powered by an 8×A100 cluster for 35B-A3B quantized inference. Fully OpenAI-compatible, featuring 64-way concurrency, 100ms dynamic micro-batching, and per-IP rate limiting. Try it with [call_api.py](inference/llm/call_api.py).
 - **2026-10-04:** released four [Index-Translate benchmarks](#benchmarks), with datasets/metadata on Hugging Face and evaluation scripts and guides on GitHub.
 - **2026-10-03:** released official quantized builds across the family on Hugging Face and ModelScope — **GGUF** for llama.cpp local inference, alongside **FP8** (W8A8) and **NVFP4** (W4A4, Blackwell-optimized) for vLLM serving.
 - **2026-09-30:** released Index-Translate, with 2B / 9B / 35B-A3B (preview) text-model weights on Hugging Face and ModelScope, the technical report, and the online demo.
@@ -67,6 +68,26 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 ## Inference
 
 ### Quick start
+
+#### Option 1: Online API (Zero GPU Setup)
+
+You can call our dedicated 8×A100 35B-A3B cluster directly without local GPUs:
+
+```bash
+# Using the zero-dependency Python script
+python inference/llm/call_api.py "你好，世界。今天天气不错，我们去公园散步吧。" --target en
+
+# Or using curl (OpenAI-compatible)
+curl https://index-translate.bilibili.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Index-Translate-35B-A3B",
+    "messages": [{"role": "user", "content": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"}],
+    "max_tokens": 100
+  }'
+```
+
+#### Option 2: Self-hosted local vLLM
 
 Start with the 2B text model on a CUDA GPU using a vLLM build with Qwen3.5 support. From a terminal:
 

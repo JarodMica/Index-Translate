@@ -30,6 +30,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 ## 最新动态
 
+- **2026-10-04：** 在 [index-translate.bilibili.com/v1](https://index-translate.bilibili.com) 上线 35B-A3B 公网 API 接口，基于 8×A100 集群驱动。完全兼容 OpenAI 接口规范，具备 64 路并发、100ms 动态微批处理（Micro-batching）与单 IP 限流防护。支持通过 [call_api.py](inference/llm/call_api.py) 免 GPU 快速调用。
 - **2026-10-04：** 发布四个 [Index-Translate benchmarks](#benchmarks)；Hugging Face 提供数据／元数据，GitHub 同步评测脚本和运行说明。
 - **2026-10-03：** 发布全家族官方量化版本（Hugging Face 与 ModelScope 同步开放）—— 包含适用于 llama.cpp 本地推理的 **GGUF**，以及适用于 vLLM 部署的 **FP8**（W8A8）与 **NVFP4**（W4A4，面向 Blackwell GPU）。
 - **2026-09-30：** Index-Translate 正式发布，2B / 9B / 35B-A3B（preview）文本模型权重在 Hugging Face 与 ModelScope 开放，技术报告与在线 Demo 上线。
@@ -69,6 +70,26 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 ## 推理
 
 ### 快速上手
+
+#### 方式一：公网 API 快速调用（无需本地 GPU）
+
+你可以直接调用我们部署在 8×A100 专用集群上的 35B-A3B 模型，无需本地显卡环境：
+
+```bash
+# 使用零外部依赖 Python 脚本直接调用
+python inference/llm/call_api.py "你好，世界。今天天气不错，我们去公园散步吧。" --target en
+
+# 或使用标准 curl 调用（兼容 OpenAI 规范）
+curl https://index-translate.bilibili.com/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Index-Translate-35B-A3B",
+    "messages": [{"role": "user", "content": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"}],
+    "max_tokens": 100
+  }'
+```
+
+#### 方式二：本地私有化部署（vLLM）
 
 先用 2B 文本模型完成一次翻译。需要 CUDA GPU 和支持 Qwen3.5 的 vLLM 版本，在终端中运行：
 

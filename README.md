@@ -37,7 +37,6 @@ The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–
 - [x] Release official quantized builds (GGUF for llama.cpp local inference, FP8 and NVFP4 for vLLM serving) for the whole family.
 - [ ] Release the official version of Index-Translate-35B-A3B.
 - [x] Release instTrans, MEME, SandGlass and NAtIveLong data/metadata and evaluation code; see [Benchmarks](#benchmarks).
-- [ ] Release the follow-up SandGlass-V2 benchmark.
 - [ ] Add support for more languages to Index-Echo.
 - [ ] Release larger models.
 

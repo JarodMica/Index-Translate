@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 import tempfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -13,7 +14,11 @@ from pathlib import Path
 from typing import Any
 
 BENCHMARK_DIR = Path(__file__).resolve().parent
-from eval.judge_client import JudgeClient  # noqa: E402
+from eval.judge_client import (  # noqa: E402
+    JUDGE_MAX_TOKENS,
+    JUDGE_TEMPERATURE,
+    JudgeClient,
+)
 from eval.metrics import compute_summary  # noqa: E402
 from eval.prompts import (  # noqa: E402
     JUDGE_PROMPT_VERSION,
@@ -106,6 +111,11 @@ def load_prediction_map(
             predictions[sentence_id] = value
         else:
             empty += 1
+    if not predictions:
+        raise ValueError(
+            f"{path}: no usable predictions found ({len(payload)} input rows, "
+            f"{empty} empty predictions); refusing to report a zero-score run"
+        )
     return predictions, {"input_rows": len(payload), "empty_predictions": empty}
 
 
@@ -116,9 +126,17 @@ def score_predictions(
     predictions: dict[str, str],
     client: JudgeClient,
     max_workers: int,
-) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+) -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, Any]]:
+    """Score every case, but abort the queue on the first judge failure.
+
+    A judge failure (spent retry budget, empty response) aborts the run instead of
+    letting the remaining thousands of queued cases run: pending futures are
+    cancelled, only in-flight calls finish, and the rows already scored are returned
+    so the caller can still persist a partial, clearly marked report.
+    """
     results_by_index: dict[int, dict[str, Any]] = {}
     audits: list[dict[str, Any]] = []
+    abort_error: str | None = None
 
     def score_one(index: int, case: dict[str, Any]) -> tuple[int, dict[str, Any]]:
         prediction = predictions.get(case["sentence_id"])
@@ -145,7 +163,9 @@ def score_predictions(
             **base,
             "prediction": prediction,
             "prediction_status": "present",
-            "judge_status": "success",
+            "judge_status": (
+                "success" if parsed.parse_status != "nonstandard_fallback_0" else "unparsed"
+            ),
             "judge_cached": cached,
             "judge_prompt_version": JUDGE_PROMPT_VERSION,
             "judge_prompt_sha256": prompt_sha256(prompt),
@@ -157,26 +177,43 @@ def score_predictions(
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(score_one, i, case): i for i, case in enumerate(cases)}
-        for completed, future in enumerate(as_completed(futures), 1):
-            index, result = future.result()
-            results_by_index[index] = result
-            if result["parse_status"] == "nonstandard_fallback_0":
-                normalized_prediction = str(result["prediction"] or "").strip().lower()
-                audits.append({
-                    "sentence_id": result["sentence_id"],
-                    "prediction": result["prediction"],
-                    "judge_response": result["judge_response"],
-                    "parsed_score": result["score"],
-                    "parse_status": result["parse_status"],
-                    "audit_decision": (
-                        "keep_0_candidate_is_NA"
-                        if normalized_prediction in {"n/a", "na"}
-                        else "needs_review"
-                    ),
-                })
-            if completed % 100 == 0:
-                print(f"Judge progress: {completed}/{len(cases)}", flush=True)
-    return [results_by_index[i] for i in range(len(cases))], audits
+        try:
+            for completed, future in enumerate(as_completed(futures), 1):
+                index, result = future.result()
+                results_by_index[index] = result
+                if result["parse_status"] == "nonstandard_fallback_0":
+                    normalized_prediction = str(result["prediction"] or "").strip().lower()
+                    audits.append({
+                        "sentence_id": result["sentence_id"],
+                        "prediction": result["prediction"],
+                        "judge_response": result["judge_response"],
+                        "parsed_score": result["score"],
+                        "parse_status": result["parse_status"],
+                        "audit_decision": (
+                            "keep_0_candidate_is_NA"
+                            if normalized_prediction in {"n/a", "na"}
+                            else "needs_review"
+                        ),
+                    })
+                if completed % 100 == 0:
+                    print(f"Judge progress: {completed}/{len(cases)}", flush=True)
+        except Exception as exc:
+            # Do not wait for the still-queued judge calls; report what we have.
+            abort_error = f"{type(exc).__name__}: {exc}"
+            for future in futures:
+                future.cancel()
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
+    results = [results_by_index[index] for index in sorted(results_by_index)]
+    run_state = {
+        "aborted": abort_error is not None,
+        "abort_error": abort_error,
+        "scored_cases": len(results),
+        "total_cases": len(cases),
+    }
+    return results, audits, run_state
 
 
 def parse_args() -> argparse.Namespace:
@@ -211,7 +248,7 @@ def main() -> int:
         prompt_version=JUDGE_PROMPT_VERSION,
         cache_path=args.judge_cache or args.output_dir / "judge_cache.jsonl",
     )
-    results, audits = score_predictions(
+    results, audits, run_state = score_predictions(
         cases=cases,
         contexts=contexts,
         predictions=predictions,
@@ -223,13 +260,15 @@ def main() -> int:
     summary = {
         "benchmark": "meme_translation",
         "benchmark_version": "v1",
-        "formal_run": args.limit == 0,
+        "formal_run": args.limit == 0 and not run_state["aborted"],
         "timestamp": now,
+        "run_state": run_state,
         "judge": {
             "model": args.judge_model,
+            "base_url": args.judge_base_url,
             "prompt_version": JUDGE_PROMPT_VERSION,
-            "temperature": 0.0,
-            "max_tokens": 2048,
+            "temperature": JUDGE_TEMPERATURE,
+            "max_tokens": JUDGE_MAX_TOKENS,
         },
         "prediction_input": {
             "path": str(inference_path),
@@ -238,10 +277,21 @@ def main() -> int:
         },
         **metrics,
     }
-    atomic_json(args.output_dir / "eval_results.json", {"summary": summary, "results": results})
+    atomic_json(
+        args.output_dir / "eval_results.json",
+        {"summary": summary, "results": results, "run_state": run_state},
+    )
     atomic_json(args.output_dir / "score_parse_audit.json", audits)
     atomic_json(args.output_dir / "eval_summary.json", summary)
     print(json.dumps(summary, ensure_ascii=False, indent=2))
+    if run_state["aborted"]:
+        print(
+            "ABORTED after "
+            f"{run_state['scored_cases']}/{run_state['total_cases']} cases "
+            f"({run_state['abort_error']}); partial results written to {args.output_dir}",
+            file=sys.stderr,
+        )
+        return 2
     return 0
 
 

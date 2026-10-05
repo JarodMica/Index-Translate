@@ -32,6 +32,11 @@ os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 LANGS = ("en", "es", "ja", "zh")
 S2ST_MAX_S = 10.5   # S2ST generation is capped; longer audio is rejected
 S2TT_MAX_S = 60.0
+MAX_UPLOAD_BYTES = 100 * 1024 * 1024   # reject bigger uploads before buffering
+
+
+class PayloadTooLarge(Exception):
+    """Upload over MAX_UPLOAD_BYTES; surfaced as HTTP 413."""
 
 
 def to_wav16k(raw: bytes, suffix: str) -> str:
@@ -61,7 +66,13 @@ def wav_duration(path: str) -> float:
 
 def build_app(model_dir, device=None):
     if device:
-        os.environ.setdefault("CUDA_VISIBLE_DEVICES", device)
+        # the flag must win over an inherited CUDA_VISIBLE_DEVICES (setdefault
+        # would silently ignore --device); warn when it overrides a different one
+        prev = os.environ.get("CUDA_VISIBLE_DEVICES")
+        if prev is not None and prev != str(device):
+            print(f"[serve_s2st] --device {device} overrides the existing "
+                  f"CUDA_VISIBLE_DEVICES={prev}", flush=True)
+        os.environ["CUDA_VISIBLE_DEVICES"] = str(device)
     sys.path.insert(0, model_dir)
 
     from fastapi import FastAPI, UploadFile, Form
@@ -76,12 +87,29 @@ def build_app(model_dir, device=None):
     lock = threading.Lock()
     app = FastAPI(title="index-dub-s2st")
 
+    @app.middleware("http")
+    async def reject_oversized(request, call_next):
+        # pre-check the declared body size: the multipart parser would otherwise
+        # spool the whole upload to disk before any handler runs
+        declared = request.headers.get("content-length")
+        if declared:
+            try:
+                too_big = int(declared) > MAX_UPLOAD_BYTES
+            except ValueError:
+                too_big = False
+            if too_big:
+                return JSONResponse(
+                    {"ok": False, "error": f"upload exceeds "
+                     f"{MAX_UPLOAD_BYTES // (1024 * 1024)}MB limit"}, 413)
+        return await call_next(request)
+
     async def read_audio(file: UploadFile):
         raw = await file.read()
         if not raw:
             raise RuntimeError("empty file")
-        if len(raw) > 100 * 1024 * 1024:
-            raise RuntimeError("file too large (>100MB)")
+        if len(raw) > MAX_UPLOAD_BYTES:
+            raise PayloadTooLarge(
+                f"file too large (>{MAX_UPLOAD_BYTES // (1024 * 1024)}MB)")
         src = to_wav16k(raw, os.path.splitext(file.filename or "")[1])
         return src, wav_duration(src)
 
@@ -105,6 +133,8 @@ def build_app(model_dir, device=None):
                     "lang": lang, "dur": round(d, 2)}
         except AssertionError as e:
             return JSONResponse({"ok": False, "error": f"nothing translated: {e}"}, 422)
+        except PayloadTooLarge as e:
+            return JSONResponse({"ok": False, "error": str(e)}, 413)
         except Exception as e:  # noqa: BLE001
             traceback.print_exc()
             return JSONResponse({"ok": False, "error": str(e)[-400:]}, 500)
@@ -134,6 +164,8 @@ def build_app(model_dir, device=None):
                     "hit_eos": info.get("hit_eos")}
         except AssertionError as e:
             return JSONResponse({"ok": False, "error": f"nothing translated: {e}"}, 422)
+        except PayloadTooLarge as e:
+            return JSONResponse({"ok": False, "error": str(e)}, 413)
         except Exception as e:  # noqa: BLE001
             traceback.print_exc()
             return JSONResponse({"ok": False, "error": str(e)[-400:]}, 500)
@@ -153,7 +185,8 @@ def main():
     ap.add_argument("--host", default="0.0.0.0")
     ap.add_argument("--port", type=int, default=8094)
     ap.add_argument("--device", default=None,
-                    help="GPU index for CUDA_VISIBLE_DEVICES, e.g. 0")
+                    help="GPU index for CUDA_VISIBLE_DEVICES, e.g. 0 "
+                         "(overrides an inherited CUDA_VISIBLE_DEVICES)")
     args = ap.parse_args()
 
     import uvicorn

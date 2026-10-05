@@ -194,7 +194,7 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
                 self.wfile.write(b"Index-Translate Proxy Ready\n")
 
         def do_POST(self):
-            if not (self.path.endswith("/chat/completions") or self.path.endswith("/completions")):
+            if not (self.path.endswith("/chat/completions") or self.path.endswith("/completions") or self.path.endswith("/responses")):
                 self.send_response(404)
                 self.end_headers()
                 return
@@ -215,7 +215,8 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
             except Exception:
                 pass
 
-            upstream_url = f"{api_base.rstrip('/')}/chat/completions"
+            upstream_path = "/responses" if self.path.endswith("/responses") else "/chat/completions"
+            upstream_url = f"{api_base.rstrip('/')}{upstream_path}"
             req = urllib.request.Request(
                 upstream_url,
                 data=body,

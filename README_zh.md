@@ -83,13 +83,20 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 # 使用零外部依赖 Python 脚本直接调用
 python inference/llm/call_api.py "你好，世界。今天天气不错，我们去公园散步吧。" --target en
 
-# 或使用标准 curl 调用（兼容 OpenAI 规范）
+# 选项 A：标准 Chat Completions API（兼容 OpenAI 规范）
 curl https://index-translate.bilibili.com/v1/chat/completions \
   -H "Content-Type: application/json" \
   -d '{
     "model": "Index-Translate-35B-A3B",
-    "messages": [{"role": "user", "content": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"}],
-    "max_tokens": 100
+    "messages": [{"role": "user", "content": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"}]
+  }'
+
+# 选项 B：最新 OpenAI Responses API（适配 client.responses.create / POST /v1/responses）
+curl https://index-translate.bilibili.com/v1/responses \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "Index-Translate-35B-A3B",
+    "input": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"
   }'
 ```
 

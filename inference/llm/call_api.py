@@ -100,7 +100,7 @@ def call_completion(
     model: str,
     prompt: str,
     max_tokens: int = 1024,
-    temperature: float = 0.3,
+    temperature: float = 0.0,
     stream: bool = False,
 ):
     url = f"{api_base.rstrip('/')}/chat/completions"
@@ -209,6 +209,8 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
                     payload["chat_template_kwargs"] = {}
                 if "enable_thinking" not in payload["chat_template_kwargs"]:
                     payload["chat_template_kwargs"]["enable_thinking"] = False
+                if "temperature" not in payload or payload.get("temperature") is None:
+                    payload["temperature"] = 0.0
                 body = json.dumps(payload).encode("utf-8")
             except Exception:
                 pass
@@ -281,6 +283,7 @@ def main():
     ap.add_argument("--glossary", "-g", default="", help="Glossary pairs, e.g. 'term1:target1, term2:target2'")
     ap.add_argument("--api-base", default=DEFAULT_API_BASE, help=f"API Base URL (default: {DEFAULT_API_BASE})")
     ap.add_argument("--max-tokens", type=int, default=1024, help="Max tokens to generate (default: 1024)")
+    ap.add_argument("--temperature", type=float, default=0.0, help="Sampling temperature (default: 0.0 for greedy decoding)")
     ap.add_argument("--stream", action="store_true", help="Stream translation tokens (SSE)")
     ap.add_argument(
         "--serve",
@@ -317,6 +320,7 @@ def main():
         model=args.model,
         prompt=prompt,
         max_tokens=args.max_tokens,
+        temperature=args.temperature,
         stream=args.stream,
     )
 

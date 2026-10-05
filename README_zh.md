@@ -5,6 +5,7 @@
 
 <p align="center">
   <a href="https://index-translate.bilibili.com/">🌐&nbsp;Demo</a> ·
+  <a href="#方式一免费公网-api-快速调用无需本地-gpu">⚡&nbsp;<b>免费 API</b></a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗&nbsp;Hugging&nbsp;Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt="">&nbsp;ModelScope</a> ·
   <a href="https://arxiv.org/abs/2609.40181">📚&nbsp;报告</a> ·
@@ -12,6 +13,9 @@
   <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗&nbsp;Benchmarks</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧&nbsp;QQ群</a>
 </p>
+
+> [!TIP]
+> 🚀 **官方免费 API 现已开放！** 无需本地显卡环境，直接免费调用 **Index-Translate-35B-A3B** 旗舰翻译模型。完全兼容 OpenAI 接口规范（Base URL: `https://index-translate.bilibili.com/v1`）。支持免依赖脚本即开即用：`python inference/llm/call_api.py "你好，世界" --target en`！👉 [快速上手指南](#方式一免费公网-api-快速调用无需本地-gpu)
 
 Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本模型覆盖**150 种语言**，支持术语、格式、保留内容等翻译指令，并将共同的多语基础扩展到语音、音节可控翻译和长文档翻译。
 
@@ -26,7 +30,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 雷达图采用官网七类聚合分数，在完整对比模型集合上固定各维度的 min–max 范围进行归一化，并非准确率。灰色虚线是各维度非 Index 模型的最高值组合，不代表一个实际模型。[原始聚合分数](docs/assets/seven_category_scores_raw.csv) · [图表说明](docs/assets/README.md) · [单项评测结果](docs/evaluation_zh.md)。
 
-[最新动态](#最新动态) · [模型下载](#模型下载) · [快速上手](#快速上手) · [指令遵循](#指令遵循与约束翻译) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
+[最新动态](#最新动态) · [⚡ 免费 API](#方式一免费公网-api-快速调用无需本地-gpu) · [模型下载](#模型下载) · [快速上手](#快速上手) · [指令遵循](#指令遵循与约束翻译) · [精选案例](#精选案例) · [评测结果](#评测结果) · [Benchmarks](#benchmarks) · [应用工具](#应用工具) · [TODO](#todo) · [论文与引用](#论文与引用)
 
 ## 最新动态
 
@@ -49,7 +53,7 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 | 模型 | 任务与发布包覆盖 | Hugging Face | ModelScope | 推理 |
 |---|---|---|---|---|
-| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B-preview) | [使用说明](inference/llm/README_zh.md) |
+| **Index-Translate** | 150 种语言的文本翻译与指令遵循 | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) ([⚡免费API](#方式一免费公网-api-快速调用无需本地-gpu)) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B-preview) | [使用说明](inference/llm/README_zh.md) · [免费API](inference/llm/call_api.py) |
 | **Index-Echo S2TT** | 语音转字幕；发布脚本支持中→英/日/西 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-9B) | [使用说明](inference/echo-s2tt/README_zh.md) |
 | **Index-Echo S2ST** | 语音配音；中→英/西/日，英→中/西/日 | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-9B) | [使用说明](inference/echo-s2st/README_zh.md) |
 | **Index-Homura** | 按指定目标音节数翻译 | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Homura-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Homura-9B) | [使用说明](inference/llm/README_zh.md) |

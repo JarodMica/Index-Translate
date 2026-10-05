@@ -5,6 +5,7 @@
 
 <p align="center">
   <a href="https://index-translate.bilibili.com/">🌐&nbsp;Demo</a> ·
+  <a href="#option-1-free-online-api-zero-gpu-setup">⚡&nbsp;<b>Free API</b></a> ·
   <a href="https://huggingface.co/collections/IndexTeam/index-translate">🤗&nbsp;Hugging&nbsp;Face</a> ·
   <a href="https://modelscope.cn/collections/IndexTeam/Index-Translate"><img src="docs/assets/modelscope.svg" width="16" height="16" alt="">&nbsp;ModelScope</a> ·
   <a href="https://arxiv.org/abs/2609.40181">📚&nbsp;Report</a> ·
@@ -12,6 +13,9 @@
   <a href="https://huggingface.co/collections/IndexTeam/index-translate-benchmarks-6ac16fee5057f40abd7d31b7">🤗&nbsp;Benchmarks</a> ·
   <a href="https://qm.qq.com/q/xSASqaiEGA">🐧&nbsp;QQ</a>
 </p>
+
+> [!TIP]
+> 🚀 **Free Public API Now Available!** Call **Index-Translate-35B-A3B** directly with zero GPU setup. Fully OpenAI-compatible at `https://index-translate.bilibili.com/v1`. Try it in seconds with `python inference/llm/call_api.py "Hello, world!" --target zh`! 👉 [API Quick Start](#option-1-free-online-api-zero-gpu-setup)
 
 Index-Translate is a family of multilingual translation models built on Qwen3.5. The text models cover **150 languages** and follow translation instructions such as terminology, formatting, and content-preservation requirements. The family extends this foundation to speech, syllable-controlled translation, and full-document translation.
 
@@ -24,7 +28,7 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 
 The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
-[News](#news) · [Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+[News](#news) · [⚡ Free API](#option-1-free-online-api-zero-gpu-setup) · [Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
 
 ## News
 
@@ -47,7 +51,7 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 | Model | Task and released package coverage | Hugging Face | ModelScope | Inference |
 |---|---|---|---|---|
-| **Index-Translate** | Text translation and instructions across 150 languages | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B-preview) | [Guide](inference/llm/README.md) |
+| **Index-Translate** | Text translation and instructions across 150 languages | [2B](https://huggingface.co/IndexTeam/Index-Translate-2B) · [9B](https://huggingface.co/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://huggingface.co/IndexTeam/Index-Translate-35B-A3B-preview) ([⚡Free API](#option-1-free-online-api-zero-gpu-setup)) | [2B](https://modelscope.cn/models/IndexTeam/Index-Translate-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Translate-9B) · [35B-A3B (preview)](https://modelscope.cn/models/IndexTeam/Index-Translate-35B-A3B-preview) | [Guide](inference/llm/README.md) · [Free API](inference/llm/call_api.py) |
 | **Index-Echo S2TT** | Speech → subtitles; packaged script: zh→en/ja/es | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2TT-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2TT-9B) | [Guide](inference/echo-s2tt/README.md) |
 | **Index-Echo S2ST** | Speech → speech; zh→en/es/ja, en→zh/es/ja | [2B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://huggingface.co/IndexTeam/Index-Echo-S2ST-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Echo-S2ST-9B) | [Guide](inference/echo-s2st/README.md) |
 | **Index-Homura** | Translation with a target syllable count | [2B](https://huggingface.co/IndexTeam/Index-Homura-2B) · [9B](https://huggingface.co/IndexTeam/Index-Homura-9B) | [2B](https://modelscope.cn/models/IndexTeam/Index-Homura-2B) · [9B](https://modelscope.cn/models/IndexTeam/Index-Homura-9B) | [Guide](inference/llm/README.md) |

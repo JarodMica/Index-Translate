@@ -274,7 +274,7 @@ def _count_generic_text(text, lang, _in_number=False):
                 total += _latin_word_syllables(w, lang)
         elif script_type == 'cyrillic':
             for w in segment.split():
-                total += _cyrillic_word_syllables(w, lang if lang == 'ru' else 'ru')
+                total += _cyrillic_word_syllables(w, 'ru')
         elif script_type == 'hangul':
             total += _count_hangul_chars(segment)
         elif script_type == 'thai':
@@ -303,7 +303,7 @@ SUPPORTED_LANGS = sorted(_V2_NATIVE | {
     'sv', 'nl', 'id', 'ms', 'th', 'hi',
 })
 
-# 可靠性分级（2026-08-04 espeak-ng IPA 基准校验后更新，见 validate_v3_counter.py）
+# 可靠性分级（2026-08-04 espeak-ng IPA 基准校验后更新；校验脚本 validate_v3_counter.py 未随仓发布）
 # 21 语种全部通过（P50≤8% 且 P90≤20%）；ja/ar espeak 基准无效，凭生产 RL 验证豁免
 RELIABILITY = {
     'high':   ['zh', 'en', 'ja', 'ko', 'vi', 'es', 'de', 'fr', 'it', 'pt',
@@ -314,6 +314,17 @@ RELIABILITY = {
 }
 
 
+# 本模块 patch 进 v2._SCRIPT_RANGES 的新脚本段
+# （v2 的分派表只认 han/kana/latin/arabic/number，其余静默丢弃）
+_NEW_SCRIPT_TYPES = ('cyrillic', 'hangul', 'thai', 'devanagari')
+
+
+def _count_new_script_segments(text, lang):
+    """补齐 v2 原生链路不认的脚本段，避免 cyrillic/hangul/thai/devanagari 静默计 0。"""
+    return sum(_count_generic_text(segment, lang) for segment, script_type
+               in v2._parse_mixed_content(text) if script_type in _NEW_SCRIPT_TYPES)
+
+
 def cal_syllable_count(text, lang='en'):
     if not text or not text.strip():
         return 0
@@ -321,7 +332,8 @@ def cal_syllable_count(text, lang='en'):
     if lang in ('tl',):
         lang = 'fil'
     if lang in _V2_NATIVE:
-        return v2.cal_syllable_count(text, lang)
+        # v2 原生链路 + patch 新脚本段（v2 对这几类脚本返回 0）
+        return v2.cal_syllable_count(text, lang) + _count_new_script_segments(text, lang)
     return _count_generic_text(text.strip(), lang)
 
 

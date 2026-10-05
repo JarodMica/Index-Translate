@@ -28,7 +28,10 @@ def _pyphen_syllable_count(word, pyphen_lang):
     """使用 pyphen 计算音节数（带缓存，规范化处理）"""
     # 规范化：去除尾部标点和连字符
     clean_word = word.rstrip(".,;:!?()[]{}\"\'-")
+    clean_word = re.sub(r'^[^\w]+|[^\w]+$', '', clean_word)  # 两侧对称去标点（原实现只 rstrip）
     normalized = clean_word.replace("-", "")  # 避免连字符被算作音节分隔
+    if not any(ch.isalnum() for ch in normalized):
+        return 0  # 纯标点 token（如 '...'）不贡献音节（此前被计为 1）
 
     # 检查西语词典
     if pyphen_lang == 'es_ES' and normalized.lower() in _SPANISH_SYLLABLES:
@@ -357,7 +360,9 @@ def _expand_number(num_str, lang):
     try:
         n = int(num_str_clean)
     except ValueError:
-        return num_str
+        # 版本号/多小数点（3.5.6、1.2.3）num2words 解析不了，原先直接返回原串，
+        # 上层 isalpha 过滤后归零；改为逐段展开（位数估算）。
+        return _expand_digit_groups(num_str_clean, lang)
 
     # 检查是否是年份（使用原始字符串，包含逗号信息）
     if lang == 'en' and _is_year_like(num_str):
@@ -374,6 +379,21 @@ def _expand_number(num_str, lang):
         return num2words(n, lang=n2w_lang)
     except Exception:
         return num2words(n, lang='en')
+
+
+def _expand_digit_groups(num_str, lang):
+    """num2words 解析不了的形态（多小数点/版本号）逐段展开为词，避免静默计 0 音节。"""
+    chunks = re.findall(r'\d+', num_str)
+    if not chunks:
+        return num_str
+    n2w_lang = _NUM2WORDS_LANG_MAP.get(lang, 'en')
+    words = []
+    for chunk in chunks:
+        try:
+            words.append(num2words(int(chunk), lang=n2w_lang))
+        except Exception:
+            words.append(num2words(int(chunk), lang='en'))
+    return ' '.join(words)
 
 
 def _expand_decimal(text, lang):

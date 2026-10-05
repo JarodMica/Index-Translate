@@ -47,7 +47,9 @@ python evaluate.py --predictions outputs/predictions.jsonl --output-dir outputs/
 
 The evaluator accepts saved predictions from any inference engine. It does not
 load a GPU model or bundle provider credentials. The default Judge is
-`gemini-2.5-flash`; its request parameters are recorded in the summary.
+`gemini-2.5-flash`; its request parameters are recorded in the summary, with the
+endpoint reduced to scheme+host (embedded credentials, path and query are never
+written out).
 
 ## Data Format
 
@@ -97,7 +99,7 @@ score = (syllable_reward + quality) / 2
 ## Syllable Calculation
 
 The benchmark uses `syllable_calculation.py` (v3), which supports 22 languages with:
-- **Reliability varies by language**: the source module rates zh/en/ja/ko/vi/es/de/fr/it/pt high, ru/ro/pl/sv/nl/tr/id/ms/ar/fil medium, and th/hi approximate.
+- **Reliability**: `syllable_calculation.py`'s `RELIABILITY` map rates all 22 languages `high` (2026-08-04 espeak-ng IPA validation; `medium`/`low` are empty). ja/ar are exempt from that baseline and are validated by production RL instead.
 - **Method**: Language-specific rules (pyphen dictionaries, script-based counting, vowel heuristics)
 - **Number expansion**: Digits converted to words before counting
 
@@ -142,18 +144,16 @@ Three targets per sentence:
 
 ## Results Format
 
-`results/<model>.jsonl` contains per-item results:
+`<output-dir>/scores.jsonl` contains per-item results (field names as written by `evaluate.py`):
 
 ```json
 {
+  "case_id": "uuid:en:natural",
   "uuid": "...",
-  "fenqu": "二次元",
   "target_language": "en",
   "target_kind": "natural",
   "target_syllables": 12,
-  "duration": 1.9,
-  "source": "如果按照奥特曼世界科技排序的话",
-  "hyp": "If we go by the technological hierarchy of the Ultraman world",
+  "prediction": "If we go by the technological hierarchy of the Ultraman world",
   "hyp_syllables": 13,
   "abs_diff": 1,
   "dev": 0.0833,
@@ -164,7 +164,6 @@ Three targets per sentence:
   "hit_10": 1,
   "hit_20": 1,
   "quality": 1.0,
-  "judge_error": 0,
   "score": 1.0
 }
 ```

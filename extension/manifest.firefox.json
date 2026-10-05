@@ -9,7 +9,7 @@
       "strict_min_version": "121.0"
     }
   },
-  "permissions": ["storage", "activeTab", "scripting", "declarativeNetRequest"],
+  "permissions": ["storage", "activeTab", "declarativeNetRequest"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "scripts": ["background.js"]

@@ -133,7 +133,7 @@ The settings page provides **four quick-fill buttons (vLLM / SGLang × 2B / 9B)*
 ## How it works
 
 1. **content.js** walks the DOM and collects text from block-level elements (`<p>`, `<h1>`–`<h6>`, `<li>`, `<td>`, etc.), skipping code blocks, invisible elements, and overly short text;
-2. Batches of 10 paragraphs are sent to **background.js**;
+2. Batches of **4 paragraphs** are sent to **background.js**, with up to **3 batches in flight** at the same time;
 3. The background worker calls the local model's `/chat/completions` endpoint with a JSON array of source texts and asks for an equal-length array of translations (with tolerant parsing for markdown fences, truncated output, etc., and automatic retries on format errors);
 4. Translations are inserted below the original paragraphs with a `data-llm-translated` marker to prevent duplicate translation, and can be removed in one click.
 
@@ -148,7 +148,6 @@ The settings page provides **four quick-fill buttons (vLLM / SGLang × 2B / 9B)*
 
 - [ ] No streaming output yet — translations appear after each batch completes
 - [ ] Dynamically loaded content (infinite scroll) is not translated automatically — click again
-- [ ] Batches are requested serially — long pages are slow (concurrency planned)
 - [ ] Custom translation prompts / glossaries
 
 ## License

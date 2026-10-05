@@ -3,7 +3,7 @@
   "name": "LLM Page Translator",
   "version": "0.1.0",
   "description": "网页双语翻译插件，配合本地部署的 Index-Translate 模型（vLLM / SGLang）使用",
-  "permissions": ["storage", "activeTab", "scripting", "declarativeNetRequest"],
+  "permissions": ["storage", "activeTab", "declarativeNetRequest"],
   "host_permissions": ["<all_urls>"],
   "background": {
     "service_worker": "background.js"

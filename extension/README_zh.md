@@ -133,7 +133,7 @@ curl http://localhost:8000/v1/chat/completions \
 ## 工作原理
 
 1. **content.js** 遍历页面 DOM，收集 `<p>` `<h1>-<h6>` `<li>` `<td>` 等块级元素的文本（跳过代码块、不可见元素、过短文本）；
-2. 按每批 10 段发消息给 **background.js**；
+2. 按每批 4 段、最多 3 路并发发消息给 **background.js**；
 3. background 以 JSON 数组形式调用本地模型的 `/chat/completions` 接口，要求返回等长的译文数组（对 markdown 代码块包裹、输出截断等常见问题做了容错解析，格式异常自动重试）；
 4. 译文插回原段落下方，带 `data-llm-translated` 标记防止重复翻译，可一键还原。
 
@@ -148,7 +148,6 @@ curl http://localhost:8000/v1/chat/completions \
 
 - [ ] 暂不支持流式输出，整批返回后才显示
 - [ ] 动态加载的内容（无限滚动）不会自动翻译，需要再点一次
-- [ ] 批与批之间是串行请求，长页面较慢（可加并发）
 - [ ] 自定义翻译 prompt、术语表
 
 ## 开源协议

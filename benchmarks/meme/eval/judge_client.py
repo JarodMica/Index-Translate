@@ -18,6 +18,10 @@ class JudgeRequestError(RuntimeError):
     pass
 
 
+class _EmptyJudgeResponseError(JudgeRequestError):
+    """Raised when a provider returns no usable completion text for a judgement."""
+
+
 class JudgeClient:
     def __init__(
         self,
@@ -35,6 +39,7 @@ class JudgeClient:
         from openai import OpenAI
 
         self.model = model
+        self.base_url = base_url
         self.prompt_version = prompt_version
         self.timeout = timeout
         self.max_attempts = max_attempts
@@ -49,6 +54,9 @@ class JudgeClient:
         payload = json.dumps(
             {
                 "model": self.model,
+                # The provider endpoint is part of the judgement identity: the same
+                # prompt answered by a different backend is not the same cached result.
+                "base_url": self.base_url,
                 "prompt_version": self.prompt_version,
                 "temperature": JUDGE_TEMPERATURE,
                 "max_tokens": JUDGE_MAX_TOKENS,
@@ -72,8 +80,8 @@ class JudgeClient:
                     self._cache[record["key"]] = record["response"]
                 except (json.JSONDecodeError, KeyError, TypeError):
                     # An interrupted final append must not destroy earlier cache entries.
-                    if line_number > 1:
-                        continue
+                    # Skip the damaged line and keep every readable entry around it.
+                    continue
 
     def _cache_put(self, key: str, response: str) -> None:
         with self._lock:
@@ -92,7 +100,7 @@ class JudgeClient:
         if cached is not None:
             return cached, True
 
-        error: BaseException | None = None
+        error: Exception | None = None
         for attempt in range(self.max_attempts):
             try:
                 response = self._client.chat.completions.create(
@@ -101,10 +109,14 @@ class JudgeClient:
                     temperature=JUDGE_TEMPERATURE,
                     max_tokens=JUDGE_MAX_TOKENS,
                 )
-                content = response.choices[0].message.content or ""
+                content = response.choices[0].message.content
+                if not isinstance(content, str) or not content.strip():
+                    # A content filter (or a reasoning-only reply) yields no judgement.
+                    # Never cache it and never score it: retry, then fail loudly.
+                    raise _EmptyJudgeResponseError("judge returned an empty response")
                 self._cache_put(key, content)
                 return content, False
-            except BaseException as exc:
+            except Exception as exc:
                 error = exc
                 status_code = getattr(exc, "status_code", None)
                 retryable = status_code == 429 or (

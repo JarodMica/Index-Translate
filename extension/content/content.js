@@ -22,6 +22,7 @@
 
   let translating = false;
   let cancelRequested = false; // 用户点击"停止翻译"后置位，worker 不再领取新批次
+  let discardInFlight = false; // 页面被还原后置位：在途请求的结果不再插回页面
   let translatedNodes = []; // 记录每个已翻译块的信息（含显示模式），用于"还原"
 
   // ---------- 占位符系统 ----------
@@ -168,6 +169,10 @@
   }
 
   function restorePage() {
+    // 还原后不允许在途批次再把译文插回页面：
+    // cancelRequested 让 worker 不再领取新批次，discardInFlight 让已发出的请求丢弃结果。
+    cancelRequested = true;
+    discardInFlight = true;
     clearHoverState();
     for (const rec of translatedNodes) {
       if (rec.mode === "replace") {
@@ -232,6 +237,7 @@
     if (translating) return { ok: false, error: "正在翻译中" };
     translating = true;
     cancelRequested = false;
+    discardInFlight = false;
 
     try {
       const blocks = collectBlocks();
@@ -262,8 +268,9 @@
           const batch = batches[nextBatch++];
           const resp = await sendBatch(batch.map((b) => b.text));
 
-          // 在途请求返回后仍然插入译文（API 已消耗，不浪费）
-          if (resp.ok) {
+          // 在途请求返回后仍然插入译文（API 已消耗，不浪费）；
+          // 但页面已被还原（discardInFlight）时必须丢弃，否则会在还原后的页面上重新插回译文。
+          if (resp.ok && !discardInFlight) {
             batch.forEach((block, j) => insertTranslation(block, resp.translations[j], displayMode));
           } else if (!firstError) {
             firstError = resp.error;
@@ -452,8 +459,20 @@
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "TRANSLATE_PAGE") {
       translatePage((done, total) => {
-        chrome.runtime.sendMessage({ type: "PROGRESS", done, total }).catch?.(() => {});
-      }).then(sendResponse);
+        // 进度上报是尽力而为：popup 可能已关闭，sendMessage 可能同步抛错或返回 rejected promise，
+        // 不能让它中断翻译（原来的 `.catch?.()` 挡不住同步抛错）。
+        try {
+          chrome.runtime.sendMessage({ type: "PROGRESS", done, total })?.catch?.(() => {});
+        } catch (_) {
+          /* 忽略进度上报失败 */
+        }
+      })
+        .then(sendResponse)
+        .catch((err) => {
+          // translatePage 内部抛错时也必须回包，否则 popup 的 sendMessage 回调永远等不到响应
+          console.error("[llm-translator] 页面翻译异常:", err);
+          sendResponse({ ok: false, error: (err && err.message) || String(err) });
+        });
       return true;
     }
     if (message.type === "RESTORE_PAGE") {

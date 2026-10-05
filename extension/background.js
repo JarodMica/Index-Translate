@@ -26,7 +26,17 @@ async function getSettings() {
 // 浏览器会给扩展发出的请求自动附加 Origin: chrome-extension://... 头，
 // 部分本地服务（如 Ollama、带鉴权网关的部署）会因此返回 403。
 // fetch 无法删除该头，这里用 declarativeNetRequest 在网络层移除。
-// Firefox 的扩展源是随机 UUID，initiatorDomains 条件不适用，失败时降级为无条件规则。
+// 规则一律限定到扩展自身源：Firefox 的扩展源是随机 UUID（moz-extension://<uuid>），
+// 降级时也不能无条件摘掉全网请求的 Origin 头，否则会影响与插件无关的网页请求。
+// DNR 的 initiatorDomains 只接受 host，所以从 getURL("") 解析出扩展自身的 host。
+function extensionOriginHost() {
+  try {
+    return new URL(chrome.runtime.getURL("")).host;
+  } catch (_) {
+    return "";
+  }
+}
+
 async function setupOriginStrippingRule() {
   const baseRule = {
     id: 1,
@@ -50,13 +60,23 @@ async function setupOriginStrippingRule() {
       ],
     });
   } catch (e) {
+    // 降级：条件换成扩展自身 host（Firefox 上即 moz-extension://<uuid> 里的 UUID）。
+    // 解析不出自身源时宁可不注册规则，也不做无条件的全网 Origin 移除。
+    const ownHost = extensionOriginHost();
+    if (!ownHost) {
+      console.warn("Origin 头移除规则注册失败（无法确定扩展自身源，部分网关可能返回 403）:", e.message);
+      return;
+    }
     try {
       await chrome.declarativeNetRequest.updateDynamicRules({
         removeRuleIds: [1],
         addRules: [
           {
             ...baseRule,
-            condition: { resourceTypes: ["xmlhttprequest"] },
+            condition: {
+              initiatorDomains: [ownHost],
+              resourceTypes: ["xmlhttprequest"],
+            },
           },
         ],
       });
@@ -98,39 +118,77 @@ async function saveCache(cache) {
       delete cache[key];
     }
   }
-  await chrome.storage.local.set({ [CACHE_KEY]: cache });
+  try {
+    await chrome.storage.local.set({ [CACHE_KEY]: cache });
+  } catch (e) {
+    // 缓存写失败（如超出 storage.local 配额）不能连累本次译文返回，只警告。
+    console.warn("[llm-translator] 写入翻译缓存失败（本次译文仍会返回）:", e && e.message ? e.message : e);
+  }
+}
+
+// 缓存读-改-写串行化：多个批次（3 路并发）各自 load→save 会互相覆盖，
+// 后写的把先写的译文丢掉。用一条 promise 链把所有「读-改-写」排成队；
+// 网络请求留在锁外，保住批量翻译的并发度。
+let cacheLock = Promise.resolve();
+function withCacheLock(task) {
+  const run = cacheLock.then(task, task); // 前一个任务失败也要继续执行后面的
+  cacheLock = run.then(() => {}, () => {}); // 错误不外溢到链上，避免阻塞后续任务
+  return run;
 }
 
 // 带缓存的批量翻译：先查缓存，只把未命中的段落发给 API，结果合并后写回缓存。
 async function translateWithCache(texts, settings) {
   const cacheKeyOf = (text) => fnv1a(`${text}|${settings.targetLang}|${settings.model}`);
-  const cache = await loadCache();
   const now = Date.now();
 
   const results = new Array(texts.length).fill("");
-  const missIndexes = [];
+  const hitIndexes = [];
 
-  for (let i = 0; i < texts.length; i++) {
-    const entry = cache[cacheKeyOf(texts[i])];
-    if (entry && now - entry.t < CACHE_TTL) {
-      results[i] = entry.v;
-      entry.t = now; // 刷新访问时间（LRU）
-    } else {
-      missIndexes.push(i);
+  // 阶段 1（锁内）：查缓存，命中的段落直接给结果，只有未命中的才发给 API。
+  const missIndexes = await withCacheLock(async () => {
+    const cache = await loadCache();
+    const missing = [];
+    for (let i = 0; i < texts.length; i++) {
+      const entry = cache[cacheKeyOf(texts[i])];
+      if (entry && now - entry.t < CACHE_TTL) {
+        results[i] = entry.v;
+        hitIndexes.push(i);
+      } else {
+        missing.push(i);
+      }
     }
-  }
+    return missing;
+  });
 
+  // 阶段 2（锁外）：网络请求不进锁，多个批次仍可并发。
+  let fresh = [];
   if (missIndexes.length > 0) {
-    const fresh = await translateBatch(missIndexes.map((i) => texts[i]), settings);
+    fresh = await translateBatch(missIndexes.map((i) => texts[i]), settings);
     missIndexes.forEach((i, j) => {
       results[i] = fresh[j];
-      if (fresh[j]) {
-        cache[cacheKeyOf(texts[i])] = { v: fresh[j], t: now };
-      }
     });
   }
 
-  await saveCache(cache);
+  // 阶段 3（锁内）：重新读盘后再合并写回，避免覆盖并发批次已写入的条目。
+  // 缓存读写失败都不能连累译文返回（results 已就绪），只记警告。
+  try {
+    await withCacheLock(async () => {
+      const cache = await loadCache();
+      for (const i of hitIndexes) {
+        const entry = cache[cacheKeyOf(texts[i])];
+        if (entry) entry.t = now; // 刷新访问时间（LRU）
+      }
+      missIndexes.forEach((i, j) => {
+        if (fresh[j]) {
+          cache[cacheKeyOf(texts[i])] = { v: fresh[j], t: now };
+        }
+      });
+      await saveCache(cache);
+    });
+  } catch (e) {
+    console.warn("[llm-translator] 更新翻译缓存失败（本次译文仍会返回）:", e && e.message ? e.message : e);
+  }
+
   return results;
 }
 
@@ -191,6 +249,9 @@ async function requestTranslation(texts, settings, isFinalAttempt) {
       model: settings.model,
       temperature: settings.temperature,
       max_tokens: MAX_TOKENS,
+      // 关闭思维链：Qwen3 等模型默认会输出 reasoning_content，
+      // 既浪费 token 又可能挤掉正文，导致 JSON 解析失败。
+      chat_template_kwargs: { enable_thinking: false },
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: JSON.stringify(texts) },
@@ -260,7 +321,13 @@ function parseTranslations(content, expectedLength, allowPlainText) {
   }
 
   if (!Array.isArray(arr)) {
-    throw new Error("模型返回的不是数组");
+    // 合法 JSON 但不是数组（裸字符串 "译文"、单对象 {"text": "译文"} 等）：
+    // 末次尝试同样走纯文本降级（字符串取本身，其余取原始输出），否则整批翻译直接失败。
+    if (!allowPlainText) {
+      throw new Error("模型返回的不是数组");
+    }
+    console.warn("[llm-translator] 模型返回的不是 JSON 数组，已按纯文本降级处理:\n" + text);
+    arr = [typeof arr === "string" ? arr : text];
   }
   // 长度不一致时补齐/截断，避免整批失败
   if (arr.length < expectedLength) {

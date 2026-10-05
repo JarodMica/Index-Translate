@@ -16,8 +16,10 @@ Run:
 """
 
 import argparse
+import collections
 import os
 import re
+import shutil
 import threading
 import time
 import traceback
@@ -60,8 +62,9 @@ JOBS_LOCK = threading.Lock()
 
 
 def _log(job, msg):
+    # deque(maxlen=200) trims to the tail in the same atomic C call (a list
+    # append + slice assignment could interleave between worker threads)
     job["log"].append(msg)
-    del job["log"][:-200]  # keep the tail
 
 
 def _set(job, **kw):
@@ -111,21 +114,35 @@ def run_pipeline(job):
 
         def dub_one(i, s, e):
             seg_in = os.path.join(seg_dir, f"in_{i:04d}.wav")
-            media.extract_segment(speech_wav, seg_in, s, e)
             try:
+                media.extract_segment(speech_wav, seg_in, s, e)
                 r = client.dub(seg_in, lang)
-                seg_out = os.path.join(seg_dir, f"out_{i:04d}.wav")
-                with open(seg_out, "wb") as f:
-                    f.write(r["_wav_bytes"])
-                dub_wavs[i] = seg_out
+                wav_bytes = r.get("_wav_bytes")
+                if wav_bytes is None:
+                    # text-only endpoint (/s2tt): no audio came back; keep the
+                    # original voice in the slot but still record the
+                    # translation (mirrors dub_video.py)
+                    dub_wavs[i] = seg_in
+                    _log(job, f"[{i + 1}/{n}] {s:.1f}-{e:.1f}s text-only response, "
+                              f"original kept | {str(r.get('zh', ''))[:30]} -> "
+                              f"{str(r.get('text', ''))[:30]}")
+                else:
+                    seg_out = os.path.join(seg_dir, f"out_{i:04d}.wav")
+                    with open(seg_out, "wb") as f:
+                        f.write(wav_bytes)
+                    dub_wavs[i] = seg_out
+                    _log(job, f"[{i + 1}/{n}] {s:.1f}-{e:.1f}s "
+                              f"{str(r.get('zh', ''))[:30]} -> "
+                              f"{str(r.get('text', ''))[:30]}")
                 translations[i] = r.get("text", "")
                 sources[i] = r.get("zh", "")
-                _log(job, f"[{i + 1}/{n}] {s:.1f}-{e:.1f}s "
-                          f"{str(sources[i])[:30]} -> {str(translations[i])[:30]}")
-            except RuntimeError as err:
-                # keep the original voice in the slot (e.g. source==target 422,
-                # or effect sounds the service rejects)
-                dub_wavs[i] = seg_in
+            except Exception as err:  # noqa: BLE001
+                # one bad segment must never kill the whole job: keep the
+                # original voice in its slot (e.g. source==target 422, effect
+                # sounds the service rejects, or an extract that failed). If the
+                # extract itself failed there is nothing to fall back to, and
+                # the slot is left empty (timeline skips None).
+                dub_wavs[i] = seg_in if os.path.exists(seg_in) else None
                 translations[i] = ""
                 sources[i] = ""
                 _log(job, f"[{i + 1}/{n}] {s:.1f}-{e:.1f}s failed, original kept: {err}")
@@ -147,7 +164,7 @@ def run_pipeline(job):
         kept_src = {}
         if back_lang:
             for i, (s, e) in enumerate(spans):
-                if translations[i] != "":
+                if translations[i] != "" or dub_wavs[i] is None:
                     continue
                 try:
                     r = client.dub(dub_wavs[i], back_lang, endpoint="/s2tt")
@@ -212,6 +229,11 @@ def run_pipeline(job):
         _set(job, status="done", step="done", step_label="完成",
              result={"case_id": case_id, "video": meta["video"]})
         _log(job, f"done: {out_mp4}")
+
+        # drop the per-job scratch dir (audio16k.wav, demucs stems, segs/, ...):
+        # the final artefacts live one level up, in results/<case_id>/, and are
+        # what job["result"]["video"] points at — never touched here.
+        shutil.rmtree(tmp, ignore_errors=True)
     except Exception as e:
         traceback.print_exc()
         _set(job, status="error", step_label="失败", error=str(e))
@@ -269,7 +291,8 @@ def create_app(s2st_url):
                "separate": separate, "workers": max(1, min(workers, 16)),
                "s2st_url": s2st_url, "upload": upload_path, "workdir": workdir,
                "status": "running", "step": "queued", "step_label": "排队中",
-               "seg_done": 0, "seg_total": 0, "log": [], "error": None,
+               "seg_done": 0, "seg_total": 0,
+               "log": collections.deque(maxlen=200), "error": None,
                "result": None, "created": time.time()}
         with JOBS_LOCK:
             JOBS[job_id] = job
@@ -291,9 +314,11 @@ def create_app(s2st_url):
         if not job:
             return JSONResponse({"ok": False, "error": "not found"}, status_code=404)
         with JOBS_LOCK:
-            return {k: job[k] for k in ("id", "filename", "lang", "status", "step",
+            data = {k: job[k] for k in ("id", "filename", "lang", "status", "step",
                                         "step_label", "seg_done", "seg_total",
-                                        "error", "log", "result")}
+                                        "error", "result")}
+            data["log"] = list(job["log"])  # deque -> JSON list
+            return data
 
     @app.get("/api/healthz")
     def healthz():

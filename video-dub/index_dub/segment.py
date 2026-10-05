@@ -28,6 +28,9 @@ def _energy_quietest_split(y, sr, t0, t1, min_cut=2.0):
 
 def _enforce_max_dur(spans, y, sr, max_dur):
     """Recursively split spans longer than max_dur at quiet internal points."""
+    if max_dur <= 0:
+        raise ValueError(f"max_dur must be > 0 seconds, got {max_dur} "
+                         "(splitting would never terminate)")
     out = []
     stack = list(spans)
     while stack:
@@ -115,6 +118,10 @@ def segment_ffmpeg(wav_path, max_dur=12.0, silence_thresh="-35dB",
 
 def segment_audio(wav_path, backend="auto", **kw):
     """Segment audio; backend = 'silero' | 'ffmpeg' | 'auto'."""
+    max_dur = kw.get("max_dur")
+    if max_dur is not None and max_dur <= 0:
+        # reject early: a non-positive cap cannot be satisfied by splitting
+        raise ValueError(f"max_dur must be > 0 seconds, got {max_dur}")
     if backend in ("auto", "silero"):
         try:
             return segment_silero(wav_path, **kw)

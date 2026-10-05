@@ -31,8 +31,9 @@ HTTP service.
 ## Setup
 
 ```bash
-pip install -r requirements.txt          # pipeline deps (repo root)
-pip install -r demo/requirements.txt     # web app deps
+cd <repo>/video-dub                      # the paths below are relative to video-dub/
+pip install -r requirements.txt          # pipeline deps (video-dub/requirements.txt)
+pip install -r demo/requirements.txt     # web app deps (video-dub/demo/requirements.txt)
 ffmpeg -version                          # ffmpeg must be on PATH
 ```
 

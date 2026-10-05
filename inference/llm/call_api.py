@@ -25,7 +25,7 @@ Usage:
     cat document.txt | python call_api.py -t en
 
     # 7. Start local OpenAI-compatible bridge proxy (e.g. for Immersive Translate / 沉浸式翻译)
-    python call_api.py --serve
+    python call_api.py --serve              # binds 127.0.0.1:8080; add --host 0.0.0.0 to expose on LAN
 """
 
 import argparse
@@ -40,13 +40,65 @@ import urllib.request
 DEFAULT_API_BASE = "https://index-translate.bilibili.com/v1"
 DEFAULT_MODEL = "Index-Translate-35B-A3B"
 
+# Language code -> Chinese name, as used by translate.py; kept in sync so both entry
+# points build byte-identical prompts.
 LANG_NAMES = {
     "en": "英语", "zh": "中文", "de": "德语", "fr": "法语", "es": "西班牙语",
     "ja": "日语", "ko": "韩语", "pt": "葡萄牙语", "ru": "俄语", "ar": "阿拉伯语",
     "it": "意大利语", "nl": "荷兰语", "pl": "波兰语", "ro": "罗马尼亚语",
     "sv": "瑞典语", "tr": "土耳其语", "hi": "印地语", "vi": "越南语",
     "th": "泰语", "id": "印尼语", "ms": "马来语", "fil": "菲律宾语",
+    "ukr_cyrl": "乌克兰语", "fas_arab": "波斯语", "ces_latn": "捷克语",
+    "ell_grek": "希腊语", "dan_latn": "丹麦语", "hun_latn": "匈牙利语",
+    "fin_latn": "芬兰语", "nob_latn": "书面挪威语", "slk_latn": "斯洛伐克语",
+    "bul_cyrl": "保加利亚语",
 }
+
+
+def parse_glossary_terms(glossary_input: str) -> list:
+    """Parse a glossary given as a JSON file path, an inline JSON string, or delimited pairs.
+
+    Mirrors translate.py::parse_glossary_terms so both entry points accept the same
+    inputs and render the same standardized "A→B" term pairs. stdlib only.
+    """
+    if not glossary_input:
+        return []
+    glossary_input = glossary_input.strip()
+
+    # Case 1: path of an existing JSON file: {"term": "target"}
+    if os.path.isfile(glossary_input):
+        try:
+            with open(glossary_input, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            if isinstance(data, dict):
+                return [f"{k.strip()}→{str(v).strip()}" for k, v in data.items()]
+        except Exception as e:
+            sys.stderr.write(f"Warning: failed to read glossary file {glossary_input}: {e}\n")
+
+    # Case 2: inline JSON string: {"term": "target"}
+    if glossary_input.startswith("{") and glossary_input.endswith("}"):
+        try:
+            data = json.loads(glossary_input)
+            if isinstance(data, dict):
+                return [f"{k.strip()}→{str(v).strip()}" for k, v in data.items()]
+        except Exception:
+            pass
+
+    # Case 3: delimited pairs — "k:v", "k：v" (full-width colon), "k->v", "k→v",
+    # separated by "," or "，" (full-width comma).
+    pairs = []
+    for item in glossary_input.replace("，", ",").split(","):
+        item = item.strip()
+        if not item:
+            continue
+        for sep in ("->", "→", ":", "："):
+            if sep in item:
+                k, v = item.split(sep, 1)
+                pairs.append(f"{k.strip()}→{v.strip()}")
+                break
+        else:
+            pairs.append(item)
+    return pairs
 
 
 def build_prompt(
@@ -55,32 +107,63 @@ def build_prompt(
     source_lang: str = "auto",
     instruction: str = "",
     glossary: str = "",
+    genre: str = "文本",
 ) -> str:
-    """Build standardized translation prompt matching Index-Translate instTrans template."""
+    """Build the canonical Index-Translate instTrans prompt.
+
+    Mirrors translate.py::trans_prompt for the glossary + --instruction usage, so the
+    free public API is prompted exactly like a local server. Deliberately stdlib-only:
+    this script must run without third-party packages.
+    """
     tgt_name = LANG_NAMES.get(target_lang.lower(), target_lang)
-    src_name = LANG_NAMES.get(source_lang.lower(), "") if source_lang and source_lang != "auto" else ""
+    has_source = bool(source_lang) and source_lang.lower() not in ("auto", "")
+    src_name = LANG_NAMES.get(source_lang.lower(), source_lang) if has_source else ""
 
     constraints = []
-    if instruction:
-        constraints.append(f"【指令要求】{instruction.strip()}")
 
+    # 1. Terminology glossary -> 【硬性要求】专名/术语对照: A→B、C→D
     if glossary:
-        pairs = []
-        for pair in glossary.split(","):
-            if ":" in pair:
-                k, v = pair.split(":", 1)
-                pairs.append(f"{k.strip()}→{v.strip()}")
-        if pairs:
-            constraints.append(f"【术语干预】必须按照术语表翻译：{', '.join(pairs)}")
+        terms = parse_glossary_terms(glossary)
+        if terms:
+            constraints.append(f"【硬性要求】专名/术语对照: {'、'.join(terms)}")
+
+    # 2. Free-form instruction -> 【注意】 unless it already carries a constraint tag
+    if instruction:
+        for line in instruction.strip().splitlines():
+            line = line.strip().lstrip("0123456789. ")
+            if not line:
+                continue
+            if line.startswith(("【硬性要求】", "【注意】", "【软性要求】")):
+                constraints.append(line)
+            else:
+                constraints.append(f"【注意】{line}")
 
     if constraints:
-        header = f"请将以下{src_name + ' ' if src_name else ''}文本翻译为{tgt_name}。"
-        req_lines = [f"{i+1}. {c}" for i, c in enumerate(constraints)]
+        header_src = f"{src_name}{genre}" if src_name else genre
+        header = f"请将以下{header_src}翻译成{tgt_name}，并且严格遵循所有约束要求。"
+        req_lines = [f"{i + 1}. {c}" for i, c in enumerate(constraints)]
+
+        # JSON input + JSON-preservation constraint gets the canonical JSON suffix.
+        stripped = text.strip()
+        is_json = False
+        if stripped.startswith("{") and stripped.endswith("}"):
+            try:
+                is_json = isinstance(json.loads(stripped), dict)
+            except Exception:
+                is_json = False
+
+        if is_json and any("JSON" in c or "json" in c for c in constraints):
+            suffix = "请以相同的 JSON 格式输出翻译结果，key 保持不变，value 为对应译文。只输出 JSON，不要有任何额外说明。"
+        else:
+            suffix = "只输出译文，不要有任何额外说明。"
+
         return (
             f"{header}\n\n"
-            f"【源文】\n{text.strip()}\n\n"
-            f"【约束要求】\n{chr(10).join(req_lines)}\n\n"
-            f"只输出译文，不要有任何额外说明。"
+            f"【源文】\n"
+            f"{stripped}\n\n"
+            f"【约束要求】\n"
+            f"{chr(10).join(req_lines)}\n\n"
+            f"{suffix}"
         )
 
     if src_name:
@@ -110,6 +193,10 @@ def call_completion(
         "temperature": temperature,
         "max_tokens": max_tokens,
         "stream": stream,
+        # Keep reasoning OFF: the model is trained to emit the translation directly, and
+        # with thinking enabled the CoT text can replace the translation in the response.
+        # Mirrors translate.py's extra_body and the --serve proxy default.
+        "chat_template_kwargs": {"enable_thinking": False},
     }
     data = json.dumps(payload).encode("utf-8")
     req = urllib.request.Request(
@@ -133,13 +220,20 @@ def call_completion(
                         break
                     try:
                         chunk = json.loads(body)
-                        delta = chunk.get("choices", [{}])[0].get("delta", {})
-                        content = delta.get("content", "")
-                        if content:
-                            sys.stdout.write(content)
-                            sys.stdout.flush()
                     except json.JSONDecodeError:
                         continue
+                    # Servers may send chunks without choices (or with an empty list):
+                    # guard instead of crashing with IndexError/AttributeError.
+                    if not isinstance(chunk, dict):
+                        continue
+                    choices = chunk.get("choices") or []
+                    if not choices:
+                        continue
+                    delta = choices[0].get("delta") or {}
+                    content = delta.get("content")
+                    if content:
+                        sys.stdout.write(content)
+                        sys.stdout.flush()
                 print()
             else:
                 res = json.loads(resp.read().decode("utf-8"))
@@ -155,8 +249,13 @@ def call_completion(
         sys.exit(1)
 
 
-def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
-    """Run lightweight OpenAI-compatible local proxy server for browser extensions like Immersive Translate."""
+def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE, host: str = "127.0.0.1"):
+    """Run lightweight OpenAI-compatible local proxy server for browser extensions like Immersive Translate.
+
+    Binds loopback only by default: the proxy forwards to a public endpoint without
+    authentication, so listening on 0.0.0.0 would expose it to the whole LAN. Pass
+    --host 0.0.0.0 explicitly if that is really wanted.
+    """
 
     class ProxyHandler(http.server.BaseHTTPRequestHandler):
         def log_message(self, format, *args):
@@ -215,7 +314,16 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
             except Exception:
                 pass
 
-            upstream_path = "/responses" if self.path.endswith("/responses") else "/chat/completions"
+            # Forward to the same endpoint that was requested: a client posting to
+            # /v1/completions must not be silently rewritten to /chat/completions.
+            if self.path.endswith("/chat/completions"):
+                upstream_path = "/chat/completions"
+            elif self.path.endswith("/completions"):
+                upstream_path = "/completions"
+            elif self.path.endswith("/responses"):
+                upstream_path = "/responses"
+            else:
+                upstream_path = "/chat/completions"
             upstream_url = f"{api_base.rstrip('/')}{upstream_path}"
             req = urllib.request.Request(
                 upstream_url,
@@ -256,14 +364,16 @@ def run_proxy_server(port: int = 8080, api_base: str = DEFAULT_API_BASE):
                 self.end_headers()
                 self.wfile.write(json.dumps({"error": str(e)}).encode("utf-8"))
 
-    server = http.server.ThreadingHTTPServer(("0.0.0.0", port), ProxyHandler)
+    server = http.server.ThreadingHTTPServer((host, port), ProxyHandler)
+    # 0.0.0.0 / :: are wildcard binds; show a URL that actually works locally.
+    display_host = "127.0.0.1" if host in ("0.0.0.0", "::") else host
     print("=" * 60)
-    print(f"Index-Translate Local Proxy started on http://127.0.0.1:{port}/v1")
+    print(f"Index-Translate Local Proxy listening on {host}:{port} — http://{display_host}:{port}/v1")
     print(f"Upstream API: {api_base}")
     print()
     print("沉浸式翻译 (Immersive Translate) 配置指南:")
     print("  1. 翻译服务选择: 自定义 (OpenAI 兼容)")
-    print(f"  2. 接口地址 (API URL): http://127.0.0.1:{port}/v1")
+    print(f"  2. 接口地址 (API URL): http://{display_host}:{port}/v1")
     print("  3. 模型 (Model): Index-Translate-35B-A3B")
     print("  4. API Key: 随意填写 (如 index)")
     print("=" * 60, flush=True)
@@ -296,11 +406,16 @@ def main():
         dest="serve_port",
         help="Start local OpenAI-compatible bridge proxy (default port: 8080) for tools like Immersive Translate",
     )
+    ap.add_argument(
+        "--host",
+        default="127.0.0.1",
+        help="Interface for --serve to bind (default: 127.0.0.1; 0.0.0.0 exposes it on the LAN)",
+    )
 
     args = ap.parse_args()
 
     if args.serve_port is not None:
-        run_proxy_server(port=args.serve_port, api_base=args.api_base)
+        run_proxy_server(port=args.serve_port, api_base=args.api_base, host=args.host)
         return
 
     text = args.text if args.text is not None else sys.stdin.read()

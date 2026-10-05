@@ -36,7 +36,8 @@ def main() -> None:
                     help="TARGET language: en/es/ja/zh (source is auto-detected)")
     ap.add_argument("--model-dir", "-m", default=os.environ.get("S2ST_MODEL_DIR", "./Index-Echo-S2ST-2B"),
                     help="local path of the downloaded model package")
-    ap.add_argument("-o", "--out", default=None, help="output wav path (default: dub_<lang>.wav)")
+    ap.add_argument("-o", "--out", default=None,
+                    help="output wav path (default: dub_<lang>.wav in the current directory)")
     args = ap.parse_args()
 
     model_dir = os.path.abspath(args.model_dir)
@@ -44,6 +45,15 @@ def main() -> None:
         ap.error(f"{model_dir} does not look like an Index-Echo-S2ST package "
                  f"(modeling_dubbing.py missing). Download with:\n"
                  f"  huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir {args.model_dir}")
+
+    # Resolve the user's input/output paths BEFORE chdir(): we switch into the model
+    # directory below, so a relative path would be resolved against the package instead
+    # of the caller's working directory (dub.py clip.wav would look for
+    # <model_dir>/clip.wav). Same treatment as ../../echo-s2tt/s2tt.py.
+    input_path = os.path.abspath(args.input)
+    if not os.path.isfile(input_path):
+        ap.error(f"input audio not found: {input_path}")
+    out_wav = os.path.abspath(args.out or f"dub_{args.lang}.wav")
 
     # The package is self-contained: weights + all inference code live inside.
     sys.path.insert(0, model_dir)
@@ -55,8 +65,7 @@ def main() -> None:
     model = DubbingBridgeModel.from_pretrained(model_dir)
     print("[dub] model loaded", file=sys.stderr, flush=True)
 
-    out_wav = args.out or f"dub_{args.lang}.wav"
-    wav, sr, info = model.dub(args.input, lang=args.lang, out_wav=out_wav, return_info=True)
+    wav, sr, info = model.dub(input_path, lang=args.lang, out_wav=out_wav, return_info=True)
     print(f"[dub] source lang : {info['src_lang']}", file=sys.stderr)
     print(f"[dub] transcript  : {info['zh']}", file=sys.stderr)
     print(f"[dub] translation : {info['tgt_raw']}", file=sys.stderr)

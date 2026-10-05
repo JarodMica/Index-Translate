@@ -18,6 +18,29 @@ def read_jsonl(path):
         return [json.loads(line) for line in f if line.strip()]
 
 
+def read_jsonl_tolerant(path):
+    """容错读取：跳过被中断写坏的半行/坏 JSON（仅用于可重建的 judge 缓存）。"""
+    rows = []
+    with Path(path).open(encoding='utf-8') as f:
+        for line in f:
+            if not line.strip():
+                continue
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    return rows
+
+
+def redact_api_base(api_base):
+    """summary 会随发布物公开：只保留 scheme+host，去掉 userinfo/路径/查询。"""
+    if not api_base:
+        return ''
+    scheme, _, rest = api_base.partition('://')
+    host = rest.split('/')[0].split('@')[-1] if rest else ''
+    return f'{scheme}://{host}' if host else '<redacted>'
+
+
 def parse_score(text):
     text = text.strip()
     if text.startswith('[') and text.endswith(']'):
@@ -92,16 +115,16 @@ def main():
     args = ap.parse_args()
     if args.limit < 0:
         ap.error('--limit must be nonnegative')
-    rows = read_jsonl(args.data_file)
-    if args.limit:
-        rows = rows[:args.limit]
-    if not rows or len({r['case_id'] for r in rows}) != len(rows):
+    dataset = read_jsonl(args.data_file)
+    if not dataset or len({r['case_id'] for r in dataset}) != len(dataset):
         ap.error('Empty dataset or duplicate case IDs')
-    preds = load_predictions(args.predictions,{r['case_id'] for r in rows})
+    # --limit 只缩小评分范围；合法 case_id 集合始终取未截断的完整数据集
+    rows = dataset[:args.limit] if args.limit else dataset
+    preds = load_predictions(args.predictions,{r['case_id'] for r in dataset})
     args.output_dir.mkdir(parents=True,exist_ok=True)
     config = dict(model=args.judge_model,api_base=args.judge_api_base,reasoning_effort='low')
     cache_file = args.output_dir/'judge_cache.jsonl'
-    cache = {r['key']:r['response'] for r in read_jsonl(cache_file)} if cache_file.exists() else {}
+    cache = {r['key']:r['response'] for r in read_jsonl_tolerant(cache_file)} if cache_file.exists() else {}
     client = None
     if not args.skip_judge:
         if not args.judge_api_base or not os.environ.get('JUDGE_API_KEY'):
@@ -144,7 +167,8 @@ def main():
             target_kind=m['target_kind'],target_syllables=m['target_syllables'],prediction=hyp,**metrics,
             quality=quality,score=(metrics['syllable_reward']+quality)/2 if quality is not None else None))
     summary = dict(formal_result=not args.limit and not args.skip_judge,subset=bool(args.limit),skip_judge=args.skip_judge,
-        data_sha256=hashlib.sha256(args.data_file.read_bytes()).hexdigest(),judge=config if client else None,
+        data_sha256=hashlib.sha256(args.data_file.read_bytes()).hexdigest(),
+        judge=dict(config,api_base=redact_api_base(config['api_base'])) if client else None,
         prediction_coverage=sum(bool(r['prediction'].strip()) for r in scored)/len(scored),
         overall=aggregate(scored),controllability=controllability(scored))
     for field in ['target_language','target_kind']:

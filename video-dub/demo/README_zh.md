@@ -28,10 +28,13 @@
 ## 安装
 
 ```bash
-# 1. 配音管线依赖（仓库根目录）
+# 在 video-dub/ 目录下执行（下面的相对路径都相对它）
+cd <repo>/video-dub
+
+# 1. 配音管线依赖（video-dub/requirements.txt）
 pip install -r requirements.txt
 
-# 2. Web 应用依赖（本目录）
+# 2. Web 应用依赖（video-dub/demo/requirements.txt）
 pip install -r demo/requirements.txt
 
 # 3. ffmpeg 需要在 PATH 中

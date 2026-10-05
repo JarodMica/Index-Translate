@@ -47,7 +47,7 @@ python dub_video.py input.mp4 --lang ja --max-seg 10
 | 人声分离 | `index_dub/separate.py` | 默认开启，demucs two-stem；BGM 回填到配音下面，`--no-separate` 关闭、`--no-bgm` 丢弃伴奏 |
 | 切句 | `index_dub/segment.py` | silero-vad 找语音段，短停顿合并，超长段在最安静点二次切分，全部带时间戳 |
 | 配音 | `index_dub/s2st.py` | `POST {url}/s2st`（multipart: `file`=wav, `lang`=目标语言）→ `audio_b64`(24kHz wav) + 源文 + 译文 |
-| 对齐合成 | `index_dub/timeline.py` | 每句放回原始时间段，过长按比例 atempo 变速（上限 `--max-stretch`），越界截断，静音补齐 |
+| 对齐合成 | `index_dub/timeline.py` | 每句放回原始时间段，与时间槽不一致时向两个方向变速（上限 `--max-stretch`，过短也会放慢填充），越界截断，静音补齐 |
 | 封装 | `index_dub/media.py` | ffmpeg 音轨替换，视频流 copy 不重编码 |
 
 ## 推理服务
@@ -69,4 +69,5 @@ DubbingBridgeModel 一体化包，单卡 ~22G 显存）。
 
 - 源语言自动识别仅支持中文/英文（`zh/en`），其他源语言暂不支持
 - 语速差异大时（如中→英长句）会有最多 `--max-stretch` 倍的变速，极限情况下按时间槽截断
+- 变速是双向的：译文比原时间槽短时也会**放慢**填补（同样受 `--max-stretch` 上限约束），因此很短的句子听起来可能被拉长
 - 单人说话效果最佳；多人重叠说话/强 BGM 场景依赖人声分离（默认已开启）

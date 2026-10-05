@@ -52,7 +52,7 @@ Target languages: `en / es / ja / zh` (source auto-detected: Chinese/English).
 | Vocal separation | `index_dub/separate.py` | on by default, demucs two-stem; the instrumental is mixed back under the dub. `--no-separate` skips it, `--no-bgm` drops the music |
 | Segmentation | `index_dub/segment.py` | silero-vad speech spans, short gaps merged, over-long spans re-split at their quietest point; all with timestamps |
 | Dubbing | `index_dub/s2st.py` | `POST {url}/s2st` (multipart: `file`=wav, `lang`=target) → `audio_b64` (24 kHz wav) + source/translated text; `--workers N` parallel requests |
-| Timeline assembly | `index_dub/timeline.py` | each dub goes back into its original slot, atempo-stretched if too long (cap `--max-stretch`), silence elsewhere |
+| Timeline assembly | `index_dub/timeline.py` | each dub goes back into its original slot: stretched to fit the slot in both directions (`--max-stretch` cap, so a short dub is slowed down to fill the time), silence elsewhere |
 | Muxing | `index_dub/media.py` | ffmpeg audio-track replacement, video stream copied (no re-encode) |
 
 ## Inference service
@@ -74,6 +74,7 @@ official DubbingBridgeModel export package (single GPU, ~22 GB VRAM for 9B).
 
 - Source language auto-detection supports Chinese/English only
 - Fast speech + long translations may be time-stretched up to `--max-stretch` (default 1.5×), hard-truncated to the slot beyond that
+- The stretch goes both ways: a dub shorter than its slot is **slowed down** (up to the same `--max-stretch` cap) so it still fills the original timing — very short utterances can therefore sound dragged out
 - Best with a single speaker; overlapping speakers / heavy BGM rely on vocal separation (on by default)
 
 ## License

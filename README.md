@@ -75,11 +75,20 @@ The links below provide **2B, 9B, and 35B-A3B (preview)** text-model checkpoints
 
 #### Option 1: Free Online API (Zero GPU Setup)
 
-You can call our free online API directly without local GPUs:
+You can call our free online API directly without local GPUs. We recommend using our zero-dependency Python script [`inference/llm/call_api.py`](inference/llm/call_api.py):
 
 ```bash
-# Using the zero-dependency Python script
+# 1. Quick command-line translation (zero dependencies, works out-of-the-box)
 python inference/llm/call_api.py "你好，世界。今天天气不错，我们去公园散步吧。" --target en
+
+# 2. Local proxy bridge for browser extensions (e.g. Immersive Translate / 沉浸式翻译)
+# Browser extensions require a local bridge proxy due to CORS/WAF headers and thinking tag suppression:
+python inference/llm/call_api.py --serve
+# Then configure Immersive Translate:
+# - Service: Custom / OpenAI
+# - API URL: http://127.0.0.1:8080/v1
+# - Model: Index-Translate-35B-A3B
+# - API Key: Any string (e.g. index)
 
 # Option A: Standard Chat Completions API (OpenAI-compatible)
 curl https://index-translate.bilibili.com/v1/chat/completions \
@@ -97,6 +106,9 @@ curl https://index-translate.bilibili.com/v1/responses \
     "input": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"
   }'
 ```
+
+> [!TIP]
+> **Immersive Translate Notice**: When using browser extensions like Immersive Translate (沉浸式翻译), direct connections to public endpoints may encounter browser CORS restrictions, WAF header protections, or unintended chain-of-thought (CoT) reasoning output. Please run the local proxy via [`inference/llm/call_api.py`](inference/llm/call_api.py) (`python inference/llm/call_api.py --serve`), and configure the API URL in the extension to `http://127.0.0.1:8080/v1` with model `Index-Translate-35B-A3B`.
 
 #### Option 2: Self-hosted local vLLM
 

@@ -29,6 +29,22 @@ GPU memory (bf16): 2B ≈ 8 GB, 9B ≈ 24 GB, plus KV cache for long contexts.
 
 ## Use
 
+### Free Public Online API & Immersive Translate Proxy
+
+Call the online **Index-Translate-35B-A3B** model without a local GPU using our zero-dependency [`call_api.py`](call_api.py):
+
+```bash
+# Quick command-line translation (stdlib-only; supports -t language, --stream, -g glossary, --instruction)
+python call_api.py "你好，世界。" --target en
+
+# Local bridge proxy for browser extensions (e.g. Immersive Translate / 沉浸式翻译)
+python call_api.py --serve
+```
+
+> **Immersive Translate configuration**: Browser extensions cannot connect directly due to CORS restrictions, WAF protections, and the need to disable CoT thinking output. Run the local proxy `python call_api.py --serve`, then select custom OpenAI in Immersive Translate with API URL `http://127.0.0.1:8080/v1` and model `Index-Translate-35B-A3B`.
+
+### Self-Hosted Local Model Invocation
+
 ```bash
 pip install openai httpx
 

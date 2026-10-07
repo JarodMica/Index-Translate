@@ -27,6 +27,22 @@ pip install -U vllm     # 需要带 Qwen3.5 支持的版本（实测 0.29）
 
 ## 调用
 
+### 免费公网 API 调用与沉浸式翻译本地代理
+
+无需本地显卡，可直接通过零依赖脚本 [`call_api.py`](call_api.py) 调用线上 **Index-Translate-35B-A3B**：
+
+```bash
+# 命令行快速调用（标准库即开即用，支持 -t 指定语种、--stream 流式、-g 术语表、--instruction 约束等）
+python call_api.py "你好，世界。" --target en
+
+# 沉浸式翻译（Immersive Translate）等浏览器插件本地代理服务
+python call_api.py --serve
+```
+
+> **沉浸式翻译配置**：沉浸式翻译等浏览器插件直连公网端点时，受限于浏览器跨域限制 (CORS)、WAF 保护以及思维链 (CoT) 格式要求，请在本地运行 `python call_api.py --serve`。在插件设置中选择自定义 OpenAI 翻译服务，接口地址填 `http://127.0.0.1:8080/v1`，模型填 `Index-Translate-35B-A3B` 即可。
+
+### 本地私有化部署模型调用
+
 ```bash
 pip install openai httpx
 

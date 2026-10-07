@@ -77,11 +77,20 @@ Index-Translate 是基于 Qwen3.5 构建的多语言翻译模型家族。文本�
 
 #### 方式一：免费公网 API 快速调用（无需本地 GPU）
 
-你可以直接免费调用公网 35B-A3B 模型接口，无需本地显卡环境：
+你可以直接免费调用公网 35B-A3B 模型接口，无需本地显卡环境。推荐使用官方零外部依赖 Python 脚本 [`inference/llm/call_api.py`](inference/llm/call_api.py)：
 
 ```bash
-# 使用零外部依赖 Python 脚本直接调用
+# 1. 命令行快速翻译（零外部依赖，标准库即开即用）
 python inference/llm/call_api.py "你好，世界。今天天气不错，我们去公园散步吧。" --target en
+
+# 2. 沉浸式翻译（Immersive Translate）等浏览器插件配置（需启动本地代理）：
+# 浏览器扩展受同源策略 (CORS) 与请求头限制，且需强制关闭思考输出，请在本地启动代理服务：
+python inference/llm/call_api.py --serve
+# 启动后在沉浸式翻译中配置：
+# - 翻译服务: 自定义 / OpenAI
+# - 接口地址 (API URL): http://127.0.0.1:8080/v1
+# - 模型名称 (Model): Index-Translate-35B-A3B
+# - API Key: 随意填写（如 index）
 
 # 选项 A：标准 Chat Completions API（兼容 OpenAI 规范）
 curl https://index-translate.bilibili.com/v1/chat/completions \
@@ -99,6 +108,9 @@ curl https://index-translate.bilibili.com/v1/responses \
     "input": "请将以下文本翻译为英语，直接输出翻译结果，不要进行任何解释。\n\n你好，世界。"
   }'
 ```
+
+> [!TIP]
+> **沉浸式翻译 (Immersive Translate) 提醒**：沉浸式翻译等浏览器插件直连公网端点时，受限于浏览器跨域限制 (CORS)、WAF 保护以及思维链 (CoT) 格式要求，请使用 [`inference/llm/call_api.py`](inference/llm/call_api.py) 提供的本地代理模式（`python inference/llm/call_api.py --serve`）。在插件中将自定义 OpenAI 接口地址填写为 `http://127.0.0.1:8080/v1`、模型选择 `Index-Translate-35B-A3B` 即可流畅体验！
 
 #### 方式二：本地私有化部署（vLLM）
 

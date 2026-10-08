@@ -20,6 +20,11 @@
 - Hugging Face：[`IndexTeam/Index-Translate-2B`](https://huggingface.co/IndexTeam/Index-Translate-2B) · [`IndexTeam/Index-Translate-9B`](https://huggingface.co/IndexTeam/Index-Translate-9B)
 - ModelScope：[IndexTeam 组织主页](https://modelscope.cn/organization/IndexTeam)（同名仓库）
 
+> [!TIP]
+> **想要更丰富的功能（如 PDF / EPUB 翻译、移动端支持、丰富的排版规则）？**
+> 你也可以使用第三方热门扩展 **沉浸式翻译 (Immersive Translate)**，支持直连免费公网 35B API 或本地部署模型！
+> 详见图文教程：**[沉浸式翻译配置教程](../docs/immersive_translate_zh.md)**。
+
 ## 目录结构
 
 ```

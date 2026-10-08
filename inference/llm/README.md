@@ -41,7 +41,7 @@ python call_api.py "你好，世界。" --target en
 python call_api.py --serve
 ```
 
-> **Immersive Translate configuration**: Browser extensions cannot connect directly due to CORS restrictions, WAF protections, and the need to disable CoT thinking output. Run the local proxy `python call_api.py --serve`, then select custom OpenAI in Immersive Translate with API URL `http://127.0.0.1:8080/v1` and model `Index-Translate-35B-A3B`.
+> 📖 **Immersive Translate Setup Guide**: Browser extensions require a local bridge proxy due to CORS restrictions, WAF protections, and the need to disable CoT thinking output. Run `python call_api.py --serve`, then follow our step-by-step tutorial: **[【Guide】Immersive Translate Configuration Tutorial](../../docs/immersive_translate.md)**.
 
 ### Self-Hosted Local Model Invocation
 

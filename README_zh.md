@@ -110,7 +110,9 @@ curl https://index-translate.bilibili.com/v1/responses \
 ```
 
 > [!TIP]
-> **沉浸式翻译 (Immersive Translate) 提醒**：沉浸式翻译等浏览器插件直连公网端点时，受限于浏览器跨域限制 (CORS)、WAF 保护以及思维链 (CoT) 格式要求，请使用 [`inference/llm/call_api.py`](inference/llm/call_api.py) 提供的本地代理模式（`python inference/llm/call_api.py --serve`）。在插件中将自定义 OpenAI 接口地址填写为 `http://127.0.0.1:8080/v1`、模型选择 `Index-Translate-35B-A3B` 即可流畅体验！
+> 🌐 **想要在浏览器一键双语畅读网页？沉浸式翻译 (Immersive Translate) 开箱即用！**
+> 针对浏览器插件特有的跨域保护 (CORS)、WAF 协议头以及大模型思维链 (CoT) 抑制需求，官方提供零配置本地桥接代理。
+> 👉 **[【图文配置教程】沉浸式翻译对接 Index-Translate 完整指南（附高清实操截图与参数避坑）](docs/immersive_translate_zh.md)**
 
 #### 方式二：本地私有化部署（vLLM）
 
@@ -349,7 +351,8 @@ NAtIveLong 不包含小说原文或参考译文；BWB 需自行获取官方语�
 
 ## 应用工具
 
-- **[浏览器扩展](extension/README_zh.md)：** 通过本地部署的模型翻译网页，支持 Chrome、Edge 与 Firefox。
+- **[沉浸式翻译配置教程](docs/immersive_translate_zh.md)：** 图文教程，通过公网 35B 免费 API 或本地模型为「沉浸式翻译 (Immersive Translate)」插件提供高品质网页双语对照翻译。
+- **[内置浏览器扩展](extension/README_zh.md)：** 官方内置极简网页翻译插件，支持 Chrome、Edge 与 Firefox，纯原生 JS 零构建。
 - **[视频配音管线](video-dub/README_zh.md)：** 完成音频提取、人声分离、语音切分、翻译配音及时间轴对齐，输出配音视频。
 
 ## 交流社区

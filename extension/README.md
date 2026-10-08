@@ -20,6 +20,11 @@ Model weights (either source):
 - Hugging Face: [`IndexTeam/Index-Translate-2B`](https://huggingface.co/IndexTeam/Index-Translate-2B) · [`IndexTeam/Index-Translate-9B`](https://huggingface.co/IndexTeam/Index-Translate-9B)
 - ModelScope: [IndexTeam organization](https://modelscope.cn/organization/IndexTeam) (same repository names)
 
+> [!TIP]
+> **Prefer feature-rich extensions with PDF/EPUB support and mobile sync?**
+> You can also connect the popular **Immersive Translate** browser extension to Index-Translate!
+> See our step-by-step tutorial: **[Immersive Translate Configuration Guide](../docs/immersive_translate.md)**.
+
 ## Project layout
 
 ```

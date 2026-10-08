@@ -39,7 +39,7 @@ python call_api.py "你好，世界。" --target en
 python call_api.py --serve
 ```
 
-> **沉浸式翻译配置**：沉浸式翻译等浏览器插件直连公网端点时，受限于浏览器跨域限制 (CORS)、WAF 保护以及思维链 (CoT) 格式要求，请在本地运行 `python call_api.py --serve`。在插件设置中选择自定义 OpenAI 翻译服务，接口地址填 `http://127.0.0.1:8080/v1`，模型填 `Index-Translate-35B-A3B` 即可。
+> 📖 **沉浸式翻译图文教程**：沉浸式翻译等浏览器插件直连公网端点时，受限于浏览器跨域限制 (CORS)、WAF 保护以及思维链 (CoT) 格式要求，请在本地运行 `python call_api.py --serve`。详细图文配置步骤与常见问题排查见：**[【图文教程】沉浸式翻译配置指南](../../docs/immersive_translate_zh.md)**。
 
 ### 本地私有化部署模型调用
 

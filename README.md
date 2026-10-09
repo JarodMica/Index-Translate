@@ -28,7 +28,51 @@ Index-Translate is a family of multilingual translation models built on Qwen3.5.
 
 The radar includes **35B-A3B (preview), 9B, and 2B**, with fixed per-axis min–max ranges across all 14 models. Its seven axes are WMT, FLORES, instruction following, low-resource translation, subtitles, MEME, and books/fiction. Instruction following averages instTrans and IFMTBench IFscore. The normalized scale is not an accuracy percentage. The gray dashed line combines the best non-Index score on each axis and does not represent one model. [Raw category scores](docs/assets/seven_category_scores_raw.csv) · [Figure notes](docs/assets/README.md) · [Individual benchmark results](docs/evaluation.md).
 
-[News](#news) · [⚡ Free API](#option-1-free-online-api-zero-gpu-setup) · [Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+[News](#news) · [Native Windows setup](#native-windows-setup-with-uv) · [⚡ Free API](#option-1-free-online-api-zero-gpu-setup) · [Models](#models) · [Quick start](#quick-start) · [Instruction Following](#instruction-following--constrained-translation) · [Examples](#examples) · [Evaluation](#evaluation) · [Benchmarks](#benchmarks) · [Applications](#applications) · [TODO](#todo) · [Papers and citation](#papers-and-citation)
+
+## Native Windows setup with uv
+
+This fork includes a Python 3.12 environment for the file-based inference tools.
+For local Index-Echo speech-to-speech inference, use 64-bit Windows, an NVIDIA
+GPU with BF16 support and at least 12 GB available VRAM for 2B, and a driver
+compatible with CUDA 13.0. Install [Git](https://git-scm.com/downloads/win) and
+[uv](https://docs.astral.sh/uv/getting-started/installation/) first. FFmpeg must
+be on `PATH` for video and formats that need an external audio decoder.
+The CUDA toolkit, WSL, and a C++ compiler are not needed for this environment's
+Windows wheels. Other model servers, including vLLM, have separate requirements.
+
+Run in PowerShell:
+
+```powershell
+git clone https://github.com/JarodMica/Index-Translate.git
+cd Index-Translate
+uv sync --extra cu130
+```
+
+The CUDA extra selects official PyTorch GPU wheels. Keep `--extra cu130` on
+`uv run` commands so uv retains that selection. Model weights are a separate
+download and stay outside Git:
+
+```powershell
+uv run --extra cu130 python inference/echo-s2st/download.py
+uv run --extra cu130 python -X utf8 inference/echo-s2st/dub.py models/Index-Echo-S2ST-2B/samples/input_en.wav --lang es --model-dir models/Index-Echo-S2ST-2B -o outputs/spanish.wav
+```
+
+Open `outputs/spanish.wav` to hear the bundled English sample translated into
+Spanish. Change `--lang es` to `--lang ja` for Japanese, or supply your own
+short English or Chinese audio file. `-X utf8` makes UTF-8 model metadata work
+with Windows locales. The Windows Japanese frontend uses the prebuilt
+`pyopenjtalk-plus` package, which provides the `pyopenjtalk` import.
+The dubbing wrapper saves WAV with SoundFile, avoiding TorchCodec's FFmpeg DLL
+requirements for output encoding.
+Use `download.py --size 9b` for the larger official package, then pass
+`--model-dir models/Index-Echo-S2ST-9B` to `dub.py`. Allow at least 24 GB
+available VRAM for 9B. Each package includes its own translator and trained bridge.
+
+These commands provide file-based inference. Experimental real-time capture,
+chunking and custom acceleration code are not included in this fork.
+See [speech-to-speech usage](inference/echo-s2st/README.md) for model directions
+and [the other inference tools](inference/README.md) for task-specific commands.
 
 ## News
 

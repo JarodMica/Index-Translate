@@ -7,7 +7,7 @@ speaker's voice (ST LM -> Hidden2CV mapper -> CosyVoice3, single package).
 
 Usage:
     # one-time download (~13 GB for 2B, ~26 GB for 9B)
-    huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir ./Index-Echo-S2ST-2B
+    python download.py --size 2b --model-dir ./Index-Echo-S2ST-2B
 
     python dub.py input.wav --lang en --model-dir ./Index-Echo-S2ST-2B -o dub_en.wav
     python dub.py english.wav --lang zh --model-dir ./Index-Echo-S2ST-2B -o dub_zh.wav
@@ -42,9 +42,11 @@ def main() -> None:
 
     model_dir = os.path.abspath(args.model_dir)
     if not os.path.isfile(os.path.join(model_dir, "modeling_dubbing.py")):
+        downloader = os.path.join(os.path.dirname(os.path.abspath(__file__)), "download.py")
         ap.error(f"{model_dir} does not look like an Index-Echo-S2ST package "
                  f"(modeling_dubbing.py missing). Download with:\n"
-                 f"  huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir {args.model_dir}")
+                 f'  uv run --extra cu130 python "{downloader}" --size 2b --model-dir "{args.model_dir}" '
+                 f"(use --size 9b for the larger package)")
 
     # Resolve the user's input/output paths BEFORE chdir(): we switch into the model
     # directory below, so a relative path would be resolved against the package instead
@@ -65,7 +67,12 @@ def main() -> None:
     model = DubbingBridgeModel.from_pretrained(model_dir)
     print("[dub] model loaded", file=sys.stderr, flush=True)
 
-    wav, sr, info = model.dub(input_path, lang=args.lang, out_wav=out_wav, return_info=True)
+    # The released lower-level API returns audio without invoking
+    # torchaudio/TorchCodec's platform-specific FFmpeg encoder.
+    wav, sr, info = model._pipe.dub(input_path, lang=args.lang, out_wav=None)
+    import soundfile as sf
+    os.makedirs(os.path.dirname(out_wav), exist_ok=True)
+    sf.write(out_wav, wav.detach().cpu().numpy().T, sr, subtype="PCM_16")
     print(f"[dub] source lang : {info['src_lang']}", file=sys.stderr)
     print(f"[dub] transcript  : {info['zh']}", file=sys.stderr)
     print(f"[dub] translation : {info['tgt_raw']}", file=sys.stderr)

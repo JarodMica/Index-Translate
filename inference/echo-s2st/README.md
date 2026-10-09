@@ -10,11 +10,16 @@ all in one self-contained package).
 
 ## Quick start
 
+For native Windows, follow the repository's [uv setup](../../README.md#native-windows-setup-with-uv).
+After installing, prefix the commands below with `uv run --extra cu130` and
+use `python -X utf8` on Windows. The pinned model downloader is
+`uv run --extra cu130 python inference/echo-s2st/download.py --size 2b`.
+
 See the [shared settings table](../../README.md#default-inference-settings) for text decoding, speech sampling, token budgets, seed, speed, and sample rate. The table distinguishes CLI options from fixed package settings and lower-level API controls.
 
 ```bash
 # download the package (~13 GB for 2B, ~26 GB for 9B)
-huggingface-cli download IndexTeam/Index-Echo-S2ST-2B --local-dir ./Index-Echo-S2ST-2B
+python download.py --size 2b --model-dir ./Index-Echo-S2ST-2B
 
 # install deps (see the model repo's README for the full pinned list)
 pip install torch==2.11.0 torchaudio transformers==5.6.0 librosa onnxruntime \
@@ -31,7 +36,7 @@ python dub.py input_en.wav --lang zh -o dub_zh.wav
 directions: zh→en/es/ja and en→zh/es/ja.
 
 `dub.py` prints the transcript and translation to stderr and writes the
-dubbed wav. For the underlying `DubbingBridgeModel` Python API (batch use,
+dubbed wav using SoundFile. For the underlying `DubbingBridgeModel` Python API (batch use,
 `return_info`, retries), see the model repo README. Each model package also
 ships its own `samples/` (input clips + reference dubs) and a
 `verify_export.py` self-check.

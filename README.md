@@ -41,13 +41,18 @@ be on `PATH` for video and formats that need an external audio decoder.
 The CUDA toolkit, WSL, and a C++ compiler are not needed for this environment's
 Windows wheels. Other model servers, including vLLM, have separate requirements.
 
-Run in PowerShell:
+The Windows setup and browser demos currently live on the `windows-uv-setup`
+branch. Switch to it before installing. Run in PowerShell:
 
 ```powershell
 git clone https://github.com/JarodMica/Index-Translate.git
 cd Index-Translate
+git switch windows-uv-setup
 uv sync --extra cu130
 ```
+
+If you already cloned the repository, run `git fetch origin` before
+`git switch windows-uv-setup`, then run `uv sync --extra cu130`.
 
 The CUDA extra selects official PyTorch GPU wheels. Keep `--extra cu130` on
 `uv run` commands so uv retains that selection. Model weights are a separate

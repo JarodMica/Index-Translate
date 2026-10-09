@@ -10,7 +10,8 @@ all in one self-contained package).
 
 ## Browser interfaces
 
-From the repository root, after `uv sync --extra cu130`, run:
+From the repository root on the `windows-uv-setup` branch, after
+`uv sync --extra cu130`, run:
 
 ```powershell
 uv run --extra cu130 python -X utf8 inference/echo-s2st/demo.py

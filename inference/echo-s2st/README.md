@@ -8,6 +8,19 @@ a Chinese or English clip into English / Spanish / Japanese / Chinese while
 preserving the source speaker's voice (ST LM → Hidden2CV mapper → CosyVoice3,
 all in one self-contained package).
 
+## Browser interfaces
+
+From the repository root, after `uv sync --extra cu130`, run:
+
+```powershell
+uv run --extra cu130 python -X utf8 inference/echo-s2st/demo.py
+```
+
+The Gradio clip/recording interface opens at `http://localhost:7860/` and the
+continuous microphone/browser-audio interface is at `http://localhost:7860/live`.
+The model downloads on first use. See the [browser demo instructions](../../README.md#browser-demos)
+for capture controls, model selection, and the limits of the standard runtime.
+
 ## Quick start
 
 For native Windows, follow the repository's [uv setup](../../README.md#native-windows-setup-with-uv).

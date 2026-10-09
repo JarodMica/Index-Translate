@@ -69,8 +69,48 @@ Use `download.py --size 9b` for the larger official package, then pass
 `--model-dir models/Index-Echo-S2ST-9B` to `dub.py`. Allow at least 24 GB
 available VRAM for 9B. Each package includes its own translator and trained bridge.
 
-These commands provide file-based inference. Experimental real-time capture,
-chunking and custom acceleration code are not included in this fork.
+### Browser demos
+
+Launch the Gradio interface from the repository root:
+
+```powershell
+uv run --extra cu130 python -X utf8 inference/echo-s2st/demo.py
+```
+
+Open **http://localhost:7860/** to upload or record a short clip, load a bundled
+sample, select a target language, and play the translation. First use downloads
+the official 2B package automatically. **Get model ready** loads it before use;
+**Unload model** releases GPU memory. Launch with `--size 9b` for the larger
+package or `--model-dir path/to/package` for an existing offline package.
+Change the port with `--port 7861` if needed.
+
+Open **http://localhost:7860/live** for continuous microphone or browser-tab
+audio capture. Click **Get translator ready** before speaking or playing media.
+Segment length and pause threshold are adjustable. Phrases are processed in
+order, and translated playback is automatic. **Stop capture** finishes accepted
+phrases; **Cancel** stops playback and discards pending work. In-flight GPU work
+finishes before its resources can be reused.
+
+Use headphones for microphone capture. For browser audio, open the demo in
+Chrome or Edge, share the source tab with **Share audio** enabled, and leave
+**Hear original audio too** unchecked. Source muting depends on browser support.
+Whole-system capture cannot reliably mute the original source; automatic
+translation playback is disabled when it could feed back into the capture.
+
+The continuous demo processes complete phrases using the standard runtime.
+It is not token-streaming translation and may be slower than the incoming
+speech. Its bounded queue stops capture and reports overload rather than
+silently accumulating an unlimited backlog. RTF measures inference through
+finished audio; input collection and queued playback add to the total delay.
+The demos use the released BF16 model and preserve the original FP32 speech
+generator. Custom FP8 kernels, CUDA graphs, sampling accelerators, acoustic
+compilation, and duration fitting are not included.
+
+Generated audio and metadata stay in the ignored `outputs/demos/` directory;
+captured source chunks are temporary and are removed when the session ends.
+The server binds to the local machine only. Audio is processed locally after
+the model download.
+
 See [speech-to-speech usage](inference/echo-s2st/README.md) for model directions
 and [the other inference tools](inference/README.md) for task-specific commands.
 

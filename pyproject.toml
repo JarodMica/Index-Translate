@@ -35,6 +35,11 @@ dependencies = [
     "openai-whisper==20250625",
     "pyopenjtalk-plus==0.4.1.post9; sys_platform == 'win32'",
     "silero-vad>=6.0,<7",
+    "gradio>=6.30,<7",
+    "fastapi>=0.143,<1",
+    "uvicorn>=0.54,<1",
+    "websockets>=17.2,<18",
+    "webrtcvad-wheels==2.0.14.post1",
 ]
 
 [project.optional-dependencies]

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Index-Echo continuous audio translator</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#10151e;color:#e7edf8}body{max-width:1000px;margin:32px auto;padding:0 24px}h1{font-size:30px;margin-bottom:10px}p{color:#aebbd0;line-height:1.6}a{color:#8bbaff}.panel{background:#192231;border:1px solid #30415b;border-radius:16px;padding:22px;margin:18px 0}.settings{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px}label{display:block;font-weight:600}select,input{width:100%;margin-top:12px}select,button{font:inherit;padding:12px;border-radius:9px;border:1px solid #50678a;background:#23314a;color:white}button{cursor:pointer;margin:6px 8px 0 0}button.primary{background:#286ad9;border-color:#286ad9}button:disabled{opacity:.45;cursor:default}.badge{color:#9eb8db;font-size:14px}#status{padding:14px 0;min-height:26px}#status.error{color:#ffb7af}#meter{width:100%;height:8px;margin:12px 0}.metrics{display:flex;gap:30px;flex-wrap:wrap}.metrics strong{display:block;color:white;font-size:22px}.chunk{border-top:1px solid #30415b;padding:18px 0}.chunk p{margin:8px 0}.chunk .translated{color:#d8e7ff;font-size:19px}audio{width:100%;margin-top:10px}small{color:#aebbd0}#history:empty:after{content:'Translated phrases will appear here.';color:#aebbd0}input[type=range]{accent-color:#70aaff}
+</style>
+<h1>Continuous speech translation</h1>
+<p>Translate Chinese or English speech from your microphone or a browser tab. Completed phrases are translated locally while capture continues. The standard model may fall behind continuous speech; source collection and queued playback add to the delay.</p>
+<a href="/">Back to clip translator</a>
+<div class="panel settings">
+ <label>Audio source<select id="source"><option value="microphone">Microphone</option><option value="computer">Computer or browser audio</option></select></label>
+ <label>Target language<select id="target"><option value="es">Spanish</option><option value="ja" selected>Japanese</option><option value="zh">Chinese</option><option value="en">English</option></select></label>
+ <label>Maximum segment length: <span id="lengthValue">4</span> seconds<input id="length" type="range" min="2" max="12" step="0.5" value="4"><small>Use longer segments for more context. A pause can end a segment earlier.</small></label>
+ <label>Pause before translating: <span id="pauseValue">0.35</span> seconds<input id="pause" type="range" min="0.3" max="1.5" step="0.05" value="0.35"><small>Increase this if natural pauses split your sentences too early.</small></label>
+</div>
+<div class="panel"><p id="sourceHelp">Use headphones to keep translated playback out of your microphone.</p><label><input id="hearOriginal" type="checkbox" style="width:auto;margin-right:8px">Hear original audio too</label><label><input id="autoplay" type="checkbox" checked style="width:auto;margin-right:8px">Play translated phrases automatically</label><small id="captureInfo">Only audio is sent to the local translator.</small></div>
+<div class="panel">
+ <button id="prepare">Get translator ready</button><button id="start" class="primary">Start capture</button><button id="stop" disabled>Stop capture and finish phrases</button><button id="cancel" disabled>Cancel and stop playback</button>
+ <div id="status" role="status">Click Get translator ready before playing source media. First use downloads and loads the official model.</div>
+ <meter id="meter" min="0" max="0.2" value="0"></meter>
+ <div class="metrics"><div><strong id="pending">0</strong><small>Phrases pending</small></div><div><strong id="firstAudio">—</strong><small>Time to first audio after queuing</small></div><div><strong id="processing">—</strong><small>Last processing time</small></div><div><strong id="ratio">—</strong><small>RTF: processing / input duration</small></div><div><strong id="playbackLag">0s</strong><small>Translated playback queued</small></div></div>
+</div>
+<div class="panel"><h2>Translated phrases</h2><div id="history"></div></div>
+<script>
+const $=id=>document.getElementById(id);
+for(const id of ['length','pause'])$(id).oninput=()=>$(id+'Value').textContent=$(id).value;
+let ws=null,context=null,stream=null,node=null,mute=null,mic=null,acceptAudio=false,flushed=null,playAt=0,sources=new Set(),urls=[],sessionId=0,cancelled=false,overloaded=false,stopping=false,systemFeedbackRisk=false;
+const queuedAt=new Map();
+function updateSourceHelp(){
+ const computer=$('source').value==='computer';
+ $('sourceHelp').textContent=computer?'For translation-only listening, share the browser tab playing the source speech and leave Hear original audio too off. Enable Share audio in the picker. Capturing Entire Screen cannot reliably silence other applications. Screen video stays in the browser; only audio is sent locally.':'Use headphones to keep translated playback out of your microphone.';
+ $('hearOriginal').disabled=!computer;
+ $('start').textContent=computer?'Choose computer audio':'Start microphone';
+ $('captureInfo').textContent=computer?(navigator.mediaDevices?.getDisplayMedia?'Computer audio sharing is available. Choose a source with an audio track.':'Audio sharing is unavailable here. Open '+location.origin+'/live in Chrome or Edge.'):'Only microphone audio is sent to the local translator.';
+}
+$('source').onchange=updateSourceHelp;updateSourceHelp();
+function status(message,error=false){$('status').textContent=message;$('status').className=error?'error':'';}
+function settings(disabled){for(const id of ['prepare','source','target','length','pause'])$(id).disabled=disabled;$('hearOriginal').disabled=disabled||$('source').value!=='computer';}
+function stopPlayback(){for(const s of sources){try{s.stop();}catch{}}sources.clear();playAt=0;}
+setInterval(()=>{$('playbackLag').textContent=context?Math.max(0,playAt-context.currentTime).toFixed(1)+'s':'0s';},250);
+async function stopMic(flush=true){
+ if(stream){stream.getTracks().forEach(t=>{t.onended=null;t.stop();});stream=null;}
+ if(node&&flush&&acceptAudio){await new Promise(resolve=>{flushed=resolve;node.port.postMessage('flush');setTimeout(resolve,500);});}
+ acceptAudio=false;
+ for(const n of [mic,node,mute]){try{n?.disconnect();}catch{}}
+ mic=node=mute=null;$('meter').value=0;$('stop').disabled=true;
+}
+const worklet=`class Capture extends AudioWorkletProcessor{
+ constructor(){super();this.buffer=new Float32Array(4096);this.used=0;this.port.onmessage=()=>{this.emit();this.port.postMessage({kind:'flushed'});};}
+ emit(){if(this.used){const out=this.buffer.slice(0,this.used);this.port.postMessage(out,[out.buffer]);this.used=0;}}
+ process(inputs){const channels=inputs[0];const input=channels?.[0];if(input){for(let i=0;i<input.length;i++){let sample=0;for(const channel of channels)sample+=channel[i];this.buffer[this.used++]=sample/channels.length;if(this.used===this.buffer.length)this.emit();}}return true;}
+}registerProcessor('index-capture',Capture);`;
+async function openMic(id){
+ if(!stream?.getAudioTracks().length)throw Error('No audio source is selected.');
+ const url=URL.createObjectURL(new Blob([worklet],{type:'application/javascript'}));
+ try{await context.audioWorklet.addModule(url);}finally{URL.revokeObjectURL(url);}
+ if(id!==sessionId||cancelled||!ws||ws.readyState!==WebSocket.OPEN){await stopMic(false);return;}
+ mic=context.createMediaStreamSource(stream);node=new AudioWorkletNode(context,'index-capture');mute=context.createGain();mute.gain.value=0;
+ node.port.onmessage=e=>{
+  if(e.data?.kind==='flushed'){flushed?.();flushed=null;return;}
+  if(!acceptAudio||ws?.readyState!==WebSocket.OPEN)return;
+  const audio=e.data;let sum=0;for(const v of audio)sum+=v*v;$('meter').value=Math.sqrt(sum/audio.length);
+  if(ws.bufferedAmount>16000*4*4){status('The audio connection is falling behind. Capture stopped.',true);finish();return;}
+  ws.send(audio.buffer);
+ };
+ acceptAudio=true;mic.connect(node);node.connect(mute);mute.connect(context.destination);
+ $('stop').disabled=false;status('Capturing audio. Phrases will be translated after pauses or the segment limit.');
+}
+async function chooseInput(id){
+ if($('source').value==='microphone')return navigator.mediaDevices.getUserMedia({audio:{channelCount:1,echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+ if(!navigator.mediaDevices?.getDisplayMedia)throw Error('Audio sharing is unavailable here. Open '+location.origin+'/live in Chrome or Edge.');
+ const supported=navigator.mediaDevices.getSupportedConstraints();
+ const suppressOriginal=!$('hearOriginal').checked;
+ const audio={suppressLocalAudioPlayback:suppressOriginal};if(supported.restrictOwnAudio)audio.restrictOwnAudio=true;
+ const chosen=await navigator.mediaDevices.getDisplayMedia({video:true,audio,systemAudio:'include',windowAudio:'system',selfBrowserSurface:'exclude',surfaceSwitching:'exclude'});
+ if(id!==undefined&&(cancelled||id!==sessionId))return chosen;
+ const track=chosen.getAudioTracks()[0];
+ if(!track){chosen.getTracks().forEach(t=>t.stop());throw Error('No audio was shared. Select a browser tab or Entire Screen and enable Share audio.');}
+ const tab=chosen.getVideoTracks()[0]?.getSettings().displaySurface==='browser';
+ const excluded=track.getSettings().restrictOwnAudio===true;
+ systemFeedbackRisk=!tab&&!excluded;
+ if(!tab&&!excluded){$('autoplay').checked=false;$('captureInfo').textContent='System audio selected. Automatic translated playback is off because this browser cannot confirm that its own audio is excluded. Replay phrases after stopping, or enable playback only with separate audio routing.';}
+ else{$('captureInfo').textContent=tab?'Capturing the selected browser tab. Translator playback is outside that tab.':'Capturing system audio with this translator’s playback excluded by the browser.';}
+ if(suppressOriginal){
+  if(tab&&track.getSettings().suppressLocalAudioPlayback===true)$('captureInfo').textContent+=' Original tab playback is suppressed; captured audio still goes to the translator.';
+  else if(tab)$('captureInfo').textContent+=' Source muting was requested but the browser has not confirmed it. If both voices remain audible, use Chrome or Edge and share the source tab.';
+  else $('captureInfo').textContent+=' Original system playback cannot be reliably muted by this capture mode. Share a source browser tab for translation-only listening, or route the source to a separate audio device.';
+ }
+ return chosen;
+}
+async function play(message,id){
+ const bytes=Uint8Array.from(atob(message.audio),c=>c.charCodeAt(0));
+ const buffer=await context.decodeAudioData(bytes.buffer.slice(0));
+ if(cancelled||id!==sessionId)return;
+ if($('autoplay').checked){
+  const source=context.createBufferSource();source.buffer=buffer;source.connect(context.destination);
+  playAt=Math.max(context.currentTime+0.05,playAt);source.start(playAt);playAt+=buffer.duration;sources.add(source);
+  source.onended=()=>{sources.delete(source);if(!sources.size&&!acceptAudio&&(!ws||ws.readyState!==WebSocket.OPEN)){$('cancel').disabled=true;}};
+ }
+ if(queuedAt.has(message.sequence)){$('firstAudio').textContent=((performance.now()-queuedAt.get(message.sequence))/1000).toFixed(2)+'s';queuedAt.delete(message.sequence);}
+ const box=document.createElement('div');box.className='chunk';
+ const label=document.createElement('div');label.className='badge';label.textContent='Phrase '+message.sequence+' · '+message.input_seconds+'s input · '+message.processing_seconds+'s processing · '+message.queue_seconds+'s waiting';
+ const original=document.createElement('p');original.textContent=message.details.source_transcript;
+ const translated=document.createElement('p');translated.className='translated';translated.textContent=message.details.translation;
+ const audio=document.createElement('audio');audio.controls=true;const url=URL.createObjectURL(new Blob([bytes],{type:'audio/wav'}));urls.push(url);audio.src=url;
+ audio.onplay=()=>{if(systemFeedbackRisk&&acceptAudio&&!$('autoplay').checked){audio.pause();status('Stop system-audio capture before replaying this phrase, or use separate output routing.',true);}};
+ box.append(label,original,translated,audio);$('history').prepend(box);
+ while($('history').children.length>30){$('history').lastChild.remove();URL.revokeObjectURL(urls.shift());}
+ $('pending').textContent=message.pending;$('processing').textContent=message.processing_seconds+'s';$('ratio').textContent=(message.details.rtf??message.processing_seconds/message.input_seconds).toFixed(2)+'×';
+ if(acceptAudio)status('Capturing audio. Translated phrase '+message.sequence+' is ready.');
+}
+async function finish(){if(stopping)return;stopping=true;await stopMic(true);if(ws?.readyState===WebSocket.OPEN)ws.send(JSON.stringify({command:'stop'}));else{$('start').disabled=false;settings(false);}status('Capture off. Finishing accepted phrases…');}
+$('stop').onclick=finish;
+$('prepare').onclick=()=>{
+ $('start').disabled=true;settings(true);status('Preparing the translator. Keep source media paused until ready…');
+ ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/live/ws');
+ ws.onopen=()=>ws.send(JSON.stringify({target:$('target').value,prepare_only:true}));
+ ws.onmessage=e=>{const msg=JSON.parse(e.data);if(msg.kind==='status')status('Preparing the translator. The first preparation can take a few minutes…');if(msg.kind==='ready')status('Translator ready. Choose computer audio or start your microphone.');if(msg.kind==='error')status(msg.message,true);};
+ ws.onerror=()=>status('Could not prepare the translator. Check that the server is running.',true);
+ ws.onclose=()=>{$('start').disabled=false;settings(false);};
+};
+$('cancel').onclick=async()=>{cancelled=true;await stopMic(false);stopPlayback();if(ws?.readyState===WebSocket.OPEN){ws.send(JSON.stringify({command:'cancel'}));ws.close();}else{$('start').disabled=false;settings(false);$('cancel').disabled=true;}status('Cancelled. Capture and playback stopped.');};
+$('start').onclick=async()=>{
+ const id=++sessionId;cancelled=false;overloaded=false;stopping=false;systemFeedbackRisk=false;queuedAt.clear();
+ $('start').disabled=true;settings(true);$('cancel').disabled=false;stopPlayback();$('pending').textContent='0';
+ try{
+  // Screen capture must be requested during the Start click's user gesture.
+  status('Choose the audio source and allow capture…');
+  const inputPromise=chooseInput(id);
+  const chosen=await inputPromise;
+  if(cancelled||id!==sessionId){chosen.getTracks().forEach(t=>t.stop());return;}
+  stream=chosen;
+  for(const track of stream.getTracks())track.onended=()=>{if(!stopping&&!cancelled)finish();};
+  if(context)await context.close();context=new AudioContext({sampleRate:16000});await context.resume();
+  if(context.sampleRate!==16000)throw Error('This browser does not support 16 kHz microphone capture. Try Chrome or Edge.');
+  status('Connecting and loading the model…');
+  ws=new WebSocket((location.protocol==='https:'?'wss://':'ws://')+location.host+'/live/ws');
+  ws.onopen=()=>ws.send(JSON.stringify({target:$('target').value,max_seconds:Number($('length').value),pause_seconds:Number($('pause').value)}));
+  let chain=Promise.resolve();
+  ws.onmessage=e=>{chain=chain.then(async()=>{
+   const msg=JSON.parse(e.data);
+   if(cancelled||id!==sessionId)return;
+   if(msg.kind==='status')status(msg.message.replace('microphone capture','audio capture'));
+   if(msg.kind==='ready'&&!stopping){try{await openMic(id);}catch(err){await stopMic(false);ws.close();status(err.message,true);}}
+   if(msg.kind==='queued'){queuedAt.set(msg.sequence,performance.now());$('pending').textContent=msg.pending;status('Capturing audio. Phrase '+msg.sequence+' queued.');}
+   if(msg.kind==='audio')await play(msg,id);
+   if(msg.kind==='overload'){overloaded=true;await stopMic(false);status(msg.message,true);}
+   if(msg.kind==='error')status((msg.sequence?'Phrase '+msg.sequence+': ':'')+msg.message,true);
+   if(msg.kind==='done'){$('pending').textContent='0';const failed=msg.failed_phrases||0;status(overloaded?'Stopped because translation fell behind. Accepted phrases finished; the last segment was not accepted.':failed?'Finished with '+failed+' failed phrase(s). See errors above.':'Capture off. All accepted phrases translated.',overloaded||failed>0);}
+  }).catch(err=>status(err.message,true));};
+  ws.onerror=()=>status('Connection failed. Check that the local server is running.',true);
+  ws.onclose=async()=>{if(id!==sessionId)return;await stopMic(false);$('start').disabled=false;settings(false);if(!sources.size)$('cancel').disabled=true;};
+ }catch(err){if(id!==sessionId)return;status(err.message,true);await stopMic(false);$('start').disabled=false;settings(false);$('cancel').disabled=true;}
+};
+window.addEventListener('pagehide',()=>{stream?.getTracks().forEach(t=>t.stop());ws?.close();stopPlayback();});
+</script>
+</html>
